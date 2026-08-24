@@ -67,6 +67,7 @@ body { font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
   .institutional-logo { justify-self: center; max-height: 4.6rem; width: min(100%, 22rem); }
   .logo-psp { max-height: 5.5rem; width: auto; }
   .md-typeset { font-size: 0.78rem; }
+  .md-typeset__scrollwrap { margin-inline: 0; max-width: 100%; }
 }
 
 @media print {
