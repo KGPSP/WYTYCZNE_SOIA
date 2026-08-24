@@ -59,4 +59,23 @@ extra_css:
   - assets/stylesheets/extra-v2.css
 
 nav:
-  - "1. Podręcznik SOiA": index.md
+  - "Podręcznik SOiA": index.md
+  - "Część I. Cel, zasady i zakres systemu":
+      - "Załącznik nr 2 — Informacja dla organów": zalaczniki/Z2-INFORMACJA-DLA-ORGANOW.md
+  - "Część II. Terminologia i interpretacja":
+      - "Załącznik nr 1 — Słownik pojęć": zalaczniki/Z1-SLOWNIK.md
+  - "Część III. Wymagania dla urządzeń":
+      - "Załącznik nr 3 — Wymagania minimalne": zalaczniki/Z3-WYMAGANIA-MINIMALNE.md
+      - "Załącznik nr 4 — Katalog sygnałów": zalaczniki/Z4-KATALOG-SYGNALOW.md
+      - "Załącznik nr 5 — Profile sterownika": zalaczniki/Z5-PROFILE-STEROWNIKA.md
+  - "Część IV. Podłączenie i integracja":
+      - "Załącznik nr 6 — Poziom 0": zalaczniki/Z6-POZIOM-0-PUBLICZNY-WYKAZ.md
+      - "Załącznik nr 7 — Poziom 1": zalaczniki/Z7-POZIOM-1-REJESTRACJA.md
+      - "Załącznik nr 8 — Poziom 2": zalaczniki/Z8-POZIOM-2-APN-I-SMS.md
+  - "Część V. Konfiguracja i odbiór":
+      - "Załącznik nr 9 — Karta konfiguracji": zalaczniki/Z9-KARTA-KONFIGURACJI.md
+      - "Załącznik nr 10 — Testy i odbiór": zalaczniki/Z10-TESTY-I-ODBIOR.md
+  - "Część VI. Zamówienie":
+      - "Załącznik nr 11 — Wytyczne do OPZ": zalaczniki/Z11-ZAPISY-DO-OPZ.md
+  - "Część VII. Ramy prawne":
+      - "Załącznik nr 12 — Podstawa prawna": zalaczniki/Z12-PODSTAWA-PRAWNA.md

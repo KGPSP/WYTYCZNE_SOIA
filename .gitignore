@@ -3,6 +3,13 @@
 !/.github/**
 !/docs/
 !/docs/**
+!/scripts/
+!/scripts/**
+!/tests/
+!/tests/**
+/tests/__pycache__/
+!/zalaczniki/
+!/zalaczniki/**
 !/.gitignore
 !/mkdocs.yml
 !/requirements.txt
