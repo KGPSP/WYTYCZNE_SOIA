@@ -4,20 +4,13 @@ Publiczne repozytorium wytycznych dotyczących systemu ostrzegania i alarmowania
 
 ## Zawartość
 
-1. **[Podręcznik SOiA](PODRECZNIK_v2.md)** — strona główna, sposób korzystania z dokumentu i spis treści.
-2. **[Dwanaście załączników](zalaczniki/)** — każdy załącznik jest osobnym plikiem Markdown, dzięki czemu można go bezpośrednio otworzyć, zacytować i udostępnić.
-3. **[Dokumentacja GitHub Pages](docs/)** — osobne strony załączników generowane z tych samych źródeł dla serwisu MkDocs.
+1. **[Podręcznik SOiA — pełna wersja V2](PODRECZNIK_v2.md)** — dotychczasowa wersja w jednym pliku.
+2. **[Podręcznik SOiA — wersja rozdzielona](PODRECZNIK_v2_ROZDZIELONY.md)** — druga wersja przeznaczona do łatwiejszego czytania bezpośrednio w GitHubie; prowadzi do [dwunastu osobnych załączników](zalaczniki/).
 
 Kolejne wytyczne techniczne i sprzętowe będą dodawane jako odrębne, jednoznacznie oznaczone dokumenty.
 
 ## Strona
 
-[Otwórz Wytyczne SOiA w GitHub Pages](https://kgpsp.github.io/WYTYCZNE_SOIA/). Załączniki są dostępne w bocznej nawigacji, pogrupowane według siedmiu części podręcznika.
+[Otwórz Wytyczne SOiA w GitHub Pages](https://kgpsp.github.io/WYTYCZNE_SOIA/)
 
-Pliki w `docs/` powstają deterministycznie po uruchomieniu:
-
-```bash
-python scripts/build_docs.py
-```
-
-Workflow GitHub Pages sprawdza testy generatora, zgodność wygenerowanych stron ze źródłami oraz ścisły build MkDocs.
+GitHub Pages pozostaje odrębną formą publikacji i nie jest zmieniany przez repozytoryjną wersję rozdzieloną.

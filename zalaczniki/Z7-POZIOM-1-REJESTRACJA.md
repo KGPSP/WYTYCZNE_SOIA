@@ -7,7 +7,7 @@ autor: Biuro Informatyki i Łączności Komendy Głównej Państwowej Straży Po
 źródło: "Wydzielono z PODRECZNIK_v2.md"
 ---
 
-[← Powrót do podręcznika](../PODRECZNIK_v2.md#spis-treści)
+[← Powrót do podręcznika](../PODRECZNIK_v2_ROZDZIELONY.md#spis-treści)
 
 # Załącznik nr 7 — Poziom 1: rejestracja i kanał powiadomienia
 
