@@ -1,11 +1,11 @@
 site_name: Podręcznik SOiA
-site_description: Projekt zasad podłączania syren alarmowych i innych urządzeń do SOiA
+site_description: Zasady podłączania syren alarmowych i innych urządzeń do SOiA
 site_author: Biuro Informatyki i Łączności Komendy Głównej Państwowej Straży Pożarnej
 site_url: https://kgpsp.github.io/podrecznik-soia/
 repo_url: https://github.com/KGPSP/podrecznik-soia
 repo_name: KGPSP/podrecznik-soia
 edit_uri: ""
-copyright: Projekt v0.4 — dokument niepodpisany i nieobowiązujący
+copyright: "Wersja 0.4 — status dokumentu: w trakcie akceptacji"
 
 theme:
   name: material
