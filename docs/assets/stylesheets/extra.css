@@ -33,6 +33,32 @@ body { font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 .logo-psp { justify-self: center; max-height: 6rem; }
 .logo-mswia, .logo-olioc { justify-self: stretch; width: 100%; }
 
+.publication-information { display: grid; gap: 0.75rem; margin: 0 0 1.8rem; }
+.document-repository {
+  background: #f7f8fa;
+  border: 1px solid var(--soia-border);
+  border-left: 0.3rem solid var(--soia-red);
+  border-radius: 0.45rem;
+  padding: 0.8rem 1rem;
+}
+.document-repository p, .ai-disclosure p { margin: 0; }
+.document-repository a, .ai-disclosure a { font-weight: 700; }
+.ai-disclosure {
+  align-items: start;
+  background: #fffaf0;
+  border: 1px solid #ead8ad;
+  border-left: 0.3rem solid var(--soia-orange);
+  border-radius: 0.45rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 7rem 1fr;
+  margin: 0;
+  padding: 1rem;
+}
+.ai-disclosure img { display: block; height: auto; max-width: 7rem; width: 100%; }
+.ai-disclosure__content { display: grid; gap: 0.45rem; }
+.ai-disclosure__content > strong { font-size: 0.92rem; letter-spacing: 0.01em; }
+
 .publication-status {
   background: #fff3f4;
   border: 2px solid var(--soia-red);
@@ -53,12 +79,12 @@ body { font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 .md-typeset .admonition, .md-typeset details { border-width: 0 0 0 0.3rem; box-shadow: 0 0.15rem 0.55rem rgba(20, 24, 32, 0.08); }
 .section-return { display: inline-block; font-weight: 650; margin: 1.5rem 0 0.5rem; }
 .section-return::before { content: "↑ "; }
-.ai-disclosure { border-top: 1px solid var(--soia-border); margin-top: 3rem; padding-top: 1.25rem; }
-.ai-disclosure img { display: block; height: auto; opacity: 0.78; width: 120px; }
 
 [data-md-color-scheme="slate"] .md-typeset { color: #eef0f3; }
 [data-md-color-scheme="slate"] .md-typeset h1 { color: #fff; }
 [data-md-color-scheme="slate"] .institutional-masthead { background: #fff; }
+[data-md-color-scheme="slate"] .document-repository { background: #252a32; border-color: #4a515d; }
+[data-md-color-scheme="slate"] .ai-disclosure { background: #302a1d; border-color: #66593a; }
 [data-md-color-scheme="slate"] .publication-status { background: #3b1820; color: #fff; }
 [data-md-color-scheme="slate"] .publication-status span { color: #f5dfe4; }
 
@@ -66,6 +92,8 @@ body { font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
   .institutional-masthead { gap: 1.2rem; grid-template-columns: 1fr; padding: 1rem; }
   .institutional-logo { justify-self: center; max-height: 4.6rem; width: min(100%, 22rem); }
   .logo-psp { max-height: 5.5rem; width: auto; }
+  .ai-disclosure { grid-template-columns: 1fr; }
+  .ai-disclosure img { max-width: 5.5rem; }
   .md-typeset { font-size: 0.78rem; }
   .md-typeset__scrollwrap { margin-inline: 0; max-width: 100%; }
 }

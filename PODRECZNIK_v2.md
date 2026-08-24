@@ -72,7 +72,7 @@ flowchart LR
 
 Objaśnienia, przykłady i diagramy ułatwiają interpretację, ale nie tworzą nowych wymagań i nie zmieniają wymagań istniejących. W przypadku różnicy pierwszeństwo ma źródło rozstrzygające.
 
-Odwołania w formie `§` dotyczą oddzielnego pliku `PODRECZNIK_v2_WYTYCZNE.md`. Plik ten nie jest częścią strony GitHub Pages; podręcznik przywołuje go wyłącznie jako odrębne źródło części normatywnej.
+Odwołania w formie `§` dotyczą odrębnego dokumentu normatywnego, który nie jest częścią publicznej strony GitHub Pages. Podręcznik przywołuje go wyłącznie jako odrębne źródło części normatywnej.
 
 ---
 

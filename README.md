@@ -13,5 +13,3 @@ Kolejne wytyczne techniczne i sprzętowe będą dodawane jako odrębne, jednozna
 [Otwórz Wytyczne SOiA w GitHub Pages](https://kgpsp.github.io/WYTYCZNE_SOIA/)
 
 Pierwszą publikowaną treścią jest [`docs/index.md`](docs/index.md), zawierający Podręcznik SOiA. Repozytorium zawiera również zatwierdzone znaki graficzne oraz pliki techniczne wymagane do zbudowania strony.
-
-Część normatywną przeniesiono do osobnego pliku [`PODRECZNIK_v2_WYTYCZNE.md`](PODRECZNIK_v2_WYTYCZNE.md). Plik ten pozostaje poza katalogiem `docs/`, nie znajduje się w nawigacji i nie jest publikowany w GitHub Pages.

@@ -13,6 +13,21 @@ version: "0.4"
   <img class="institutional-logo logo-olioc" src="assets/images/logo-olioc.svg" alt="Ochrona ludności i obrona cywilna">
 </div>
 
+<div class="publication-information" aria-label="Informacje o publikacji">
+  <div class="document-repository">
+    <p><strong>Repozytorium wszystkich publicznych dokumentów SOiA:</strong>
+    <a href="https://github.com/KGPSP/WYTYCZNE_SOIA">KGPSP/WYTYCZNE_SOIA</a>.</p>
+  </div>
+
+  <div class="ai-disclosure" role="note" aria-label="Informacja o wykorzystaniu sztucznej inteligencji">
+  <img src="assets/images/ai-modified.png" alt="PARTIALLY AI-MODIFIED — oficjalne oznaczenie UE dla treści częściowo zmodyfikowanej z wykorzystaniem AI">
+    <div class="ai-disclosure__content">
+      <strong>Partially AI-Modified — informacja o wykorzystaniu sztucznej inteligencji</strong>
+      <p>Materiał zawiera treść pierwotnie opracowaną przez człowieka, która została częściowo zmodyfikowana i zredagowana z wykorzystaniem narzędzi sztucznej inteligencji. Treść podlegała przeglądowi i kontroli redakcyjnej człowieka, a odpowiedzialność redakcyjną za publikację ponosi wydawca.</p>
+      <p>Zastosowano wariant <a href="https://digital-strategy.ec.europa.eu/en/policies/eu-icons-labelling-ai-generated-content">Partially AI-Modified z zestawu ikon UE</a>, z uwzględnieniem <a href="https://eur-lex.europa.eu/eli/reg/2024/1689/oj">art. 50 rozporządzenia (UE) 2024/1689</a>. Ikona jest dobrowolnym oznaczeniem i sama w sobie nie stanowi potwierdzenia zgodności prawnej ani merytorycznej dokumentu.</p>
+    </div>
+  </div>
+</div>
 
 # Podręcznik SOiA
 
@@ -80,7 +95,7 @@ flowchart LR
 
 Objaśnienia, przykłady i diagramy ułatwiają interpretację, ale nie tworzą nowych wymagań i nie zmieniają wymagań istniejących. W przypadku różnicy pierwszeństwo ma źródło rozstrzygające.
 
-Odwołania w formie `§` dotyczą oddzielnego pliku `PODRECZNIK_v2_WYTYCZNE.md`. Plik ten nie jest częścią strony GitHub Pages; podręcznik przywołuje go wyłącznie jako odrębne źródło części normatywnej.
+Odwołania w formie `§` dotyczą odrębnego dokumentu normatywnego, który nie jest częścią publicznej strony GitHub Pages. Podręcznik przywołuje go wyłącznie jako odrębne źródło części normatywnej.
 
 ---
 
@@ -3867,8 +3882,3 @@ jego identyfikator, na przykład `W-B02` albo `S-93`.
 
 *Wersja redakcyjna V2 opracowana na podstawie pliku `PODRECZNIK.md` z 23 sierpnia 2026 r.
 Wersja merytoryczna materiału źródłowego: 0.4.*
-
-
-<div class="ai-disclosure" aria-label="Informacja o wykorzystaniu sztucznej inteligencji">
-  <img src="assets/images/ai-modified.png" alt="AI MODIFIED — materiał zmodyfikowany z wykorzystaniem sztucznej inteligencji">
-</div>
