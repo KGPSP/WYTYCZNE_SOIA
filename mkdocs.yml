@@ -5,7 +5,7 @@ site_url: https://kgpsp.github.io/WYTYCZNE_SOIA/
 repo_url: https://github.com/KGPSP/WYTYCZNE_SOIA
 repo_name: KGPSP/WYTYCZNE_SOIA
 edit_uri: ""
-copyright: "Wersja 0.4 — status dokumentu: w trakcie akceptacji"
+copyright: "Podręcznik SOiA — wersja 0.4"
 
 theme:
   name: material

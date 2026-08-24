@@ -1,8 +1,5 @@
 # Wytyczne SOiA
 
-> [!WARNING]
-> **Wersja 0.4 — status dokumentu: w trakcie akceptacji.**
-
 Publiczne repozytorium wytycznych dotyczących systemu ostrzegania i alarmowania (SOiA). Będą w nim publikowane materiały organizacyjne, techniczne i sprzętowe związane z systemem.
 
 ## Zawartość

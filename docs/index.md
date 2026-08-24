@@ -4,7 +4,6 @@ description: "Zasady podłączania syren alarmowych i innych urządzeń do SOiA"
 author: "Biuro Informatyki i Łączności Komendy Głównej Państwowej Straży Pożarnej"
 date: 2026-08-23
 version: "0.4"
-status: "W TRAKCIE AKCEPTACJI"
 ---
 
 <a id="poczatek"></a>
@@ -14,20 +13,10 @@ status: "W TRAKCIE AKCEPTACJI"
   <img class="institutional-logo logo-olioc" src="assets/images/logo-olioc.svg" alt="Ochrona ludności i obrona cywilna">
 </div>
 
-<div class="publication-status" role="status" aria-label="Status dokumentu">
-  <strong>Status dokumentu: w trakcie akceptacji</strong>
-  <span>Wersja 0.4</span>
-</div>
-
 
 # Podręcznik SOiA
 
 ## Zasady podłączania syren alarmowych i innych urządzeń do systemu ostrzegania i alarmowania
-
-!!! warning "Status dokumentu"
-
-    **W trakcie akceptacji.**
-
 
 ---
 
@@ -74,6 +63,26 @@ flowchart LR
     ROLA -->|Zamawiający| ZAM
     ROLA -->|Wątpliwość terminologiczna| SLOW[Część II<br/>Terminologia]
 ```
+
+## Jak czytać zakres i horyzont dokumentu
+
+!!! info "Dokument opisuje stan docelowy"
+
+    Architektura, wymagania i procedury opisują stan docelowy SOiA, do którego prowadzą zakupy, integracje i kolejne etapy wdrożenia. Opisy stanu istniejącego oraz okresu przejściowego wyjaśniają drogę dojścia i nie obniżają wymagań docelowych.
+
+| Oznaczenie | Jak je rozumieć |
+|---|---|
+| **STAN ISTNIEJĄCY** | kontekst, zastane instalacje i sposoby działania, które mają współistnieć z SOiA |
+| **OKRES PRZEJŚCIOWY 2026–2027** | rozwiązanie czasowe stosowane przed osiągnięciem modelu docelowego |
+| **STAN DOCELOWY** | model i właściwości, do których prowadzą wymagania |
+| **ZDOLNOŚĆ PLANOWANA** | funkcja przewidziana rozwojowo, lecz niewłączona do bieżącej usługi centralnej |
+| **ŹRÓDŁO ROZSTRZYGAJĄCE** | tabela `W-*` / `S-*`, profil maszynowy, podpisane wytyczne albo inny wskazany dokument mający pierwszeństwo przed objaśnieniem |
+
+Objaśnienia, przykłady i diagramy ułatwiają interpretację, ale nie tworzą nowych wymagań i nie zmieniają wymagań istniejących. W przypadku różnicy pierwszeństwo ma źródło rozstrzygające.
+
+Odwołania w formie `§` dotyczą oddzielnego pliku `PODRECZNIK_v2_WYTYCZNE.md`. Plik ten nie jest częścią strony GitHub Pages; podręcznik przywołuje go wyłącznie jako odrębne źródło części normatywnej.
+
+---
 
 ## Zasady redakcyjne i zakres informacyjny
 
@@ -450,6 +459,10 @@ przez sterowniki. Nie jest komunikatem CAP i nie jest dowodem, że alarmowanie f
 Formalna nazwa profilu, w którym publikowany jest IoT Feed. Występuje w treści koperty i służy
 sterownikowi do sprawdzenia, że rozmawia z właściwym kontraktem.
 
+!!! note "PL-CAP, IoT Feed i urządzenie — dla odbiorcy nietechnicznego"
+
+    PL-CAP opisuje ostrzeżenie przeznaczone do wielu kanałów. IoT Feed jest podpisanym wykazem poleceń dla urządzeń korzystających z toru danych. ALARM.soia publikuje Feed, a sterownik automatycznie go pobiera, weryfikuje i interpretuje; JST nie wykonuje tych czynności ręcznie. Obecność ostrzeżenia w części informacyjnej nie uruchamia syreny. Wykonanie następuje wyłącznie po dostarczeniu polecenia właściwym kanałem oraz jego kwalifikacji i weryfikacji przez urządzenie zgodnie z profilem tego kanału.
+
 ---
 
 #### Uczestnicy i zakresy odpowiedzialności
@@ -698,6 +711,10 @@ zdarzenia i żadne z nich nie dowodzi, że sygnał był słyszalny.
 
 ---
 
+!!! note "Trzy domeny zaufania"
+
+    W dokumencie występują trzy odrębne domeny zaufania. W pierwszej `keyId` wskazuje właściwy klucz podpisujący. Klucz podpisujący pozostaje po stronie podpisującej, a odpowiadający mu klucz publiczny służy urządzeniu do weryfikacji podpisu IoT Feed. Indywidualna tożsamość urządzenia służy do rozpoznawania go w kanałach zamkniętych. Klucze aktualizacji i bezpiecznego rozruchu chronią oprogramowanie urządzenia. Tych domen nie należy łączyć ani używać zamiennie.
+
 #### Terminologia wycofana
 
 Poniższe określenia pojawiają się w starszych materiałach i nie należy ich używać.
@@ -774,6 +791,10 @@ Podział na klasy zachowuje neutralność technologiczną. Weryfikacja podpisu i
 mogą być realizowane na mikrokontrolerze; klasa I nie wymaga zastosowania komputera klasy
 aplikacyjnej.
 
+!!! note "Jak czytać tabelę wymagań"
+
+    Najpierw ustala się przedmiot dostawy, następnie wybiera klasy zdolności i symbole zakresu. `MUSI` oznacza warunek konieczny, a `POWINIEN` wymaga świadomej decyzji zamawiającego przy pominięciu. Klasy I–III opisują zdolności urządzenia, natomiast D i P wskazują zakres dostawy albo adresata. Na końcu wymaganie łączy się z właściwym scenariuszem odbiorowym; objaśnienie nie zastępuje tekstu wiersza W-*.
+
 #### Wyłączenia z zakresu załącznika
 
 **Nazwy własne.** Załącznik nie wskazuje firm, marek, modeli ani oprogramowania, również przy opisie
@@ -808,6 +829,10 @@ syreny.** Uprawnia dopiero zweryfikowana treść. Dotyczy to każdego kanału be
 wydzielonej, zamkniętej grupy abonenckiej, radiostacji i połączenia przewodowego tak samo jak
 publicznego Internetu.
 
+!!! info "SMS, IoT Feed i powiadomienie — trzy różne funkcje"
+
+    Wymagania podpisu oraz pól podpisanej treści w tej części opisują IoT Feed używany w torze danych. Kanał powiadomienia tylko informuje o zmianie Feedu i wyzwala jego pobranie. SMS jest odrębnym kanałem wykonawczym SYRENY.soia; jego profil i kontrole opisują część D oraz załącznik nr 8. Niezależnie od kanału urządzenie stosuje właściwą dla niego walidację, ochronę przed powtórzeniem, regułę obszaru, kontrolę czasu i zasadę fail-closed.
+
 | ID | Moc | Klasa zdolności | Wymaganie |
 |---|---|---|---|
 | W-A01 | MUSI | **I** | Zweryfikować podpis odebranej treści przed jakimkolwiek działaniem wykonawczym |
@@ -840,23 +865,11 @@ urządzenia. Istotna rozbieżność czasu może spowodować odrzucenie prawidło
 Próg 30 sekund przyjęto jako wartość istotnie mniejszą od trzyminutowego okna rozpoczęcia.
 Odpowiada on jednej szóstej długości tego okna i ogranicza wpływ dryfu na kwalifikację polecenia.
 
-**Kolejność źródeł** określa § 9 ust. 4 projektu Wytycznych. Jako źródło podstawowe wskazano
-państwowe serwery czasu, a jako źródło niezależne od Internetu i nawigacji satelitarnej — radiowy
-sygnał czasu urzędowego. Podstawę i brzmienie tego wymagania należy potwierdzić w toku uzgodnień
-projektu.
+!!! note "Państwowe źródła czasu"
 
-**Nawigacja satelitarna nie została wskazana jako źródło podstawowe.** Materiał źródłowy uzasadnia
-to wzrostem liczby zgłoszeń zakłóceń sygnału satelitarnego w Polsce w latach 2021–2024 oraz brakiem
-gwarancji jego bezawaryjnego działania dla celów cywilnych.
+    Zgodnie z przyjętym modelem urządzenie konfiguruje co najmniej dwa państwowe serwery NTP wskazane w obowiązującym profilu. Próg dryfu 30 sekund pozostaje bez zmian. Zegar podtrzymywany zachowuje ciągłość podczas niedostępności serwerów, ale nie zastępuje źródła odniesienia. Urządzenie zna wiek ostatniej synchronizacji i sygnalizuje jego przekroczenie zgodnie z W-A15.
 
-!!! danger "Wymagane uzupełnienie źródłowe"
-
-    Przed podpisaniem projektu należy wskazać źródło danych o zakłóceniach oraz dokument, z którego
-    wynika ocena niezawodności nawigacji satelitarnej.
-
-Odbiornik radiowego sygnału czasu jest wymagany **wyłącznie** tam, gdzie inaczej zostałby sam zegar
-podtrzymywany — czyli w instalacjach pracujących na samym kanale tekstowym, bez łącza danych.
-Urządzenie z łączem IP spełnia W-A15 parą „serwery państwowe + nawigacja satelitarna”.
+Moduł pozycjonowania pozostaje wymaganiem urządzenia służącym między innymi ustaleniu położenia. W tym dokumencie nie jest przedstawiany jako podstawowe źródło czasu, ponieważ przyjętym źródłem odniesienia są państwowe serwery NTP.
 
 ##### Uzasadnienie limitów rozmiaru danych
 
@@ -1402,7 +1415,7 @@ Wymaganie W-J08 dotyczy sytuacji, w której podczas emisji z toru istniejącego 
 odwołanie alarmu z SOiA. Materiał źródłowy określa takie polecenie jako odrzucone bez kolejkowania,
 a jednocześnie nakazuje jego ponowienie po zakończeniu emisji, jeżeli okno pozostaje otwarte.
 
-!!! danger "Wymagane rozstrzygnięcie merytoryczne"
+!!! danger "Wymaga decyzji przed akceptacją — W-J04 i W-J08"
 
     Przed podpisaniem projektu należy jednoznacznie zdefiniować relację między odrzuceniem,
     odroczeniem, zakazem kolejkowania i ponowieniem polecenia w W-J04 oraz W-J08. Redakcja V2
@@ -1697,6 +1710,10 @@ się znaczenie istniejącego. Każda zmiana wymaga przeglądu zgodności urządz
 
 Zmiana jednej z tych wersji nie pociąga automatycznie zmiany drugiej.
 
+!!! danger "Wymaga decyzji przed akceptacją — aktualizacja pakietu audio"
+
+    IoT Feed nie przenosi plików dźwiękowych. Jeżeli urządzenie ma później pobierać nową wersję pakietu bez wizyty serwisowej, trzeba odrębnie wskazać kanał dystrybucji, źródło zaufania, kontrolę integralności, zasady wersjonowania i sposób potwierdzenia instalacji. Do czasu tej decyzji nie należy utożsamiać aktualizacji pakietu z cyklicznym pobieraniem Feedu.
+
 ---
 
 #### Sprawdzenie okresowe
@@ -1936,6 +1953,10 @@ stateDiagram-v2
     end note
 ```
 
+!!! note "Dla odbiorcy operacyjnego"
+
+    Diagram jest modelem dla producenta oprogramowania, a nie instrukcją obsługi syreny. Dla właściciela najważniejsze są trzy skutki: urządzenie odmawia przy poleceniu niespełniającym warunków, nie powtarza zakończonej emisji po restarcie i nie przerywa rozpoczętej emisji zwykłym poleceniem zdalnym. Tryb serwisowy, blokada albo awaria wymagają przywrócenia warunków bezpiecznej pracy na obiekcie.
+
 **Stan `EMITTING` ma w normalnym przebiegu wyłącznie przejście wynikające z zakończenia
 sekwencji.** Awaryjne odcięcie toru wykonawczego jest czynnością sprzętową i nie stanowi zwykłego
 przejścia maszyny stanów.
@@ -2002,6 +2023,10 @@ pozostaje akustyka — i tego załącznik nie zmienia.
 Część IV opisuje trzy kumulatywne poziomy podłączenia. Poziom 0 jest dostępny bez zgody i stanowi
 podstawowy sposób integracji; poziomy wyższe rozszerzają go o kolejne kanały, nie zastępując
 poziomów niższych.
+
+!!! info "Mapa kanałów w stanie docelowym"
+
+    Tor danych pobiera podpisany IoT Feed i pozostaje podstawą poziomu 0. Kanał niezwłocznego powiadomienia nie przenosi komendy — skraca czas wykrycia nowej wersji Feedu. Kanał SMS jest odrębnym kanałem wykonawczym z własnym profilem i kontrolami. Urządzenie może korzystać z wielu kanałów, lecz ta sama komenda nie może spowodować wielokrotnej emisji.
 
 
 ### Załącznik nr 6 — Poziom 0: publiczny wykaz poleceń
@@ -2199,6 +2224,10 @@ w pętli.
 **Losowe rozproszenie momentu odpytania jest obowiązkowe.** Bez rozproszenia urządzenia mogłyby
 kierować żądania w tym samym czasie, powodując krótkotrwałe przeciążenie usługi.
 
+!!! danger "Wymaga decyzji przed akceptacją — polling, jitter i Retry-After"
+
+    Wymaganie 30 sekund, rozproszenie momentu odpytania, backoff po błędzie i okres wstrzymania wskazany przez usługę muszą mieć jedną zatwierdzoną hierarchię. Redakcja nie rozstrzyga, jak urządzenie ma postąpić, gdy wyjątkowy `Retry-After` przekracza odstęp bazowy. Implementacja i odbiór wymagają wspólnej interpretacji tego przypadku.
+
 Treść przeterminowana nie może stanowić podstawy wykonania polecenia. Brak możliwości pobrania
 aktualnego wykazu skutkuje brakiem nowej emisji.
 
@@ -2374,6 +2403,10 @@ stateDiagram-v2
     end note
 ```
 
+!!! note "Jak czytać proces rejestracji"
+
+    Diagram pokazuje status administracyjny urządzenia, a nie jego stan techniczny. JST składa i uzupełnia zgłoszenie, administrator podejmuje decyzję, system nadaje tożsamość, a urządzenie potwierdza połączenie. Zawieszenie lub odwołanie blokuje kanały zamknięte, lecz samo w sobie nie usuwa dostępu do publicznego poziomu 0.
+
 **Rejestracja nie jest warunkiem działania.** W okresie od zgłoszenia do rozstrzygnięcia — który
 może trwać dni — urządzenie normalnie wykonuje polecenia z publicznego wykazu. Nie powstaje luka
 w ochronie ludności i nie ma powodu, żeby wstrzymywać uruchomienie instalacji do czasu decyzji.
@@ -2416,6 +2449,10 @@ sequenceDiagram
     REG->>DEV: Unieważnienie materiału rozruchowego i tymczasowego
 ```
 
+!!! note "Granica odpowiedzialności przy nadawaniu tożsamości"
+
+    Diagram opisuje proces wykonywany po pozytywnej decyzji administratora. Instalator przygotowuje urządzenie do kontrolowanego nadania tożsamości, ale nie podejmuje decyzji o dopuszczeniu i nie przejmuje klucza prywatnego. Materiał prywatny pozostaje w bezpiecznym magazynie urządzenia, a system otrzymuje wyłącznie dane potrzebne do powiązania tożsamości i polityki dostępu.
+
 Obowiązuje zasada: **jeden fizyczny sterownik — jedna tożsamość.** Jeden aktywny
 certyfikat nie może identyfikować wielu urządzeń. **Klucz prywatny nie opuszcza bezpiecznego
 magazynu.** Kompromitacja jednego urządzenia nie może wymuszać wymiany całej floty. Identyfikator
@@ -2449,7 +2486,7 @@ sequenceDiagram
     DEV->>DEV: Weryfikacja podpisu i warunków wykonania
 ```
 
-Jedynym źródłem treści wykonawczej pozostaje podpisany wykaz. Powiadomienie wyłącznie skraca czas
+Dla toru danych jedynym źródłem treści wykonawczej pozostaje podpisany wykaz. Powiadomienie wyłącznie skraca czas
 dotarcia informacji o jego zmianie i nie tworzy równoległego toru decyzyjnego. Niedostępność kanału
 powiadomienia nie zatrzymuje działania poziomu 0; urządzenie wykrywa zmianę podczas cyklicznego
 odpytywania. Sprawdzenie działania bez kanału powiadomienia stanowi element odbioru.
@@ -2471,6 +2508,10 @@ albo równoważną, podpisaną treść.** Dopuszczalne sposoby to utrwalenie sta
 unieważnienie pamięci pośredniej przed wysłaniem powiadomienia, generowanie treści z krótkim czasem
 ważności pamięci pośredniej, albo umieszczenie w powiadomieniu numeru kolejnego pozwalającego
 urządzeniu rozpoznać, że pobrało wersję starszą, i ponowić żądanie.
+
+!!! danger "Wymaga decyzji przed akceptacją — świeżość po powiadomieniu"
+
+    Sama obecność pamięci pośredniej ani krótki czas jej ważności nie dowodzą, że urządzenie pobrało wersję wskazaną przez powiadomienie. Przed odbiorem trzeba zatwierdzić mechanizm pozwalający rozpoznać wersję starszą albo wykazać równoważność pobranej treści. Redakcja nie wybiera jednego z dopuszczalnych mechanizmów.
 
 Modyfikowanie podpisanej treści w warstwie pośredniczącej jest niedopuszczalne. Zmiana bajtów
 objętych podpisem powoduje niepowodzenie jego weryfikacji.
@@ -2578,7 +2619,7 @@ awaryjnego wygaszenia wyjścia. Powiązanie kodów poleceń z sygnałami zawiera
 
 Materiał źródłowy określa polecenie awaryjnego wygaszenia jako odcięcie toru wykonawczego.
 
-!!! danger "Wymagane rozstrzygnięcie merytoryczne"
+!!! danger "Wymaga decyzji przed akceptacją — semantyka awaryjnego wygaszenia"
 
     Słownik zastrzega „odcięcie lokalne” dla czynności wykonywanej na obiekcie i wyklucza zdalne
     zatrzymanie rozpoczętej emisji. Przed podpisaniem należy określić semantykę awaryjnego wygaszenia
@@ -2638,6 +2679,10 @@ w której każda warstwa odcina inną drogę wejścia:
 Komplet czterech warstw tworzy model wielowarstwowej kontroli dostępu do kanału. Nie stanowi on
 podpisu kryptograficznego treści. Żadna z warstw stosowana samodzielnie nie jest wystarczająca:
 zamknięta grupa nie zastępuje hasła, a hasło nie zastępuje wykazu numerów.
+
+!!! info "Stan przejściowy i docelowy kanału SMS"
+
+    W okresie przejściowym urządzenie może korzystać z karty innego operatora, ale nadal stosuje pełną walidację profilu SMS: numery uprawnione, unikalne hasło, składnię, znacznik czasu, licznik i ochronę przed powtórzeniem. W stanie docelowym KG PSP zapewnia kartę SIM w zamkniętej grupie użytkowników (CUG) oraz zarządza warstwą operatorską i listami numerów uprawnionych. CUG ogranicza dostęp do sieci, lecz nie zastępuje kontroli wykonywanych przez urządzenie.
 
 ##### Planowany okres przejściowy 2026–2027
 
@@ -2766,6 +2811,10 @@ w przekazie chronionym, nigdy w repozytorium ani w załączniku do wiadomości r
 Legenda: oznaczenie **[W]** wskazuje pole wypełniane przez instalatora na obiekcie. Pozostałe
 wartości nadaje Komenda Główna PSP albo zamawiający, a instalator wprowadza je bez zmian.
 
+!!! note "Odpowiedzialność za kartę konfiguracji"
+
+    Karta nie służy wykonawcy do samodzielnego ustalania wartości operacyjnych. KG PSP albo zamawiający przekazuje wartości zatwierdzone dla instalacji, instalator wprowadza je bez zmiany i uzupełnia pola oznaczone `[W]`, a właściciel przejmuje kartę po odbiorze. Każda późniejsza zmiana wartości wymaga aktualizacji karty przez podmiot do tego uprawniony.
+
 ---
 
 #### A. Identyfikacja urządzenia
@@ -2865,6 +2914,10 @@ Potwierdzenie zgodności kodów z rejestrem podziału terytorialnego: [W] ……
 Zestaw nie obejmuje elementów zależnych od obiektu — długości tras, rodzaju podłoża i warunków
 zewnętrznych. Ich brak w dostawie **nie jest niekompletnością**. Firma monterska przygotowuje je
 przed przyjazdem, po ustaleniu warunków na miejscu.
+
+!!! note "Przykład: elementy zależne od obiektu"
+
+    Kotwy dobiera się do konkretnej ściany i nie można ich ustalić wyłącznie na podstawie modelu sterownika. Brak właściwych kotew nie jest wadą fabrycznej dostawy, ale uniemożliwia bezpieczny montaż. Warunki obiektu należy więc rozpoznać przed rozpoczęciem prac, a potrzebne elementy przygotować przed przyjazdem na montaż.
 
 | Element | Przygotowano |
 |---|---|
@@ -3212,6 +3265,10 @@ testów indywidualnych wymaga odrębnego określenia procedury, częstotliwości
 
 #### 4. Protokół odbioru instalacji
 
+!!! note "Jak czytać protokół odbioru"
+
+    Protokół grupuje wyniki, ale nie zastępuje dowodów szczegółowych z testów i karty konfiguracji. Wykonawca przedstawia wyniki sprawdzeń, przedstawiciel właściciela ocenia ich kompletność i podpisuje rozstrzygnięcie. Wynik „z uwagami” nie usuwa obowiązku usunięcia niezgodności, która według kryteriów dopuszczenia wyklucza eksploatację.
+
 **Instalacja:** …………………………………………………  **Identyfikator urządzenia:** ……………………………
 
 **Data:** ………………  **Wykonujący:** ………………………………  **Przedstawiciel właściciela:** ………………………
@@ -3282,6 +3339,10 @@ prawnej ani opisu przedmiotu zamówienia dostosowanego do danego postępowania.
     Załącznik nie stanowi kompletnego opisu przedmiotu zamówienia. Zawiera propozycję minimalnego
     zakresu funkcjonalnego, który zamawiający powinien zweryfikować, uszczegółowić i dostosować do
     potrzeb, przedmiotu oraz podstawy prawnej konkretnego postępowania.
+
+!!! note "Trzy ścieżki przygotowania zamówienia"
+
+    Zamawiający wybiera najpierw jeden punkt wyjścia: nową instalację, integrację instalacji istniejącej albo zakup samej syreny. Następnie dobiera klasy zdolności oraz rozdziela wymagania wobec sterownika, syreny, montażu i odbioru. Załącznik nie jest gotowym OPZ — wymaga rozpoznania obiektu, dostosowania do postępowania oraz sprawdzenia aktualnego stanu prawnego opisanego w części VII.
 
 W konkretnym postępowaniu podstawowym mechanizmem egzekwowania wymagań wobec wykonawcy jest ich
 ujęcie w dokumentach zamówienia i umowie. Sam projekt Wytycznych nie ustanawia obowiązków po
