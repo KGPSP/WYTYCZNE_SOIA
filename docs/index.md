@@ -20,7 +20,7 @@ version: "0.4"
   </div>
 
   <div class="ai-disclosure" role="note" aria-label="Informacja o wykorzystaniu sztucznej inteligencji">
-  <img src="assets/images/ai-modified.png" alt="PARTIALLY AI-MODIFIED — oficjalne oznaczenie UE dla treści częściowo zmodyfikowanej z wykorzystaniem AI">
+  <img src="assets/images/partially-ai-modified-eu.png" alt="PARTIALLY AI-MODIFIED — oficjalne oznaczenie UE dla treści częściowo zmodyfikowanej z wykorzystaniem AI">
     <div class="ai-disclosure__content">
       <strong>Partially AI-Modified — informacja o wykorzystaniu sztucznej inteligencji</strong>
       <p>Materiał zawiera treść pierwotnie opracowaną przez człowieka, która została częściowo zmodyfikowana i zredagowana z wykorzystaniem narzędzi sztucznej inteligencji. Treść podlegała przeglądowi i kontroli redakcyjnej człowieka, a odpowiedzialność redakcyjną za publikację ponosi wydawca.</p>

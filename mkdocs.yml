@@ -56,7 +56,7 @@ markdown_extensions:
       toc_depth: "2-3"
 
 extra_css:
-  - assets/stylesheets/extra.css
+  - assets/stylesheets/extra-v2.css
 
 nav:
   - "1. Podręcznik SOiA": index.md
