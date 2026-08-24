@@ -1,0 +1,10 @@
+*
+!/.github/
+!/.github/**
+!/docs/
+!/docs/**
+!/.gitignore
+!/mkdocs.yml
+!/requirements.txt
+!/README.md
+!/PODRECZNIK_v2.md

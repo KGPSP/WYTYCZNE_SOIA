@@ -1,0 +1,62 @@
+site_name: Podręcznik SOiA
+site_description: Projekt zasad podłączania syren alarmowych i innych urządzeń do SOiA
+site_author: Biuro Informatyki i Łączności Komendy Głównej Państwowej Straży Pożarnej
+site_url: https://kgpsp.github.io/podrecznik-soia/
+repo_url: https://github.com/KGPSP/podrecznik-soia
+repo_name: KGPSP/podrecznik-soia
+edit_uri: ""
+copyright: Projekt v0.4 — dokument niepodpisany i nieobowiązujący
+
+theme:
+  name: material
+  language: pl
+  logo: assets/images/logo-psp.svg
+  favicon: assets/images/logo-psp.svg
+  font: false
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Włącz ciemny motyw
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Włącz jasny motyw
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - toc.follow
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+
+plugins:
+  - search:
+      lang: pl
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - toc:
+      permalink: true
+      toc_depth: "2-3"
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+nav:
+  - Podręcznik: index.md
