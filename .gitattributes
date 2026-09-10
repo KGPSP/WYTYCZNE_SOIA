@@ -1,0 +1,2 @@
+# Preserve the published PDFs as binary files without text conversion.
+/instrukcje-i-materialy-robocze/pdf/*.pdf binary

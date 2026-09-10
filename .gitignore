@@ -4,6 +4,7 @@
 !/docs/
 !/docs/**
 !/.gitignore
+!/.gitattributes
 !/mkdocs.yml
 !/requirements.txt
 !/README.md
@@ -17,6 +18,10 @@
 !/scripts/
 !/scripts/sync_pages.py
 !/scripts/pages-masthead.html
+!/instrukcje-i-materialy-robocze/
+!/instrukcje-i-materialy-robocze/README.md
+!/instrukcje-i-materialy-robocze/pdf/
+!/instrukcje-i-materialy-robocze/pdf/*.pdf
 
 # Materiał wewnętrzny — nie publikować w repozytorium.
 /PODRECZNIK_v2_WYTYCZNE.md
