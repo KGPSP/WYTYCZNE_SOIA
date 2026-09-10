@@ -1,204 +1,64 @@
 ---
-tytuł: "Załącznik nr 12 — Podstawa prawna"
-dokument: "Podręcznik podłączania syren alarmowych i innych urządzeń do SOiA"
-wersja: 0.4
-data: 2026-08-23
+tytuł: "Załącznik nr 12 — Podstawa prawna i źródła"
+wersja: "0.5"
+data: 2026-09-10
+status: "projekt wytycznych"
 autor: Biuro Informatyki i Łączności Komendy Głównej Państwowej Straży Pożarnej
-źródło: "Wydzielono z PODRECZNIK_v2.md"
 ---
 
 [← Powrót do podręcznika](../PODRECZNIK_v2_ROZDZIELONY.md#spis-treści)
 
-# Załącznik nr 12 — Podstawa prawna
+# Załącznik nr 12 — Podstawa prawna i źródła
 
+## Status opracowania
 
-## Zakres i aktualność podstaw prawnych
+To dokumentacja projektu wytycznych, nie nowy akt prawny ani dowód podpisania wytycznych KG PSP. Wersja 0.5 porządkuje wymagania techniczne i wdrożeniowe. Ich zastosowanie w konkretnym postępowaniu i instalacji wymaga określenia właściwego zakresu i podstawy prawnej.
 
-Załącznik zestawia akty, na których opiera się projekt, wraz ze stanem obowiązywania zadeklarowanym
-w materiale źródłowym na **23 sierpnia 2026 r.** Materiał źródłowy wskazuje, że status każdego aktu
-sprawdzono w rejestrze aktów prawnych, a zakres nowelizacji ustalono na podstawie treści ustaw
-zmieniających.
+10.09.2026 sprawdzono metadane ELI aktów wymienionych poniżej oraz treść przepisów istotnych dla sygnałów, czasu, zamówień i wskazanych zmian ustawy o ochronie ludności. Daty wejścia w życie sprawdza się niezależnie od ogólnej etykiety statusu w rejestrze.
 
-Stan prawny może ulec zmianie. Przed powołaniem aktu w piśmie lub postępowaniu należy ponownie
-sprawdzić jego status, datę ostatniej zmiany, tekst obowiązujący oraz wpływ nowelizacji na przepisy
-przywołane w projekcie.
+## Ochrona ludności i sygnały
 
-> [!caution] Granica redakcji V2
-> Formalne brzmienie załącznika nie potwierdza urzędowego wydania niniejszych Wytycznych ani
-> aktualności przywołanych aktów. Przed podpisaniem należy dołączyć trwałe odnośniki do źródeł
-> urzędowych i udokumentować ponowną weryfikację każdej pozycji.
+[Ustawa z 5 grudnia 2024 r. o ochronie ludności i obronie cywilnej, Dz.U. 2024 poz. 1907](https://api.sejm.gov.pl/eli/acts/DU/2024/1907) określa w art. 70–74 systemy wykrywania zagrożeń, powiadamiania, ostrzegania i alarmowania oraz bezpiecznej łączności. Art. 71 reguluje przekazywanie sygnałów i decyzje organów, a art. 72 stanowi delegację do rozporządzenia o alarmach. Obowiązki komunikacyjne z art. 73 nie są specyfikacją interfejsów sterownika.
 
----
+[Rozporządzenie MSWiA z 14 maja 2025 r., Dz.U. 2025 poz. 645](https://api.sejm.gov.pl/eli/acts/DU/2025/645/text.pdf) obowiązuje od 31.05.2025. Określa rodzaje alarmów, sposoby ogłaszania i odwoływania oraz tryb przekazywania. Katalog akustyczny przedstawia Z4. Parametry portów, system operacyjny i profil 1.5 nie wynikają wprost z tego rozporządzenia — są wymaganiami technicznymi projektu.
 
-## 1. Ustawa o ochronie ludności i obronie cywilnej
+| Nowelizacja ustawy | Stan istotny dla przeglądu |
+| --- | --- |
+| [Dz.U. 2025 poz. 1705](https://api.sejm.gov.pl/eli/acts/DU/2025/1705/text.pdf) | Zmienia art. 30; wejście w życie 1.01.2027, więc nie traktuje się jej zmian jako obowiązujących 10.09.2026. |
+| [Dz.U. 2026 poz. 646](https://api.sejm.gov.pl/eli/acts/DU/2026/646/text.pdf) | Obowiązuje od 29.05.2026; sprawdzony zakres nie zmienia art. 70–74. |
+| [Dz.U. 2026 poz. 815](https://api.sejm.gov.pl/eli/acts/DU/2026/815/text.pdf) | Obowiązuje od 4.07.2026; zmienia w tej ustawie art. 5, 15, 38, 40 i 44, nie art. 70–74. |
 
-**Ustawa z dnia 5 grudnia 2024 r. o ochronie ludności i obronie cywilnej** — Dz. U. poz. 1907,
-z późniejszymi zmianami.
+Odczyt metadanych źródłowej ustawy wskazał te trzy akty zmieniające. Pliku ogłoszonego nie nazwano automatycznie tekstem ujednoliconym; wpływ zmian sprawdzono osobno. Przed przyszłym użyciem aktu należy ponownie sprawdzić rejestr.
 
-Status wskazany w materiale źródłowym: obowiązująca. Ustawa jest datowana na 5 grudnia 2024 r.,
-została ogłoszona 23 grudnia 2024 r. i weszła w życie **1 stycznia 2025 r.**
+## Materiały referencyjne KG PSP
 
-Przepisy istotne dla Wytycznych:
+W materiałach źródłowych znajdują się dokumenty opisane datami 27 i 28 maja 2025 r., dotyczące cyfrowych sygnałów syren. Potwierdzono ich treść, w tym różnice opisu sygnału dla jednostki ochrony przeciwpożarowej, ale niniejszy przegląd nie potwierdza autentyczności podpisu i formalnego statusu każdego egzemplarza.
 
-**Art. 71** — system powiadamiania, ostrzegania i alarmowania o zagrożeniach. To on jest podstawą
-istnienia SOiA jako systemu, którym organy ochrony ludności przekazują alarmy i komunikaty.
+Wdrożenie wymaga pakietu i manifestu zatwierdzonego przez KG PSP, z określonym pochodzeniem, wersją i metodą odbioru. Wartości SHA-256, tolerancje i procedury nie są uznawane za aktualnie wiążące tylko dlatego, że występują w kopii podręcznika. Nie oznacza to stwierdzenia, że źródłowy dokument nie istnieje lub nie został wydany.
 
-**Art. 72** — delegacja do wydania rozporządzenia określającego rodzaje alarmów i komunikatów
-ostrzegawczych oraz sposób ich ogłaszania i odwoływania. Na tej podstawie wydano rozporządzenie
-opisane w rozdziale 2.
+## Zamówienia i interoperacyjność
 
-**Art. 73** — żądania kierowane do nadawców programów radiowych i telewizyjnych, operatorów sieci
-telekomunikacyjnych oraz redaktorów dzienników i wydawców stron internetowych.
+[Prawo zamówień publicznych, ustawa z 11 września 2019 r.](https://api.sejm.gov.pl/eli/acts/DU/2019/2019), w szczególności art. 99 i 101, jest podstawą oceny opisu przedmiotu i równoważności. Wskazanie istniejącego środowiska KG PSP wymaga uzasadnienia, opisu interfejsów i kryteriów. Nie stanowi automatycznie podstawy ograniczenia wykonawców do jednego producenta.
 
-**Art. 9 ust. 1 pkt 1** — terytorialne organy ochrony ludności, czyli podmioty ogłaszające alarm.
+OrchestraOS, Yocto, RAUC i provisioning opisują wymagany model integracji. Dokumentacja przekazana wykonawcom ma pozwalać przygotować zgodną platformę na ich sprzęcie. Szczegółowa ocena konkretnego OPZ pozostaje odrębna od redakcji wytycznych.
 
-### Zakres zweryfikowanych zmian ustawowych
+## Czas i pozostałe akty kontekstowe
 
-**Ustawa z dnia 7 listopada 2025 r.** o zmianie ustawy o systemie informacji w ochronie zdrowia oraz
-ustawy o ochronie ludności i obronie cywilnej — Dz. U. 2025 poz. 1705. Wejście w życie
-**1 stycznia 2027 r.**
+| Źródło urzędowe | Znaczenie |
+| --- | --- |
+| [Ustawa o czasie urzędowym, Dz.U. 2004 poz. 144](https://api.sejm.gov.pl/eli/acts/DU/2004/144) | Utrzymywanie i rozpowszechnianie czasu urzędowego. |
+| [Rozporządzenie o rozpowszechnianiu czasu, Dz.U. 2004 poz. 548](https://api.sejm.gov.pl/eli/acts/DU/2004/548/text.pdf) | Wskazuje m.in. serwery NTP GUM; nie ustanawia samo hierarchii wszystkich źródeł czasu sterownika. |
+| [Krajowe Ramy Interoperacyjności, Dz.U. 2024 poz. 773](https://api.sejm.gov.pl/eli/acts/DU/2024/773) | Kontekst interoperacyjności i utrzymania systemów; nie jest źródłem liczby portów 1.5. |
+| [Centralna Ewidencja Zasobów, Dz.U. 2025 poz. 493](https://api.sejm.gov.pl/eli/acts/DU/2025/493) | Ewidencja zasobów ochrony ludności; odrębna od technicznego rejestru Orchestra. |
+| [Centralna Ewidencja Obiektów Zbiorowej Ochrony, Dz.U. 2025 poz. 922](https://api.sejm.gov.pl/eli/acts/DU/2025/922) | Kontekst ustawowy, nie profil sterowania syreną. |
+| [Ustawa o zarządzaniu kryzysowym](https://api.sejm.gov.pl/eli/acts/DU/2007/590) | Planowanie i organizacja w aktualnym brzmieniu, wraz z właściwymi zmianami. |
 
-**Ustawa z dnia 17 kwietnia 2026 r.** o zmianie ustawy o ochronie ludności i obronie cywilnej oraz
-niektórych innych ustaw — Dz. U. 2026 poz. 646. Obowiązuje od **29 maja 2026 r.** Zmienia
-w szczególności art. 16, 17, 19, 30, 50, 52 i 62 oraz dalsze. **Nie zmienia art. 70–74.**
+Próg kontroli czasu i zasady pomiaru są wymaganiami technicznymi określonymi w profilu, a nie automatycznym wnioskiem z przepisów o czasie urzędowym. Zakres bezpiecznej pracy urządzenia i instalacji wynika także z właściwej dokumentacji technicznej i projektu obiektu.
 
-**Ustawa z dnia 29 maja 2026 r.** o zmianie ustawy o zarządzaniu kryzysowym oraz niektórych innych
-ustaw — Dz. U. 2026 poz. 815. Obowiązuje od **4 lipca 2026 r.** W ustawie o ochronie ludności
-i obronie cywilnej zmienia wyłącznie art. 5, 15, 38, 40 i 44. **Nie zmienia art. 70–74.**
+## Źródła techniczne aktualizacji
 
-> [!note] Wniosek wynikający z materiału źródłowego
-> Według stanu zadeklarowanego na 23 sierpnia 2026 r. wskazane nowelizacje nie zmieniły art. 70–74.
-> Wniosek ten wymaga ponownego potwierdzenia w tekście obowiązującym przed podpisaniem projektu.
+Podstawą kierunku były dokumenty KG PSP: wizja SOIA.KGPSP v0.3, wymagania wspólne platformy v0.2, profile sterowników v0.2 oraz instrukcje kanałów i integracji. Ich szczegółowe instrukcje instalacyjne i PDF-y nie są wgrywane w tym wydaniu repozytorium.
 
----
+Dokumentacja mechanizmów: [Yocto Project](https://docs.yoctoproject.org/brief-yoctoprojectqs/index.html), [BSP](https://docs.yoctoproject.org/bsp-guide/index.html), [OrchestraOS](https://cthings.co/orchestra-os) i [RAUC](https://rauc.readthedocs.io/en/latest/basic.html). Opis produktu nie jest dowodem wdrożenia funkcji w instancji KG PSP. Wersję oraz prawa do komponentów określa pakiet integracyjny.
 
-## 2. Rozporządzenie o alarmach i komunikatach ostrzegawczych
-
-**Rozporządzenie Ministra Spraw Wewnętrznych i Administracji z dnia 14 maja 2025 r. w sprawie
-alarmów i komunikatów ostrzegawczych** — Dz. U. poz. 645.
-
-Podstawa wydania: art. 72 ustawy o ochronie ludności i obronie cywilnej. Weszło w życie po upływie
-14 dni od ogłoszenia; ogłoszone 16 maja 2025 r. Status: obowiązujące.
-
-Rozporządzenie określa rodzaje alarmów oraz sposób ich ogłaszania i odwoływania, rodzaje komunikatów
-ostrzegawczych oraz tryb ich przekazywania.
-
-**Rodzaje alarmów (§ 2).** Akustyczny — modulowany dźwięk syreny alarmowej albo zapowiedź słowna
-przekazywana przez urządzenie nagłaśniające. Wizualny — żółty znak w kształcie trójkąta
-równobocznego skierowanego podstawą do dołu, umieszczany niezwłocznie po ogłoszeniu alarmu
-akustycznego.
-
-**Katalog sygnałów akustycznych (załącznik).** Cztery pozycje, będące przedmiotem załącznika nr 4
-do niniejszych Wytycznych: ogłoszenie alarmu dla ludności cywilnej — modulowany dźwięk trwający trzy
-minuty; **odwołanie alarmu — ciągły dźwięk trwający trzy minuty**; alarm dla jednostki ochrony
-przeciwpożarowej — trzykrotnie wzrastający i opadający dźwięk z przerwami trzydziestosekundowymi,
-łącznie trzy minuty; alarm ćwiczebny lub treningowy — ciągły dźwięk trwający jedną minutę.
-
-**Kaskada przekazywania (§ 5–9) i rola PSP.** Terytorialny organ ochrony ludności ogłasza alarm,
-wskazuje obszar zagrożenia, wydaje zalecenia dla ludności i określa przewidywany czas trwania
-zagrożenia. Wójt, burmistrz albo prezydent miasta przekazuje alarm podmiotom ochrony ludności.
-Starosta czyni to **uwzględniając ustalenia z komendantem powiatowym lub miejskim Państwowej Straży
-Pożarnej**; wojewoda — **uwzględniając ustalenia z komendantem wojewódzkim PSP**.
-
-Projekt przyjmuje udział Państwowej Straży Pożarnej w tych ustaleniach jako przesłankę proponowanych
-zadań komendantów powiatowych i wojewódzkich. Zakres tych zadań wymaga potwierdzenia w toku
-uzgodnień prawnych i kompetencyjnych.
-
----
-
-## 3. Wytyczne KG PSP w sprawie cyfrowych sygnałów alarmowych
-
-**Wytyczne Komendanta Głównego Państwowej Straży Pożarnej z dnia 28 maja 2025 r. w sprawie
-przygotowania, dystrybucji oraz eksploatacji cyfrowych sygnałów alarmowych syren.** Materiał
-źródłowy wskazuje datę rozpoczęcia ich stosowania na **31 maja 2025 r.**
-
-Ustanawiają cztery pliki wzorcowe wraz z sumami kontrolnymi, wymagania formatu — WAV PCM 16 bit mono
-przy próbkowaniu nie mniejszym niż 8 kHz — tolerancje czasu trwania ±5 % i poziomu ±3 dB, tryb
-dystrybucji kaskadą przez komendantów wojewódzkich, obowiązek weryfikacji sum kontrolnych przed
-instalacją, roczny test odsłuchowy wraz ze wzorem protokołu oraz zasadę wyłączenia syreny
-z eksploatacji przy rozbieżności przekraczającej 5 %.
-
-Projekt zakłada, że po podpisaniu niniejsze Wytyczne będą uzupełniać Wytyczne z 28 maja 2025 r.,
-bez ich uchylania ani zmiany. W przypadku kwestii uregulowanych w obu dokumentach projekt odsyła
-do brzmienia Wytycznych z 2025 r., w szczególności w zakresie formatu plików, tolerancji i trybu
-sprawdzeń okresowych.
-
-Załącznik nr 4 odnotowuje dwie rozbieżności wewnętrzne w materiale z 2025 r., dotyczące opisu pliku
-alarmu dla jednostki ochrony przeciwpożarowej. Ich formalne rozstrzygnięcie pozostaje poza zakresem
-niniejszego projektu.
-
----
-
-## 4. Akty stanowiące kontekst prawny
-
-Nie stanowią bezpośredniej podstawy projektu, lecz tworzą kontekst prawny działania systemu.
-
-**Rozporządzenie Ministra Spraw Wewnętrznych i Administracji z dnia 14 kwietnia 2025 r. w sprawie
-Centralnej Ewidencji Zasobów Ochrony Ludności i Obrony Cywilnej** — Dz. U. poz. 493, obowiązuje
-od 1 maja 2025 r.
-
-**Rozporządzenie Ministra Spraw Wewnętrznych i Administracji z dnia 7 lipca 2025 r. w sprawie
-Centralnej Ewidencji Obiektów Zbiorowej Ochrony** — Dz. U. poz. 922, obowiązuje od 25 lipca 2025 r.
-
-**Ustawa z dnia 26 kwietnia 2007 r. o zarządzaniu kryzysowym**, w brzmieniu nadanym nowelizacją
-z 29 maja 2026 r. — w zakresie planów zarządzania kryzysowego, do których odsyła ustawa o ochronie
-ludności.
-
-**Ustawa z dnia 11 września 2019 r. — Prawo zamówień publicznych** — w zakresie opisu przedmiotu
-zamówienia dopuszczającego rozwiązania równoważne, istotnego dla załącznika nr 11.
-
----
-
-## 5. Czas urzędowy i synchronizacja systemów
-
-Projekt wiąże wymagania dotyczące źródeł czasu z przepisami o czasie urzędowym i sposobach jego
-rozpowszechniania. Zakres, w jakim przepisy te uzasadniają konkretną kolejność źródeł technicznych,
-wymaga potwierdzenia w toku uzgodnień prawnych i technicznych.
-
-**Ustawa z dnia 10 grudnia 2003 r. o czasie urzędowym na obszarze Rzeczypospolitej Polskiej**
-(Dz. U. z 2004 r. Nr 16, poz. 144). Art. 2 ust. 4 określa uniwersalny czas koordynowany UTC(PL)
-jako polską realizację czasu koordynowanego, wyznaczaną przez państwowy wzorzec jednostek miar
-czasu i częstotliwości. Art. 4 ust. 1 czyni Prezesa Głównego Urzędu Miar organem uprawnionym
-do utrzymywania i rozpowszechniania sygnałów tego czasu.
-
-**Rozporządzenie Ministra Gospodarki, Pracy i Polityki Społecznej z dnia 19 marca 2004 r.
-w sprawie sposobów rozpowszechniania sygnałów czasu urzędowego i uniwersalnego czasu
-koordynowanego UTC(PL)** (Dz. U. Nr 56, poz. 548). § 1 wskazuje **z nazwy** dwa serwery czasu
-udostępniane całodobowo w sieci Internet oraz pozostałe drogi rozpowszechniania sygnału. Projekt
-wykorzystuje te serwery jako źródło podstawowe; samo rozporządzenie należy zweryfikować pod kątem
-tego, czy ustanawia ono taką kolejność dla urządzeń objętych projektem.
-
-**Rozporządzenie Rady Ministrów z dnia 21 maja 2024 r. w sprawie Krajowych Ram Interoperacyjności**
-(Dz. U. poz. 773), zastępujące wersję z 2012 r. Materiał źródłowy wskazuje, że akt nie zawiera
-bezpośredniego wymogu synchronizacji czasu, a jego znaczenie dla projektu ma charakter pośredni,
-związany z rozliczalnością i wiarygodnym dokumentowaniem zdarzeń. Wniosek ten nie stanowi
-samodzielnej podstawy wyboru konkretnej architektury synchronizacji.
-
----
-
-## 6. Terminologia nieaktualna
-
-W obiegu pozostają materiały posługujące się nazewnictwem z **rozporządzenia Rady Ministrów z 2013 r.
-w sprawie systemów wykrywania skażeń i powiadamiania o ich wystąpieniu** — w szczególności
-określeniami „alarm główny” i „alarm OSP”.
-
-**Nazewnictwa tego nie należy stosować.** Obowiązujące nazwy sygnałów wynikają z rozporządzenia
-z 14 maja 2025 r. i brzmią: „alarm dla ludności cywilnej”, „odwołanie alarmu”, „alarm dla jednostki
-ochrony przeciwpożarowej” oraz „alarm ćwiczebny lub treningowy”.
-
----
-
-## 7. Metodyka i data weryfikacji źródeł
-
-Status aktów oraz daty wejścia w życie ustalono na podstawie rejestru aktów prawnych prowadzonego
-przez Kancelarię Sejmu. Zakres nowelizacji ustawy o ochronie ludności i obronie cywilnej ustalono
-przez sprawdzenie treści ustaw zmieniających — to jest przez odczytanie, które artykuły są
-przedmiotem zmiany — a nie na podstawie streszczeń ani opracowań wtórnych.
-
-Cytaty z rozporządzenia i z Wytycznych z 2025 roku pochodzą z tekstów źródłowych.
-
-**Data weryfikacji: 23 sierpnia 2026 r.** Przy każdym kolejnym wydaniu Wytycznych datę tę należy
-odświeżyć wraz z ponownym sprawdzeniem statusu wymienionych aktów.
-
-
----
+Weryfikacja dokumentacji i publicznych metadanych nie zastępuje odbioru urządzeń, aplikacji i sieci. Nie wykonywano prób emisji, wysyłki SMS ani zmian systemów operacyjnych w ramach przygotowania tego wydania.

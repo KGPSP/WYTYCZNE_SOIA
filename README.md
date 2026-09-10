@@ -1,16 +1,19 @@
 # Wytyczne SOiA
 
-Publiczne repozytorium wytycznych dotyczących systemu ostrzegania i alarmowania (SOiA). Będą w nim publikowane materiały organizacyjne, techniczne i sprzętowe związane z systemem.
+Publiczne repozytorium wytycznych organizacyjnych, technicznych i sprzętowych systemu ostrzegania i alarmowania. Aktualne wydanie dokumentacyjne: **projekt 0.5 z 10 września 2026 r.**
 
 ## Zawartość
 
-1. **[Podręcznik SOiA — pełna wersja V2](PODRECZNIK_v2.md)** — dotychczasowa wersja w jednym pliku.
-2. **[Podręcznik SOiA — wersja rozdzielona](PODRECZNIK_v2_ROZDZIELONY.md)** — druga wersja przeznaczona do łatwiejszego czytania bezpośrednio w GitHubie; prowadzi do [dwunastu osobnych załączników](zalaczniki/).
+1. **[Podręcznik SOiA — pełna wersja](PODRECZNIK_v2.md)** — komplet wytycznych w jednym pliku.
+2. **[Podręcznik SOiA — wersja rozdzielona](PODRECZNIK_v2_ROZDZIELONY.md)** — nawigacja po [dwunastu załącznikach](zalaczniki/) o tej samej treści.
+3. **[Platforma sterownika i provisioning KG PSP](PLATFORMA_KG_PSP.md)** — OrchestraOS, Yocto, budowa obrazu dla płyty, tożsamość i rejestracja w Orchestra.
+4. **[Profil 1.5 dla kompaktowych sterowników](PROFIL_1_5.md)** — mniejsze wyposażenie z lokalnym audio, przy zachowaniu wspólnej platformy i bezpieczeństwa.
+5. **[Zmiany wersji 0.5](ZMIANY_v0.5.md)** — zakres korekt i ciągłość identyfikatorów wymagań oraz prób.
 
-Kolejne wytyczne techniczne i sprzętowe będą dodawane jako odrębne, jednoznacznie oznaczone dokumenty.
+Dokumenty pozostają projektem wytycznych. Nie poświadczają podpisania aktu, wdrożenia wszystkich planowanych funkcji ani odbioru konkretnego modelu. Materiały PDF nie są dołączane do tego wydania.
 
 ## Strona
 
 [Otwórz Wytyczne SOiA w GitHub Pages](https://kgpsp.github.io/WYTYCZNE_SOIA/)
 
-GitHub Pages pozostaje odrębną formą publikacji i nie jest zmieniany przez repozytoryjną wersję rozdzieloną.
+GitHub Pages pozostaje odrębnym wydaniem 0.4. Bieżącą dokumentację 0.5 należy czytać z powyższych plików repozytorium; źródła witryny nie są zmieniane w tej aktualizacji.

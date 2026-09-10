@@ -1,245 +1,77 @@
 ---
-tytuł: "Podręcznik podłączania syren alarmowych i innych urządzeń do SOiA — wersja rozdzielona"
-wersja: 0.4
-data: 2026-08-23
+tytuł: "Podręcznik SOiA"
+wersja: "0.5"
+data: 2026-09-10
+status: "projekt wytycznych"
 autor: Biuro Informatyki i Łączności Komendy Głównej Państwowej Straży Pożarnej
-wariant_redakcyjny: v2-rozdzielony
-uwaga: "Druga wersja repozytoryjna do łatwiejszego czytania; pełna wersja pozostaje w PODRECZNIK_v2.md."
 ---
 
 # Podręcznik SOiA
 
-## Zasady podłączania syren alarmowych i innych urządzeń do systemu ostrzegania i alarmowania
+## Zasady podłączania syren alarmowych i innych urządzeń
 
----
+**Wersja dokumentacyjna 0.5 · 10 września 2026 r. · Projekt wytycznych**
 
-## Przedmiot i cel dokumentu
+Dokument opisuje wymagania przygotowania, przyłączenia i utrzymania sterowników w zarządzanym systemie KG PSP. Decyzja o alarmowaniu wynika z właściwej procedury; system dostarcza polecenie, a aplikacja KG PSP weryfikuje je i wykonuje na właściwym torze. Sprzęt różnych wykonawców współpracuje przez uzgodnioną platformę i interfejsy.
 
-Dokument określa zasady podłączania syren alarmowych i innych urządzeń sygnalizacyjnych do systemu
-ostrzegania i alarmowania (SOiA). Jego celem jest zapewnienie, aby urządzenia wykonywały wyłącznie
-zweryfikowane polecenia, we właściwym czasie i na właściwym obszarze, niezależnie od producenta
-urządzenia.
+Najważniejsze uzupełnienia tej wersji to **profil 1.5 dla urządzeń kompaktowych** oraz **OrchestraOS, Yocto i provisioning KG PSP**. Parametry dostosowuje się do funkcji i zakresu dostawy. Mniejsza liczba portów nie oznacza słabszej autoryzacji, historii, nadzoru lub ochrony kluczy.
 
-Dokument opiera się na zasadzie rozdzielenia odpowiedzialności: **rolą producenta jest dostarczenie
-syreny lub urządzenia sygnalizacyjnego, natomiast rolą państwa jest prowadzenie systemu
-ostrzegania.** Urządzenia różnych producentów powinny podłączać się do SOiA według jednolitych
-reguł i w jednakowy sposób wykonywać to samo polecenie.
+## Jak korzystać z wytycznych
 
-## Sposób korzystania z dokumentu
+| Potrzeba | Punkt wejścia |
+| --- | --- |
+| Cel i odpowiedzialność organizacyjna | Z2 |
+| Wspólny system bazowy i dołączanie urządzeń | [Platforma KG PSP](PLATFORMA_KG_PSP.md), następnie Z3 i Z7 |
+| Mały sterownik i dobór wyposażenia | [Profil 1.5](PROFIL_1_5.md) i macierz Z3 |
+| Sygnały i wykonanie | Z4 i Z5 |
+| Feed, rejestracja, SMS i TETRA | Z6–Z8 |
+| Konfiguracja i odbiór | Z9 i Z10 |
+| Zakup i podstawa prawna | Z11 i Z12 |
 
-Zakres zalecanej lektury zależy od roli odbiorcy i celu wykorzystania dokumentu.
+## Zakres wersji i źródła rozstrzygające
 
-**Organy wykonawcze jednostek samorządu terytorialnego oraz komendanci PSP** — w pierwszej
-kolejności część I, a przed wszczęciem postępowania zakupowego również część VI.
+Klasa I obejmuje wspólny rdzeń, 1.5 profil kompaktowy z audio, II profil rozszerzony z audio, a III lokalny TTS. Oznaczenia D/P określają zakres dostawy lub adresata. Nie są to wersje protokołu ani `deviceClass` komendy.
 
-**Producenci sterowników i syren** — część III zawierająca wymagania, następnie część IV opisująca
-integrację oraz część V określająca zakres sprawdzeń.
+Publiczny poziom 0 pozostaje otwartym odczytem. Zgodność nowej platformy KG PSP wymaga właściwego obrazu Yocto/OrchestraOS, tożsamości, rejestracji i odbioru. Odczyt feedu, online w Managerze i fizyczna emisja to odrębne etapy.
 
-**Wykonawcy i instalatorzy** — część V obejmująca kartę konfiguracji i sprawdzenia odbiorowe;
-w przypadku sieci wydzielonej albo kanału wiadomości tekstowych również opis poziomu 2 w części IV.
+W fazie 2026–2028 zestawy mają GSM/LTE, z SMS jako zapasem i możliwością dodatkowego IP przez Ethernet/Wi-Fi. Po tej fazie podstawowym kanałem poleceń ma być odebrana TETRA, z aktywnym zapasem GSM. Terminy i warunki przełączenia określa plan lokalizacji.
 
-**Zamawiający** — część VI, poprzedzona zestawieniem klas zdolności, które określają zakres
-zamawianych funkcji.
+| Rodzaj zapisu | Znaczenie |
+| --- | --- |
+| Wymaganie W-* | Warunek w wybranej klasie/profilu i zakresie. |
+| Scenariusz S-* | Próba właściwej funkcji i jej oczekiwany wynik. |
+| Kontrakt aplikacji i metadane API | Obsługiwana wersja, klasy odbiorców i kody; nie są listą portów sprzętu. |
+| Pakiet i karta konfiguracji | Wydania, zasoby, parametry oraz uprawnienia konkretnego modelu i egzemplarza. |
+| Przepis prawa | Podstawa prawna we właściwym zakresie; dokument techniczny nie nadaje nowych kompetencji. |
 
-Definicje pojęć i zasady terminologiczne zawiera część II.
+Odczyt 10.09.2026 potwierdził publiczny profil IoT `0.1` i słownik `2026.1`. Funkcje planowane, w tym dodatkowe kody, TTS i integracja TETRA, wymagają osobnego kontraktu oraz odbioru. Publikacja wytycznych nie jest wdrożeniem aplikacji.
 
-```mermaid
-flowchart LR
-    START[Ustalenie roli odbiorcy] --> ROLA{Rola odbiorcy}
-    ROLA -->|Organ JST lub komendant PSP| JST[Część I<br/>Cel, zasady i zakres]
-    JST -->|Planowane zamówienie| ZAM[Część VI<br/>Przygotowanie zamówienia]
-    ROLA -->|Producent| TECH[Część III<br/>Wymagania techniczne]
-    TECH --> INT[Część IV<br/>Procedury integracji]
-    INT --> ODB[Część V<br/>Konfiguracja i odbiór]
-    ROLA -->|Wykonawca lub instalator| ODB
-    ODB -. sieć wydzielona lub kanał wiadomości tekstowych .-> INT
-    ROLA -->|Zamawiający| ZAM
-    ROLA -->|Wątpliwość terminologiczna| SLOW[Część II<br/>Terminologia]
-```
+Dokument pozostaje ogólny: nie zawiera pinoutów konkretnych syren, numerów abonenckich, sekretów ani konfiguracji produkcyjnych. Nazwy OrchestraOS/Orchestra, Yocto i RAUC identyfikują środowisko integracji KG PSP; modele urządzeń i wykonawcy nie są narzucone. Pliki PDF materiałów źródłowych nie są dołączane do tego wydania.
 
-## Jak czytać zakres i horyzont dokumentu
-
-> [!important] Dokument opisuje stan docelowy
-> Architektura, wymagania i procedury opisują stan docelowy SOiA, do którego prowadzą zakupy, integracje i kolejne etapy wdrożenia. Opisy stanu istniejącego oraz okresu przejściowego wyjaśniają drogę dojścia i nie obniżają wymagań docelowych.
-
-| Oznaczenie | Jak je rozumieć |
-|---|---|
-| **STAN ISTNIEJĄCY** | kontekst, zastane instalacje i sposoby działania, które mają współistnieć z SOiA |
-| **OKRES PRZEJŚCIOWY 2026–2027** | rozwiązanie czasowe stosowane przed osiągnięciem modelu docelowego |
-| **STAN DOCELOWY** | model i właściwości, do których prowadzą wymagania |
-| **ZDOLNOŚĆ PLANOWANA** | funkcja przewidziana rozwojowo, lecz niewłączona do bieżącej usługi centralnej |
-| **ŹRÓDŁO ROZSTRZYGAJĄCE** | tabela `W-*` / `S-*`, profil maszynowy, podpisane wytyczne albo inny wskazany dokument mający pierwszeństwo przed objaśnieniem |
-
-Objaśnienia, przykłady i diagramy ułatwiają interpretację, ale nie tworzą nowych wymagań i nie zmieniają wymagań istniejących. W przypadku różnicy pierwszeństwo ma źródło rozstrzygające.
-
-Odwołania w formie `§` dotyczą odrębnego dokumentu normatywnego, który nie jest częścią publicznej strony GitHub Pages. Podręcznik przywołuje go wyłącznie jako odrębne źródło części normatywnej.
-
----
-
-## Zasady redakcyjne i zakres informacyjny
-
-**Pierwszeństwo objaśnienia.** Każde zestawienie poprzedza opis jego celu i sposobu interpretacji.
-Tabele stosuje się w przypadkach, w których zwiększają jednoznaczność informacji.
-
-**Spójność informacji.** Wartości techniczne określa się w jednym miejscu, a pozostałe części
-dokumentu zawierają odwołania. Wartości rozstrzygające są publikowane maszynowo pod adresem
-produkcyjnym SOiA; wartości przytoczone w podręczniku mają charakter informacyjny.
-
-**Neutralność technologiczna.** W dokumencie nie wskazuje się nazw firm, marek, modeli ani
-oprogramowania, również przy opisie stanu faktycznie osiągniętego. Elementy rozwiązania określa się
-przez ich funkcje i wymagane właściwości.
-
-**Ochrona danych operacyjnych.** Numery, hasła, wykazy numerów uprawnionych i parametry sieci nie
-są zamieszczane w podręczniku. Dane te przechowuje się w karcie konfiguracji, poza obiegiem
-publikacyjnym.
-
-**Jawność ograniczeń.** Dokument nie przypisuje systemowi funkcji, których system nie realizuje.
-Ograniczenia wskazuje się wprost, również wtedy, gdy mogą zostać ocenione jako niekorzystne.
-
----
-
-## Powiązanie załączników z częściami podręcznika
-
-Numeracja załączników pozostaje zgodna z odwołaniami zawartymi w części normatywnej. Poniższe
-zestawienie wskazuje ich umiejscowienie w strukturze podręcznika.
-
-| Załącznik | Część podręcznika |
-|---|---|
-| [nr 1 — Słownik pojęć](zalaczniki/Z1-SLOWNIK.md) | II |
-| [nr 2 — Informacja dla organów](zalaczniki/Z2-INFORMACJA-DLA-ORGANOW.md) | I |
-| [nr 3 — Wymagania minimalne](zalaczniki/Z3-WYMAGANIA-MINIMALNE.md) | III |
-| [nr 4 — Katalog sygnałów](zalaczniki/Z4-KATALOG-SYGNALOW.md) | III |
-| [nr 5 — Profile sterownika](zalaczniki/Z5-PROFILE-STEROWNIKA.md) | III |
-| [nr 6 — Poziom 0](zalaczniki/Z6-POZIOM-0-PUBLICZNY-WYKAZ.md) | IV |
-| [nr 7 — Poziom 1](zalaczniki/Z7-POZIOM-1-REJESTRACJA.md) | IV |
-| [nr 8 — Poziom 2](zalaczniki/Z8-POZIOM-2-APN-I-SMS.md) | IV |
-| [nr 9 — Karta konfiguracji](zalaczniki/Z9-KARTA-KONFIGURACJI.md) | V |
-| [nr 10 — Scenariusze sprawdzeń](zalaczniki/Z10-TESTY-I-ODBIOR.md) | V |
-| [nr 11 — Wytyczne do OPZ](zalaczniki/Z11-ZAPISY-DO-OPZ.md) | VI |
-| [nr 12 — Podstawa prawna](zalaczniki/Z12-PODSTAWA-PRAWNA.md) | VII |
-
----
+Opis i diagram nie zastępują wymagania, ale wymaganie zakupowe również nie dowodzi istniejącej funkcji API. Sprzeczność pomiędzy zakresem zamówienia a dostępnym kontraktem trzeba rozstrzygnąć przed odbiorem; nie wolno zmieniać znaczenia komendy dla obejścia braku.
 
 ## Spis treści
 
-- **Część I. Cel, zasady i zakres systemu**
+- **Część I — Cel zasady i zakres systemu**
   - [Załącznik nr 2 — Informacja dla organów ochrony ludności i jednostek samorządu terytorialnego](zalaczniki/Z2-INFORMACJA-DLA-ORGANOW.md)
-- **Część II. Terminologia i zasady interpretacji**
+- **Część II — Terminologia i zasady interpretacji**
   - [Załącznik nr 1 — Słownik pojęć](zalaczniki/Z1-SLOWNIK.md)
-- **Część III. Wymagania techniczne i funkcjonalne dla urządzeń**
+- **Część III — Wymagania techniczne i funkcjonalne**
   - [Załącznik nr 3 — Wymagania minimalne dla urządzenia](zalaczniki/Z3-WYMAGANIA-MINIMALNE.md)
   - [Załącznik nr 4 — Katalog sygnałów i plików referencyjnych](zalaczniki/Z4-KATALOG-SYGNALOW.md)
   - [Załącznik nr 5 — Profile sterownika i maszyna stanów](zalaczniki/Z5-PROFILE-STEROWNIKA.md)
-- **Część IV. Procedury podłączenia i integracji**
-  - [Załącznik nr 6 — Poziom 0: publiczny wykaz poleceń](zalaczniki/Z6-POZIOM-0-PUBLICZNY-WYKAZ.md)
-  - [Załącznik nr 7 — Poziom 1: rejestracja i kanał powiadomienia](zalaczniki/Z7-POZIOM-1-REJESTRACJA.md)
-  - [Załącznik nr 8 — Poziom 2: sieć wydzielona i kanał wiadomości tekstowych](zalaczniki/Z8-POZIOM-2-APN-I-SMS.md)
-- **Część V. Konfiguracja, instalacja i odbiór**
+- **Część IV — Przyłączenie i kanały komunikacji**
+  - [Załącznik nr 6 — Poziom 0 publiczny wykaz poleceń](zalaczniki/Z6-POZIOM-0-PUBLICZNY-WYKAZ.md)
+  - [Załącznik nr 7 — Rejestracja urządzenia i kanały rejestrowane](zalaczniki/Z7-POZIOM-1-REJESTRACJA.md)
+  - [Załącznik nr 8 — Sieć wydzielona SMS i przejście na TETRA](zalaczniki/Z8-POZIOM-2-APN-I-SMS.md)
+- **Część V — Konfiguracja i odbiór**
   - [Załącznik nr 9 — Karta konfiguracji urządzenia](zalaczniki/Z9-KARTA-KONFIGURACJI.md)
   - [Załącznik nr 10 — Scenariusze sprawdzeń i protokół odbioru](zalaczniki/Z10-TESTY-I-ODBIOR.md)
-- **Część VI. Przygotowanie i realizacja zamówienia**
+- **Część VI — Przygotowanie zamówienia**
   - [Załącznik nr 11 — Wytyczne do opisu przedmiotu zamówienia](zalaczniki/Z11-ZAPISY-DO-OPZ.md)
-- **Część VII. Ramy prawne i źródła normatywne**
-  - [Załącznik nr 12 — Podstawa prawna](zalaczniki/Z12-PODSTAWA-PRAWNA.md)
+- **Część VII — Podstawa prawna i źródła**
+  - [Załącznik nr 12 — Podstawa prawna i źródła](zalaczniki/Z12-PODSTAWA-PRAWNA.md)
 
----
+## Powiązane opracowania
 
-## Część I. Cel, zasady i zakres systemu
-
-Ta część przedstawia cel, zasady działania i zakres SOiA w sposób przeznaczony dla osób
-podejmujących decyzje organizacyjne i zakupowe. Szczegółowe wymagania techniczne zawierają dalsze
-części podręcznika.
-
-**Załączniki w tej części:**
-
-- [Załącznik nr 2 — Informacja dla organów ochrony ludności i jednostek samorządu terytorialnego](zalaczniki/Z2-INFORMACJA-DLA-ORGANOW.md)
-
----
-
-## Część II. Terminologia i zasady interpretacji
-
-Jednoznaczna terminologia jest warunkiem prawidłowego przygotowania zamówienia, wdrożenia
-i odbioru instalacji. W szczególności potoczne określenie „włączenie syreny” obejmuje kilka
-odrębnych czynności technicznych i prawnych, które należy rozróżniać.
-
-**Załączniki w tej części:**
-
-- [Załącznik nr 1 — Słownik pojęć](zalaczniki/Z1-SLOWNIK.md)
-
----
-
-## Część III. Wymagania techniczne i funkcjonalne dla urządzeń
-
-Ta część określa wymagania wobec urządzenia, katalog wykonywanych sygnałów oraz dopuszczalne
-sposoby sprzężenia sterownika z syreną.
-
-**Załączniki w tej części:**
-
-- [Załącznik nr 3 — Wymagania minimalne dla urządzenia](zalaczniki/Z3-WYMAGANIA-MINIMALNE.md)
-- [Załącznik nr 4 — Katalog sygnałów i plików referencyjnych](zalaczniki/Z4-KATALOG-SYGNALOW.md)
-- [Załącznik nr 5 — Profile sterownika i maszyna stanów](zalaczniki/Z5-PROFILE-STEROWNIKA.md)
-
----
-
-## Część IV. Procedury podłączenia i integracji
-
-Część IV opisuje trzy kumulatywne poziomy podłączenia. Poziom 0 jest dostępny bez zgody i stanowi
-podstawowy sposób integracji; poziomy wyższe rozszerzają go o kolejne kanały, nie zastępując
-poziomów niższych.
-
-> [!important] Mapa kanałów w stanie docelowym
-> Tor danych pobiera podpisany IoT Feed i pozostaje podstawą poziomu 0. Kanał niezwłocznego powiadomienia nie przenosi komendy — skraca czas wykrycia nowej wersji Feedu. Kanał SMS jest odrębnym kanałem wykonawczym z własnym profilem i kontrolami. Urządzenie może korzystać z wielu kanałów, lecz ta sama komenda nie może spowodować wielokrotnej emisji.
-
-**Załączniki w tej części:**
-
-- [Załącznik nr 6 — Poziom 0: publiczny wykaz poleceń](zalaczniki/Z6-POZIOM-0-PUBLICZNY-WYKAZ.md)
-- [Załącznik nr 7 — Poziom 1: rejestracja i kanał powiadomienia](zalaczniki/Z7-POZIOM-1-REJESTRACJA.md)
-- [Załącznik nr 8 — Poziom 2: sieć wydzielona i kanał wiadomości tekstowych](zalaczniki/Z8-POZIOM-2-APN-I-SMS.md)
-
----
-
-## Część V. Konfiguracja, instalacja i odbiór
-
-Ta część zawiera formularz konfiguracji urządzenia oraz zakres sprawdzeń wykonywanych podczas
-odbioru. Zakres sprawdzeń odpowiada klasom zdolności i elementom objętym zamówieniem.
-
-**Załączniki w tej części:**
-
-- [Załącznik nr 9 — Karta konfiguracji urządzenia](zalaczniki/Z9-KARTA-KONFIGURACJI.md)
-- [Załącznik nr 10 — Scenariusze sprawdzeń i protokół odbioru](zalaczniki/Z10-TESTY-I-ODBIOR.md)
-
----
-
-## Część VI. Przygotowanie i realizacja zamówienia
-
-Ta część jest przeznaczona dla jednostek samorządu terytorialnego przygotowujących zakup.
-W konkretnym postępowaniu podstawowym mechanizmem egzekwowania wymagań wobec wykonawcy jest ich
-prawidłowe ujęcie w dokumentach zamówienia i w umowie. Niniejszy projekt nie zastępuje analizy
-prawnej ani opisu przedmiotu zamówienia dostosowanego do danego postępowania.
-
-**Załączniki w tej części:**
-
-- [Załącznik nr 11 — Wytyczne do opisu przedmiotu zamówienia](zalaczniki/Z11-ZAPISY-DO-OPZ.md)
-
----
-
-## Część VII. Ramy prawne i źródła normatywne
-
-Ta część przedstawia akty wskazane w materiale źródłowym jako podstawa lub kontekst projektu oraz
-opisuje przyjęty sposób weryfikacji ich statusu.
-
-**Załączniki w tej części:**
-
-- [Załącznik nr 12 — Podstawa prawna](zalaczniki/Z12-PODSTAWA-PRAWNA.md)
-
----
-
-## Tryb zgłaszania uwag
-
-Projekt wskazuje Biuro Informatyki i Łączności Komendy Głównej Państwowej Straży Pożarnej jako
-adresata uwag. Przed rozpowszechnieniem dokumentu należy potwierdzić właściwego adresata i kanał
-przekazywania uwag. Zgłoszenie dotyczące wymagania albo scenariusza sprawdzenia powinno zawierać
-jego identyfikator, na przykład `W-B02` albo `S-93`.
-
-*Wersja redakcyjna V2 opracowana na podstawie pliku `PODRECZNIK.md` z 23 sierpnia 2026 r.
-Wersja merytoryczna materiału źródłowego: 0.4.*
+[Platforma KG PSP](PLATFORMA_KG_PSP.md) · [Profil 1.5](PROFIL_1_5.md) · [Zmiany wersji 0.5](ZMIANY_v0.5.md) · [Pełny podręcznik](PODRECZNIK_v2.md)

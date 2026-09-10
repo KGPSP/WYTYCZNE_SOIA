@@ -1,279 +1,101 @@
 ---
 tytuł: "Załącznik nr 5 — Profile sterownika i maszyna stanów"
-dokument: "Podręcznik podłączania syren alarmowych i innych urządzeń do SOiA"
-wersja: 0.4
-data: 2026-08-23
+wersja: "0.5"
+data: 2026-09-10
+status: "projekt wytycznych"
 autor: Biuro Informatyki i Łączności Komendy Głównej Państwowej Straży Pożarnej
-źródło: "Wydzielono z PODRECZNIK_v2.md"
 ---
 
 [← Powrót do podręcznika](../PODRECZNIK_v2_ROZDZIELONY.md#spis-treści)
 
 # Załącznik nr 5 — Profile sterownika i maszyna stanów
 
+## Wspólny rdzeń i właściwy tor wykonania
 
-## Architektura rdzenia wspólnego i profili wykonawczych
+System przekazuje znaczenie polecenia, a aplikacja KG PSP na zgodnej platformie wybiera lokalną funkcję. Wspólne są zaufanie, adresat, czas, historia i arbitraż. Typ syreny, tryb połączenia i wyposażenie dobiera się osobno.
 
-System centralny nie wymaga informacji o konstrukcji konkretnej syreny. Przekazuje znaczenie
-polecenia: rodzaj sygnału, obszar, okno rozpoczęcia i identyfikator. Sterownik odpowiada za
-przekształcenie zweryfikowanego polecenia w działanie właściwe dla danej instalacji.
+| Oś doboru | Warianty |
+| --- | --- |
+| Klasa zdolności | I; kompaktowe audio 1.5 albo rozszerzone II; opcjonalne TTS III. |
+| Profil wykonawczy | Elektroniczny, silnikowy albo inny jawnie zdefiniowany odbiornik. |
+| Tor lokalny | AUDIO/PTT, udokumentowany API lub izolowane sterowanie napędem. |
+| Rodzaj inwestycji | Nowy punkt, adaptacja istniejącego lub montaż sprzętu powierzonego. |
 
-Konstrukcja ma więc dwie warstwy. **Rdzeń wspólny** — jednakowy dla wszystkich urządzeń — obejmuje
-odbiór polecenia dowolnym kanałem, weryfikację, regułę obszaru, kontrolę czasu, ochronę przed
-powtórzeniem i maszynę stanów. **Profil wykonawczy** opisuje, jak dane urządzenie zamienia decyzję
-rdzenia na dźwięk.
-
-```mermaid
-flowchart TB
-    IN[Kanały wejściowe<br/>IP, sieć komórkowa, wiadomości tekstowe,<br/>radio i stacja dyspozytorska] --> ENV[Wspólna koperta polecenia]
-    ENV --> CORE[Rdzeń wspólny<br/>zaufanie, obszar, czas,<br/>ochrona przed powtórzeniem i stany]
-    CORE --> PE[Profil elektroniczny]
-    CORE --> PS[Profil silnikowy]
-    CORE --> PR[Profil modernizacji instalacji istniejącej]
-    PE --> SELECT{Dobór trybu sprzężenia}
-    PS --> SELECT
-    PR --> SELECT
-    SELECT --> TD[Tryb cyfrowy<br/>udokumentowany interfejs syreny]
-    SELECT --> TA[Tryb audio<br/>sygnał liniowy + sterowanie nadawaniem]
-    SELECT --> TS[Tryb stykowy<br/>izolowana warstwa wykonawcza]
-    TD --> OUT[Syrena lub inne urządzenie sygnalizacyjne]
-    TA --> OUT
-    TS --> OUT
-```
-
-Podział na profile mówi, **czym jest urządzenie wykonawcze**. Osobną osią jest **tryb sprzężenia** —
-czy sterownik podaje syrenie gotowy dźwięk, wywołuje jej interfejs programowy, czy zamyka obwód.
-Te dwie osie są niezależne i nie należy ich mylić.
-
-Kanały wejściowe nie zmieniają znaczenia polecenia. Sieć przewodowa, sieć bezprzewodowa, transmisja
-komórkowa, wiadomość tekstowa, radio dalekiego zasięgu i stacja radiowa przekazują dane do jednej
-wspólnej koperty i jednej maszyny stanów. Dodanie kanału łączności nie może prowadzić do utworzenia
-odrębnej logiki wykonawczej.
-
----
+Profil 1.5 zachowuje ten sam rdzeń i jakość audio co II, lecz ma mniejszą liczbę portów. Współpraca z OrchestraOS/Yocto i provisioningiem jest obowiązkiem platformy, a nie cechą zastrzeżoną dla klasy III.
 
 ## Profil elektroniczny
 
-Syrena elektroniczna to wzmacniacz z przetwornikiem. Sterownik podaje na jej wejście sygnał audio
-i uruchamia tor nadawania.
+Sterownik odtwarza zatwierdzone lokalne pliki i podaje sygnał przez LINE OUT. PTT jest sterowane osobno i może korzystać z jednego z istniejących przekaźników. Czas PTT obejmuje zmierzone przygotowanie toru, całe audio i zakończenie; nie jest automatycznie równy czasowi pliku.
 
-Profil obejmuje odtworzenie sygnału z pliku wzorcowego, odtworzenie komunikatu nagranego,
-wygenerowanie komunikatu z tekstu w języku polskim, wyjście liniowe o uzgodnionym poziomie,
-sterowanie torem nadawania oraz wykrycie gotowości wzmacniacza.
+Wejście syreny identyfikuje się z dokumentacji. Wejście MIC wymaga właściwego dopasowania poziomu, odniesienia mas i ewentualnej izolacji. Złącze podobne do RJ-45 nie musi być Ethernetem. Parametrów i numerów zacisków nie przenosi się między modelami.
 
-**Syrena elektroniczna może być sterowana także przez własny interfejs programowy**, jeżeli
-producent taki udostępnia i udokumentował go zgodnie z wymaganiami swobody wyboru dostawcy.
-Sterownik wywołuje wtedy polecenia syreny — odtwórz wskazany slot, podaj stan — zamiast
-podawać jej gotowy dźwięk. Połączenie realizowane jest **standardową warstwą fizyczną**: portem
-szeregowym, przewodem sieciowym, złączem uniwersalnym albo wejściami i wyjściami ogólnego
-przeznaczenia. Nie jest to rozwiązanie zarezerwowane dla instalacji istniejących — nowa syrena
-z udokumentowanym interfejsem korzysta z tej drogi tak samo.
-
-Wybór między sterowaniem przez interfejs a podaniem gotowego dźwięku należy do projektanta
-instalacji i zależy od tego, co syrena potrafi oraz co producent udokumentował. Oba sposoby są
-równoprawne; opisuje je rozdział o trybach sprzężenia.
-
-Należy uwzględnić dwa odrębne wymagania. Poziom sygnału musi mieścić się w granicach ±3 dB
-względem wzorca, bez przesterowania. Potwierdzenie uruchomienia toru audio nie stanowi natomiast
-dowodu słyszalności i nie zastępuje sprawdzenia zasięgu.
-
-Dostarczane urządzenia mają wyjście stereofoniczne z dwoma kanałami przypisywanymi programowo
-niezależnie. Pozwala to rozdzielić tor syreny od toru pomocniczego — na przykład nagłośnienia
-wewnętrznego albo stacji radiowej — bez dokładania sprzętu.
-
----
+TTS jest osobnym rozszerzeniem: zatwierdzony tekst, lokalny polski silnik i głos, prawa użycia, bufor, limity oraz próba offline. Gotowe nagrania nie wymagają syntezy. Wymagane funkcje głosowe nie mogą opóźniać podstawowego sygnału.
 
 ## Profil silnikowy
 
-Syrena silnikowa wytwarza dźwięk mechanicznie. Sterownik nie tworzy tu przebiegu akustycznego, tylko
-zamyka i otwiera obwód zasilania układu wykonawczego według zatwierdzonego programu.
+Syrena wytwarza dźwięk mechanicznie. Sterownik przekazuje wyłącznie sygnały sterujące do izolowanej aparatury, a silnik ma własny tor mocy, zabezpieczenia i zasilanie. Funkcje programu, np. RUN/CYKL, mapuje się na odebrany interfejs. Moc silnika nie jest prądem przełączanym przez wyjście sterownika.
 
-**Sterownik nie może sterować obwodem mocy bezpośrednio z wyjść ogólnego przeznaczenia.** Musi
-używać certyfikowanej, izolowanej warstwy wykonawczej — stycznika albo układu rozruchowego —
-z izolacją galwaniczną i fizycznym zabezpieczeniem przed porażeniem podczas prac serwisowych.
+Program uwzględnia rozbieg, wybieg i cykl łączeń. Wymagane jest niezależne ograniczenie okna pracy, lokalne odcięcie i nadzór. Odjęcie napięcia kończy napęd, ale wirnik może jeszcze wybiegać. Stan stycznika nie jest pomiarem dźwięku. Akumulator sterownika nie zapewnia automatycznie zasilania silnika.
 
-Profil obejmuje ponadto sprzętowe blokady wzajemne, ograniczenie maksymalnego czasu ciągłego
-zasilania, monitorowanie stanu stycznika, wykrywanie obecności obciążenia oraz wejście awaryjnego
-odcięcia.
+## Wariant przez API i modernizacja
 
-Modulacja sygnału ochrony ludności jest **programem sterowania układem wykonawczym**, a nie
-przypadkowym przełączaniem z poziomu aplikacji. Parametry cyklu muszą pochodzić z zatwierdzonego
-profilu i przejść testy u producenta syreny oraz na instalacji — a nie zostać dobrane
-eksperymentalnie w terenie.
+Udokumentowany interfejs cyfrowy może służyć do wywołania funkcji syreny, jeśli obejmuje wymagany zakres, statusy, parametry i prawa integracji. Sam RS-232 lub Ethernet nie jest protokołem. Wykonawca dostarcza adapter, który zachowuje znaczenie funkcji i działa z pakietem KG PSP.
 
-Osobno trzeba pamiętać, że dla syreny silnikowej **odcięcie lokalne** oznacza **zatrzymanie wirnika
-pracującego pod obciążeniem**. Jest to czynność na obwodzie mocy, ze skutkami mechanicznymi,
-i pozostaje środkiem awaryjnym.
+Jeżeli API uruchamia generator syreny lub zasób zapisany w jej pamięci, trzeba jawnie przyjąć ten wariant, miejsce zasobu, kontrolę integralności i nadzór. Nie jest to automatycznie spełnienie wymagania plików w pamięci sterownika. Tak samo wybór gotowego nagrania przez API nie jest pełną obsługą dowolnego tekstu TTS.
 
----
+Adaptacja zachowuje wymagane dotychczasowe sterowanie lokalne i radiowe. Potrzebne nastawy integracyjne opisuje karta; nie podłącza się niezależnych nadajników do jednego portu szeregowego przez pasywny rozgałęźnik.
 
-## Profil modernizacji instalacji istniejącej (retrofit)
+## Znaczenie końca działania
 
-Ten profil obsługuje instalacje, które już stoją. Wytyczne przewidują dwie drogi, a wybór należy
-do zamawiającego, bo to on zna stan instalacji, umowy serwisowe i budżet.
+| Zdarzenie | Reguła |
+| --- | --- |
+| Koniec prawidłowego sygnału | Lokalny nadzór kończy odtwarzanie lub program i zwalnia właściwy tor. |
+| CANCEL_PENDING | Dotyczy wskazanej znanej operacji oczekującej; nie emituje odwołania i nie przerywa trwającego sygnału. |
+| Odwołanie alarmu | Odrębna funkcja wykonawcza, z własną kwalifikacją i właściwym sygnałem. |
+| Techniczne STOP | Tylko w profilu, który definiuje i autoryzuje tę funkcję; odnotowuje przerwanie. Nie jest odwołaniem alarmu. |
+| Odcięcie lokalne albo niezależny limit bezpieczeństwa | Ma pierwszeństwo nad poleceniami. Nie wymaga działania sieci ani aplikacji. |
+| Błąd lub niepewność po aktywacji | Bezpieczne zakończenie i trwały wynik; brak automatycznego wznowienia albo powtórzenia. |
 
-> [!important] Zasada modernizacji instalacji istniejącej
-> Kanał SOiA dodaje się jako tor równoległy. Dołączenie go nie może
-> wyłączyć ani ograniczyć dotychczasowych sposobów uruchomienia syreny — istniejącego systemu
-> dyspozytorskiego, pulpitu lokalnego, przycisku ręcznego ani kanału radiowego. Wykonawca nie może
-> warunkować dołączenia wyłączeniem albo przeprogramowaniem istniejącego systemu, ani uzależniać
-> od tego gwarancji. Oba tory pracują równolegle *(W-J01 do W-J08)*.
+Normalnie zakwalifikowany sygnał jest wykonywany do końca. Wyjątkiem jest działanie ochronne albo techniczne zatrzymanie przewidziane w przyjętym profilu. Nie wolno deklarować, że żaden sprzęt i żaden kanał nie posiada funkcji STOP; nie wolno też tworzyć jej samodzielnie przez zmianę znaczenia innej komendy.
 
-Tryby sprzężenia z syreną są niezależne od profili wykonawczych.
-Sterowanie przez interfejs programowy syreny i podanie jej gotowego dźwięku występują zarówno
-w instalacji nowej, jak i modernizowanej; profil modernizacyjny wyróżnia to, że instalacja już istnieje,
-a nie to, jakim sposobem jest wysterowana.
+## Arbitraż poleceń
 
-### Wariant 1 — integracja przez interfejs producenta
+Wszystkie kanały korzystają z jednej tabeli arbitrażu określonej w profilu KG PSP przed odbiorem. Przy braku reguły umożliwiającej odroczenie konflikt jest odrzucany i zapisywany. Wykonawca nie może sam wybrać odmiennego zachowania.
 
-Sterownik wywołuje udokumentowane polecenia syreny, w szczególności odtworzenie wskazanego slotu
-i odczyt stanu.
-Połączenie realizowane jest standardową warstwą fizyczną — portem szeregowym RS-232, przewodem
-sieciowym, złączem uniwersalnym albo wejściami i wyjściami ogólnego przeznaczenia.
+| Sytuacja | Wymagane rozstrzygnięcie |
+| --- | --- |
+| Ten sam ID operacji innym kanałem | Duplikat; nie powstaje drugie wykonanie. |
+| Inne polecenie przy zajętym torze | Brak równoległego przejęcia; końcowe odrzucenie albo jawne odroczenie zgodnie z tabelą. |
+| Koniec bieżącej funkcji | Ponowna kwalifikacja tylko operacji odroczonej: ważność, adresat, historia, zasoby i stan. |
+| Operacja odrzucona końcowo | Brak automatycznego ponowienia przez lokalną kolejkę. |
+| Brak ACK lub wynik niepewny | Uzgodnienie stanu; nie uznaje się tego za dowód niewykonania. |
+| Blokada, serwis albo odcięcie | Pierwszeństwo bezpieczeństwa; test lokalny nie obchodzi odcięcia. |
 
-Warunkiem jest otwarta dokumentacja producenta syreny: wykaz poleceń ze składnią, mapa slotów,
-format i sposób wgrania plików dźwiękowych, kody odpowiedzi i błędów, sposób odczytu stanu oraz
-parametry elektryczne złącza. Dokumentacja ma wystarczyć, żeby **niezależny wykonawca napisał
-integrację bez kontaktu z producentem**.
-
-Ewentualna wewnętrzna funkcja zatrzymania udostępniona przez producenta syreny nie stanowi
-polecenia SOiA i nie może służyć do przerwania rozpoczętej emisji wbrew zasadzie niepodzielności.
-
-### Wariant 2 — wykorzystanie syreny jako systemu nagłośnieniowego
-
-Sterownik sam odtwarza plik wzorcowy i podaje sygnał liniowy na wejście audio syreny, jednocześnie
-uruchamiając jej tor nadawania. Syrena pełni wtedy rolę wzmacniacza z przetwornikiem i **nie musi
-wiedzieć nic o SOiA** — ani o slotach, ani o katalogu sygnałów, ani o poleceniach.
-
-Wariant ten ogranicza zależność od nieudokumentowanego interfejsu programowego. Wymaga wejścia
-liniowego oraz wejścia nadawania, a jego dopuszczalność należy potwierdzić z uwzględnieniem
-dokumentacji, bezpieczeństwa, warunków gwarancji i postanowień umowy.
-
-Wierność sygnału zapewnia sterownik odtwarzający plik referencyjny zweryfikowany sumą kontrolną.
-W wariancie interfejsowym zależy ona od zawartości slotów syreny i prawidłowości jej okresowej
-weryfikacji.
-
-### Wymagania niepodlegające ograniczeniu w instalacji modernizowanej
-
-Żadna z dróg nie zwalnia z rdzenia wspólnego. Weryfikacja źródła polecenia, reguła obszaru, okno
-czasu, ochrona przed powtórzeniem i lokalne odcięcie awaryjne obowiązują tak samo jak w nowej
-instalacji. Modernizacja dotyczy **sposobu wysterowania syreny**, a nie zakresu sprawdzeń przed
-uruchomieniem.
-
-### Obsługa zbiegu poleceń z dwóch torów
-
-Przy zbiegu poleceń z równoległych torów do końca wykonuje się polecenie, które jako pierwsze
-rozpoczęło sekwencję. Polecenie odebrane w trakcie emisji podlega odnotowaniu i odroczeniu
-do ponownej kwalifikacji. Nie może zostać automatycznie zakolejkowane jako następna emisja.
-
-Lokalne odcięcie awaryjne i tryb serwisowy zachowują pierwszeństwo niezależnie od toru.
-
----
-
-## Interfejs radiowy jako punkt integracji
-
-Stacja dyspozytorska podłącza się do **odrębnego portu** sterownika — sieciowego albo
-szeregowego — przeznaczonego wyłącznie do przyjmowania polecenia z zewnątrz. Nie należy mylić tego
-portu z torem audio i sterowaniem nadawaniem syreny, które służą do czegoś zupełnie innego.
-
-Adapter stacji radiowej musi deklarować: nazwę i wersję, obsługiwany profil, wykaz obsługiwanych
-funkcji, mapowanie wejść i wyjść, dopuszczalne czasy, zachowanie przy błędzie, możliwości
-diagnostyczne oraz test zgodności.
-
-Adapter **nie tworzy własnej semantyki alarmu**. Dostarcza polecenie; sprawdza je i wykonuje rdzeń
-wspólny, dokładnie tak samo jak polecenie z każdego innego kanału. Kanał radiowy nie jest przy tym
-dowodem uprawnienia — sam fakt, że wiadomość przyszła zaufaną drogą, nie wystarcza.
-
----
+Wpisy odroczone mają ograniczone miejsce i ważność. Nie tworzą kolejki automatycznie sklejającej dwa sygnały w dłuższą emisję. Opóźniona operacja musi ponownie spełnić wszystkie warunki.
 
 ## Maszyna stanów
 
-Stan urządzenia musi być **trwały**, to znaczy dawać się odtworzyć po restarcie i po zaniku
-zasilania. Bez tego nie da się zagwarantować, że polecenie wykonane raz nie wykona się drugi raz.
-
 ```mermaid
 stateDiagram-v2
-    [*] --> IDLE
-    IDLE --> FETCHING: odebrano wykaz poleceń
-    FETCHING --> VALIDATING: pobrano treść
-    VALIDATING --> IDLE: odrzucono
-    VALIDATING --> EXPIRED: upłynęło okno lub termin ważności
-    VALIDATING --> START_SCHEDULED: polecenie zakwalifikowane
-    START_SCHEDULED --> CANCELLED_PENDING: odwołanie przed rozpoczęciem
-    CANCELLED_PENDING --> IDLE: zapisano trwały znacznik
-    START_SCHEDULED --> EMITTING: okno rozpoczęcia otwarte
-    EMITTING --> COMPLETED: sekwencja zakończona
-    COMPLETED --> IDLE
-    EXPIRED --> IDLE
-
-    state "FAULT / LOCKED / SERVICE" as BLOCKED
-    BLOCKED --> IDLE: przywrócono warunki bezpiecznej pracy
-
-    note right of BLOCKED
-        Stan FAULT, LOCKED albo SERVICE może zostać
-        ustalony z dowolnego stanu urządzenia.
-        Nie oznacza to zdalnego przerwania emisji;
-        EMITTING nie ma takiego normalnego przejścia.
-    end note
+    [*] --> VALIDATING
+    VALIDATING --> REJECTED: odmowa
+    VALIDATING --> WAITING: oczekiwanie
+    WAITING --> VALIDATING: kwalifikacja
+    WAITING --> CANCELLED_PENDING: anulowanie
+    VALIDATING --> START_INTENT: gotowa akcja
+    START_INTENT --> EMITTING: aktywacja
+    START_INTENT --> UNKNOWN: brak dowodu
+    EMITTING --> COMPLETED: koniec
+    EMITTING --> INTERRUPTED: STOP lub odcięcie
+    EMITTING --> FAILED: błąd
+    EMITTING --> UNKNOWN: utrata dowodu
+    INTERRUPTED --> BLOCKED
+    FAILED --> BLOCKED
+    UNKNOWN --> BLOCKED
 ```
 
-> [!note] Dla odbiorcy operacyjnego
-> Diagram jest modelem dla producenta oprogramowania, a nie instrukcją obsługi syreny. Dla właściciela najważniejsze są trzy skutki: urządzenie odmawia przy poleceniu niespełniającym warunków, nie powtarza zakończonej emisji po restarcie i nie przerywa rozpoczętej emisji zwykłym poleceniem zdalnym. Tryb serwisowy, blokada albo awaria wymagają przywrócenia warunków bezpiecznej pracy na obiekcie.
+Model pokazuje stany jednej operacji, nie nazwy endpointów aplikacji. Po zakończeniu lub odrzuceniu urządzenie może przyjmować kolejne polecenia, zachowując historię. Wyjście z blokady wymaga wyjaśnienia stanu i przywrócenia warunków bezpiecznej pracy. Stan przed aktywacją oraz historia przetrwają restart. Przerwana albo niepewna operacja nie wraca samoczynnie do EMITTING. Ponowne uruchomienie aplikacji nie znosi utrwalonego serwisu lub blokady.
 
-**Stan `EMITTING` ma w normalnym przebiegu wyłącznie przejście wynikające z zakończenia
-sekwencji.** Awaryjne odcięcie toru wykonawczego jest czynnością sprzętową i nie stanowi zwykłego
-przejścia maszyny stanów.
+## Dowody wykonania
 
-**Stan `CANCELLED_PENDING` dotyczy wyłącznie polecenia, którego wykonywanie jeszcze się nie
-rozpoczęło.** Urządzenie zapisuje trwały znacznik odwołania, aby późniejsze odebranie odwołanej
-akcji nie spowodowało emisji. Znacznik musi przetrwać restart.
-
----
-
-## Odtwarzanie stanu po restarcie i zaniku zasilania
-
-Po uruchomieniu urządzenie odtwarza stan trwały i postępuje według jego zawartości.
-
-Polecenie **zakończone** nie podlega ponownemu wykonaniu, niezależnie od liczby jego późniejszych
-wystąpień w wykazie. Polecenie **odwołane** nie jest uruchamiane. Polecenie **zaplanowane** podlega
-ponownej weryfikacji świeżości i okna rozpoczęcia. Stan **przerwanej emisji** wymaga jawnie
-określonego postępowania właściwego dla profilu sprzętowego; samoczynne wznowienie jest
-niedopuszczalne. Stan **awaryjny** utrzymuje się do czasu przywrócenia warunków bezpiecznej pracy.
-
-Zanik zasilania nie może usuwać stanu ochrony przed powtórzeniem ani powodować ponownego wykonania
-polecenia, którego okno rozpoczęcia upłynęło.
-
----
-
-## Tryby pracy
-
-Urządzenie musi jednoznacznie wiedzieć, w jakim jest trybie, i musi to komunikować.
-
-**Operacyjny** — przyjmuje i wykonuje polecenia produkcyjne. **Ćwiczebny** — wykonuje wyłącznie
-polecenia oznaczone jako ćwiczenie i na odrębnym profilu. **Serwisowy** — blokuje wykonanie zdalne,
-dopuszcza test lokalny. **Zablokowany** — blokada awaryjna. **Ograniczony** — pracuje węższym
-zestawem kanałów, ale **zachowuje pełny zakres weryfikacji**. **Awaryjny** — nie wykonuje poleceń
-do czasu spełnienia warunków bezpiecznej pracy.
-
-Zmiana trybu jest zdarzeniem odnotowywanym lokalnie wraz z czasem i przyczyną. **Restart nie może
-samoczynnie przełączyć trybu serwisowego lub zablokowanego na operacyjny.** Najczęstszy błąd
-eksploatacyjny w tej klasie instalacji to syrena pozostawiona w trybie serwisowym po pracach
-konserwacyjnych i odkrycie tego dopiero podczas alarmu.
-
-Tryb ćwiczebny urządzenia i sygnał ćwiczebny z katalogu to **dwie różne rzeczy o myląco podobnych
-nazwach**: pierwszy jest stanem urządzenia, drugi rodzajem dźwięku. Można wyemitować sygnał
-ćwiczebny w trybie operacyjnym i można wykonać test w trybie ćwiczebnym bez emisji zewnętrznej.
-
----
-
-## Ewidencjonowanie etapów wykonania polecenia
-
-Ustalenie przyczyny niewykonania emisji wymaga rozróżnienia kolejnych etapów. Urządzenie powinno
-ewidencjonować: przyjęcie polecenia, zaplanowanie akcji, aktywowanie wyjścia, wykrycie obciążenia,
-potwierdzenie pracy przez czujniki lokalne, zakończenie emisji oraz błąd lub wykonanie niepełne.
-
-Żaden z tych stopni **nie jest dowodem słyszalności**. Ostatnim ogniwem, którego system nie widzi,
-pozostaje akustyka — i tego załącznik nie zmienia.
-
-
----
+Rozróżnia się przyjęcie, zaplanowanie, próbę aktywacji, stan wyjścia, start odtwarzania, koniec i wynik z czujnika. Przekaźnik ani ACK nie potwierdzają słyszalności. Pomiar akustyczny potwierdza efekt wyłącznie w zakresie miejsca i metody pomiaru. Karta zapisuje, jaki dowód jest dostępny dla danego toru.
