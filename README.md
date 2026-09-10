@@ -16,4 +16,8 @@ Dokumenty pozostają projektem wytycznych. Nie poświadczają podpisania aktu, w
 
 [Otwórz Wytyczne SOiA w GitHub Pages](https://kgpsp.github.io/WYTYCZNE_SOIA/)
 
-GitHub Pages pozostaje odrębnym wydaniem 0.4. Bieżącą dokumentację 0.5 należy czytać z powyższych plików repozytorium; źródła witryny nie są zmieniane w tej aktualizacji.
+GitHub Pages publikuje to samo wydanie 0.5: podręcznik, dwanaście załączników, profil 1.5 i platformę KG PSP.
+
+## Aktualizacja dokumentacji
+
+Źródłem treści są pliki Markdown w katalogu głównym i `zalaczniki/`. Po ich zmianie uruchom `python scripts/sync_pages.py`, aby odświeżyć wersję strony. Kontrola CI sprawdza zgodność kopii oraz buduje witrynę przez `mkdocs build --strict`. Plików PDF nie kopiuje się do strony.

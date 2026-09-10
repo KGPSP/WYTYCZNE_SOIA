@@ -87,6 +87,8 @@ body { font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 [data-md-color-scheme="slate"] .ai-disclosure { background: #302a1d; border-color: #66593a; }
 [data-md-color-scheme="slate"] .publication-status { background: #3b1820; color: #fff; }
 [data-md-color-scheme="slate"] .publication-status span { color: #f5dfe4; }
+[data-md-color-scheme="slate"] { --md-typeset-a-color: #ffadb8; }
+[data-md-color-scheme="slate"] .md-nav__link--active { color: #ffadb8; }
 
 @media (max-width: 767px) {
   .institutional-masthead { gap: 1.2rem; grid-template-columns: 1fr; padding: 1rem; }

@@ -14,6 +14,9 @@
 !/PLATFORMA_KG_PSP.md
 !/PROFIL_1_5.md
 !/ZMIANY_v0.5.md
+!/scripts/
+!/scripts/sync_pages.py
+!/scripts/pages-masthead.html
 
 # Materiał wewnętrzny — nie publikować w repozytorium.
 /PODRECZNIK_v2_WYTYCZNE.md

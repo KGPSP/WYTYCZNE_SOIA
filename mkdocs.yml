@@ -5,7 +5,7 @@ site_url: https://kgpsp.github.io/WYTYCZNE_SOIA/
 repo_url: https://github.com/KGPSP/WYTYCZNE_SOIA
 repo_name: KGPSP/WYTYCZNE_SOIA
 edit_uri: ""
-copyright: "Podręcznik SOiA — wersja 0.4"
+copyright: "Wytyczne SOiA — projekt 0.5 · 10 września 2026 r."
 
 theme:
   name: material
@@ -58,5 +58,26 @@ markdown_extensions:
 extra_css:
   - assets/stylesheets/extra-v2.css
 
+validation:
+  links:
+    anchors: warn
+
 nav:
   - "1. Podręcznik SOiA": index.md
+  - "2. Spis i wersja rozdzielona": PODRECZNIK_v2_ROZDZIELONY.md
+  - "3. Profil 1.5": PROFIL_1_5.md
+  - "4. Platforma KG PSP": PLATFORMA_KG_PSP.md
+  - "Załączniki":
+      - "Z1 — Słownik": zalaczniki/Z1-SLOWNIK.md
+      - "Z2 — Informacja dla organów": zalaczniki/Z2-INFORMACJA-DLA-ORGANOW.md
+      - "Z3 — Wymagania minimalne": zalaczniki/Z3-WYMAGANIA-MINIMALNE.md
+      - "Z4 — Katalog sygnałów": zalaczniki/Z4-KATALOG-SYGNALOW.md
+      - "Z5 — Profile i wykonanie": zalaczniki/Z5-PROFILE-STEROWNIKA.md
+      - "Z6 — Publiczny IoT Feed": zalaczniki/Z6-POZIOM-0-PUBLICZNY-WYKAZ.md
+      - "Z7 — Rejestracja": zalaczniki/Z7-POZIOM-1-REJESTRACJA.md
+      - "Z8 — SMS i TETRA": zalaczniki/Z8-POZIOM-2-APN-I-SMS.md
+      - "Z9 — Karta konfiguracji": zalaczniki/Z9-KARTA-KONFIGURACJI.md
+      - "Z10 — Testy i odbiór": zalaczniki/Z10-TESTY-I-ODBIOR.md
+      - "Z11 — Zapisy do OPZ": zalaczniki/Z11-ZAPISY-DO-OPZ.md
+      - "Z12 — Podstawa prawna": zalaczniki/Z12-PODSTAWA-PRAWNA.md
+  - "Zmiany wersji 0.5": ZMIANY_v0.5.md

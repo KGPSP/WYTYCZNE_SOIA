@@ -1,8 +1,9 @@
+<!-- Generated from ZMIANY_v0.5.md; run python scripts/sync_pages.py. -->
 # Zmiany wytycznych w wersji 0.5
 
 10 września 2026 r. · Projekt wytycznych
 
-[← Wytyczne SOiA](README.md)
+[← Wytyczne SOiA](index.md)
 
 Aktualizację poprzedził przegląd wszystkich dwunastu załączników, dokumentów platformy KG PSP, publicznych metadanych IoT oraz wskazanych źródeł prawnych i technicznych. Wersja 0.5 porządkuje wymagania ogólne; nie poświadcza wdrożenia aplikacji lub odbioru modeli.
 

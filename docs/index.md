@@ -1,10 +1,12 @@
 ---
-title: "Podręcznik SOiA"
-description: "Zasady podłączania syren alarmowych i innych urządzeń do SOiA"
-author: "Biuro Informatyki i Łączności Komendy Głównej Państwowej Straży Pożarnej"
-date: 2026-08-23
-version: "0.4"
+tytuł: "Podręcznik SOiA"
+wersja: "0.5"
+data: 2026-09-10
+status: "projekt wytycznych"
+autor: Biuro Informatyki i Łączności Komendy Głównej Państwowej Straży Pożarnej
 ---
+
+<!-- Generated from PODRECZNIK_v2.md; run python scripts/sync_pages.py. -->
 
 <a id="poczatek"></a>
 <div class="institutional-masthead" role="banner" aria-label="Instytucje związane z publikacją">
@@ -23,7 +25,7 @@ version: "0.4"
   <img src="assets/images/partially-ai-modified-eu.png" alt="PARTIALLY AI-MODIFIED — oficjalne oznaczenie UE dla treści częściowo zmodyfikowanej z wykorzystaniem AI">
     <div class="ai-disclosure__content">
       <strong>Partially AI-Modified — informacja o wykorzystaniu sztucznej inteligencji</strong>
-      <p>Materiał zawiera treść pierwotnie opracowaną przez człowieka, która została częściowo zmodyfikowana i zredagowana z wykorzystaniem narzędzi sztucznej inteligencji. Treść podlegała przeglądowi i kontroli redakcyjnej człowieka, a odpowiedzialność redakcyjną za publikację ponosi wydawca.</p>
+      <p>Materiał zawiera treść pierwotnie opracowaną przez człowieka, która została częściowo zmodyfikowana i zredagowana z wykorzystaniem narzędzi sztucznej inteligencji. Odpowiedzialność redakcyjną za publikację ponosi wydawca; dokument zachowuje status projektu wytycznych.</p>
       <p>Zastosowano wariant <a href="https://digital-strategy.ec.europa.eu/en/policies/eu-icons-labelling-ai-generated-content">Partially AI-Modified z zestawu ikon UE</a>, z uwzględnieniem <a href="https://eur-lex.europa.eu/eli/reg/2024/1689/oj">art. 50 rozporządzenia (UE) 2024/1689</a>. Ikona jest dobrowolnym oznaczeniem i sama w sobie nie stanowi potwierdzenia zgodności prawnej ani merytorycznej dokumentu.</p>
     </div>
   </div>
@@ -31,829 +33,262 @@ version: "0.4"
 
 # Podręcznik SOiA
 
-## Zasady podłączania syren alarmowych i innych urządzeń do systemu ostrzegania i alarmowania
+## Zasady podłączania syren alarmowych i innych urządzeń
+
+**Wersja dokumentacyjna 0.5 · 10 września 2026 r. · Projekt wytycznych**
+
+Dokument opisuje wymagania przygotowania, przyłączenia i utrzymania sterowników w zarządzanym systemie KG PSP. Decyzja o alarmowaniu wynika z właściwej procedury; system dostarcza polecenie, a aplikacja KG PSP weryfikuje je i wykonuje na właściwym torze. Sprzęt różnych wykonawców współpracuje przez uzgodnioną platformę i interfejsy.
+
+Najważniejsze uzupełnienia tej wersji to **profil 1.5 dla urządzeń kompaktowych** oraz **OrchestraOS, Yocto i provisioning KG PSP**. Parametry dostosowuje się do funkcji i zakresu dostawy. Mniejsza liczba portów nie oznacza słabszej autoryzacji, historii, nadzoru lub ochrony kluczy.
+
+## Jak korzystać z wytycznych
+
+| Potrzeba | Punkt wejścia |
+| --- | --- |
+| Cel i odpowiedzialność organizacyjna | Z2 |
+| Wspólny system bazowy i dołączanie urządzeń | [Platforma KG PSP](PLATFORMA_KG_PSP.md), następnie Z3 i Z7 |
+| Mały sterownik i dobór wyposażenia | [Profil 1.5](PROFIL_1_5.md) i macierz Z3 |
+| Sygnały i wykonanie | Z4 i Z5 |
+| Feed, rejestracja, SMS i TETRA | Z6–Z8 |
+| Konfiguracja i odbiór | Z9 i Z10 |
+| Zakup i podstawa prawna | Z11 i Z12 |
+
+## Zakres wersji i źródła rozstrzygające
+
+Klasa I obejmuje wspólny rdzeń, 1.5 profil kompaktowy z audio, II profil rozszerzony z audio, a III lokalny TTS. Oznaczenia D/P określają zakres dostawy lub adresata. Nie są to wersje protokołu ani `deviceClass` komendy.
+
+Publiczny poziom 0 pozostaje otwartym odczytem. Zgodność nowej platformy KG PSP wymaga właściwego obrazu Yocto/OrchestraOS, tożsamości, rejestracji i odbioru. Odczyt feedu, online w Managerze i fizyczna emisja to odrębne etapy.
+
+W fazie 2026–2028 zestawy mają GSM/LTE, z SMS jako zapasem i możliwością dodatkowego IP przez Ethernet/Wi-Fi. Po tej fazie podstawowym kanałem poleceń ma być odebrana TETRA, z aktywnym zapasem GSM. Terminy i warunki przełączenia określa plan lokalizacji.
+
+| Rodzaj zapisu | Znaczenie |
+| --- | --- |
+| Wymaganie W-* | Warunek w wybranej klasie/profilu i zakresie. |
+| Scenariusz S-* | Próba właściwej funkcji i jej oczekiwany wynik. |
+| Kontrakt aplikacji i metadane API | Obsługiwana wersja, klasy odbiorców i kody; nie są listą portów sprzętu. |
+| Pakiet i karta konfiguracji | Wydania, zasoby, parametry oraz uprawnienia konkretnego modelu i egzemplarza. |
+| Przepis prawa | Podstawa prawna we właściwym zakresie; dokument techniczny nie nadaje nowych kompetencji. |
+
+Odczyt 10.09.2026 potwierdził publiczny profil IoT `0.1` i słownik `2026.1`. Funkcje planowane, w tym dodatkowe kody, TTS i integracja TETRA, wymagają osobnego kontraktu oraz odbioru. Publikacja wytycznych nie jest wdrożeniem aplikacji.
+
+Dokument pozostaje ogólny: nie zawiera pinoutów konkretnych syren, numerów abonenckich, sekretów ani konfiguracji produkcyjnych. Nazwy OrchestraOS/Orchestra, Yocto i RAUC identyfikują środowisko integracji KG PSP; modele urządzeń i wykonawcy nie są narzucone. Pliki PDF materiałów źródłowych nie są dołączane do tego wydania.
+
+Opis i diagram nie zastępują wymagania, ale wymaganie zakupowe również nie dowodzi istniejącej funkcji API. Sprzeczność pomiędzy zakresem zamówienia a dostępnym kontraktem trzeba rozstrzygnąć przed odbiorem; nie wolno zmieniać znaczenia komendy dla obejścia braku.
+
+## Spis treści
+
+- **Część I — Cel zasady i zakres systemu**
+    - [Załącznik nr 2 — Informacja dla organów ochrony ludności i jednostek samorządu terytorialnego](zalaczniki/Z2-INFORMACJA-DLA-ORGANOW.md)
+- **Część II — Terminologia i zasady interpretacji**
+    - [Załącznik nr 1 — Słownik pojęć](zalaczniki/Z1-SLOWNIK.md)
+- **Część III — Wymagania techniczne i funkcjonalne**
+    - [Załącznik nr 3 — Wymagania minimalne dla urządzenia](zalaczniki/Z3-WYMAGANIA-MINIMALNE.md)
+    - [Załącznik nr 4 — Katalog sygnałów i plików referencyjnych](zalaczniki/Z4-KATALOG-SYGNALOW.md)
+    - [Załącznik nr 5 — Profile sterownika i maszyna stanów](zalaczniki/Z5-PROFILE-STEROWNIKA.md)
+- **Część IV — Przyłączenie i kanały komunikacji**
+    - [Załącznik nr 6 — Poziom 0 publiczny wykaz poleceń](zalaczniki/Z6-POZIOM-0-PUBLICZNY-WYKAZ.md)
+    - [Załącznik nr 7 — Rejestracja urządzenia i kanały rejestrowane](zalaczniki/Z7-POZIOM-1-REJESTRACJA.md)
+    - [Załącznik nr 8 — Sieć wydzielona SMS i przejście na TETRA](zalaczniki/Z8-POZIOM-2-APN-I-SMS.md)
+- **Część V — Konfiguracja i odbiór**
+    - [Załącznik nr 9 — Karta konfiguracji urządzenia](zalaczniki/Z9-KARTA-KONFIGURACJI.md)
+    - [Załącznik nr 10 — Scenariusze sprawdzeń i protokół odbioru](zalaczniki/Z10-TESTY-I-ODBIOR.md)
+- **Część VI — Przygotowanie zamówienia**
+    - [Załącznik nr 11 — Wytyczne do opisu przedmiotu zamówienia](zalaczniki/Z11-ZAPISY-DO-OPZ.md)
+- **Część VII — Podstawa prawna i źródła**
+    - [Załącznik nr 12 — Podstawa prawna i źródła](zalaczniki/Z12-PODSTAWA-PRAWNA.md)
+
 
 ---
 
-## Przedmiot i cel dokumentu
-
-Dokument określa zasady podłączania syren alarmowych i innych urządzeń sygnalizacyjnych do systemu
-ostrzegania i alarmowania (SOiA). Jego celem jest zapewnienie, aby urządzenia wykonywały wyłącznie
-zweryfikowane polecenia, we właściwym czasie i na właściwym obszarze, niezależnie od producenta
-urządzenia.
-
-Dokument opiera się na zasadzie rozdzielenia odpowiedzialności: **rolą producenta jest dostarczenie
-syreny lub urządzenia sygnalizacyjnego, natomiast rolą państwa jest prowadzenie systemu
-ostrzegania.** Urządzenia różnych producentów powinny podłączać się do SOiA według jednolitych
-reguł i w jednakowy sposób wykonywać to samo polecenie.
-
-## Sposób korzystania z dokumentu
-
-Zakres zalecanej lektury zależy od roli odbiorcy i celu wykorzystania dokumentu.
-
-**Organy wykonawcze jednostek samorządu terytorialnego oraz komendanci PSP** — w pierwszej
-kolejności część I, a przed wszczęciem postępowania zakupowego również część VI.
-
-**Producenci sterowników i syren** — część III zawierająca wymagania, następnie część IV opisująca
-integrację oraz część V określająca zakres sprawdzeń.
-
-**Wykonawcy i instalatorzy** — część V obejmująca kartę konfiguracji i sprawdzenia odbiorowe;
-w przypadku sieci wydzielonej albo kanału wiadomości tekstowych również opis poziomu 2 w części IV.
-
-**Zamawiający** — część VI, poprzedzona zestawieniem klas zdolności, które określają zakres
-zamawianych funkcji.
-
-Definicje pojęć i zasady terminologiczne zawiera część II.
-
-```mermaid
-flowchart LR
-    START[Ustalenie roli odbiorcy] --> ROLA{Rola odbiorcy}
-    ROLA -->|Organ JST lub komendant PSP| JST[Część I<br/>Cel, zasady i zakres]
-    JST -->|Planowane zamówienie| ZAM[Część VI<br/>Przygotowanie zamówienia]
-    ROLA -->|Producent| TECH[Część III<br/>Wymagania techniczne]
-    TECH --> INT[Część IV<br/>Procedury integracji]
-    INT --> ODB[Część V<br/>Konfiguracja i odbiór]
-    ROLA -->|Wykonawca lub instalator| ODB
-    ODB -. sieć wydzielona lub kanał wiadomości tekstowych .-> INT
-    ROLA -->|Zamawiający| ZAM
-    ROLA -->|Wątpliwość terminologiczna| SLOW[Część II<br/>Terminologia]
-```
-
-## Jak czytać zakres i horyzont dokumentu
-
-!!! info "Dokument opisuje stan docelowy"
-
-    Architektura, wymagania i procedury opisują stan docelowy SOiA, do którego prowadzą zakupy, integracje i kolejne etapy wdrożenia. Opisy stanu istniejącego oraz okresu przejściowego wyjaśniają drogę dojścia i nie obniżają wymagań docelowych.
-
-| Oznaczenie | Jak je rozumieć |
-|---|---|
-| **STAN ISTNIEJĄCY** | kontekst, zastane instalacje i sposoby działania, które mają współistnieć z SOiA |
-| **OKRES PRZEJŚCIOWY 2026–2027** | rozwiązanie czasowe stosowane przed osiągnięciem modelu docelowego |
-| **STAN DOCELOWY** | model i właściwości, do których prowadzą wymagania |
-| **ZDOLNOŚĆ PLANOWANA** | funkcja przewidziana rozwojowo, lecz niewłączona do bieżącej usługi centralnej |
-| **ŹRÓDŁO ROZSTRZYGAJĄCE** | tabela `W-*` / `S-*`, profil maszynowy, podpisane wytyczne albo inny wskazany dokument mający pierwszeństwo przed objaśnieniem |
-
-Objaśnienia, przykłady i diagramy ułatwiają interpretację, ale nie tworzą nowych wymagań i nie zmieniają wymagań istniejących. W przypadku różnicy pierwszeństwo ma źródło rozstrzygające.
-
-Odwołania w formie `§` dotyczą odrębnego dokumentu normatywnego, który nie jest częścią publicznej strony GitHub Pages. Podręcznik przywołuje go wyłącznie jako odrębne źródło części normatywnej.
-
----
-
-## Zasady redakcyjne i zakres informacyjny
-
-**Pierwszeństwo objaśnienia.** Każde zestawienie poprzedza opis jego celu i sposobu interpretacji.
-Tabele stosuje się w przypadkach, w których zwiększają jednoznaczność informacji.
-
-**Spójność informacji.** Wartości techniczne określa się w jednym miejscu, a pozostałe części
-dokumentu zawierają odwołania. Wartości rozstrzygające są publikowane maszynowo pod adresem
-produkcyjnym SOiA; wartości przytoczone w podręczniku mają charakter informacyjny.
-
-**Neutralność technologiczna.** W dokumencie nie wskazuje się nazw firm, marek, modeli ani
-oprogramowania, również przy opisie stanu faktycznie osiągniętego. Elementy rozwiązania określa się
-przez ich funkcje i wymagane właściwości.
-
-**Ochrona danych operacyjnych.** Numery, hasła, wykazy numerów uprawnionych i parametry sieci nie
-są zamieszczane w podręczniku. Dane te przechowuje się w karcie konfiguracji, poza obiegiem
-publikacyjnym.
-
-**Jawność ograniczeń.** Dokument nie przypisuje systemowi funkcji, których system nie realizuje.
-Ograniczenia wskazuje się wprost, również wtedy, gdy mogą zostać ocenione jako niekorzystne.
-
----
-
-## Powiązanie załączników z częściami podręcznika
-
-Numeracja załączników pozostaje zgodna z odwołaniami zawartymi w części normatywnej. Poniższe
-zestawienie wskazuje ich umiejscowienie w strukturze podręcznika.
-
-| Załącznik | Część podręcznika |
-|---|---|
-| nr 1 — Słownik pojęć | II |
-| nr 2 — Informacja dla organów | I |
-| nr 3 — Wymagania minimalne | III |
-| nr 4 — Katalog sygnałów | III |
-| nr 5 — Profile sterownika | III |
-| nr 6 — Poziom 0 | IV |
-| nr 7 — Poziom 1 | IV |
-| nr 8 — Poziom 2 | IV |
-| nr 9 — Karta konfiguracji | V |
-| nr 10 — Scenariusze sprawdzeń | V |
-| nr 11 — Wytyczne do OPZ | VI |
-| nr 12 — Podstawa prawna | VII |
-
----
-
-## Spis treści { #spis-tresci }
-
-- **Część I. Cel, zasady i zakres systemu**
-  - Załącznik nr 2 — Informacja dla organów ochrony ludności i jednostek samorządu terytorialnego
-- **Część II. Terminologia i zasady interpretacji**
-  - Załącznik nr 1 — Słownik pojęć
-- **Część III. Wymagania techniczne i funkcjonalne dla urządzeń**
-  - Załącznik nr 3 — Wymagania minimalne dla urządzenia
-  - Załącznik nr 4 — Katalog sygnałów i plików referencyjnych
-  - Załącznik nr 5 — Profile sterownika i maszyna stanów
-- **Część IV. Procedury podłączenia i integracji**
-  - Załącznik nr 6 — Poziom 0: publiczny wykaz poleceń
-  - Załącznik nr 7 — Poziom 1: rejestracja i kanał powiadomienia
-  - Załącznik nr 8 — Poziom 2: sieć wydzielona i kanał wiadomości tekstowych
-- **Część V. Konfiguracja, instalacja i odbiór**
-  - Załącznik nr 9 — Karta konfiguracji urządzenia
-  - Załącznik nr 10 — Scenariusze sprawdzeń i protokół odbioru
-- **Część VI. Przygotowanie i realizacja zamówienia**
-  - Załącznik nr 11 — Wytyczne do opisu przedmiotu zamówienia
-- **Część VII. Ramy prawne i źródła normatywne**
-  - Załącznik nr 12 — Podstawa prawna
-
----
-
-## Część I. Cel, zasady i zakres systemu
-
-Ta część przedstawia cel, zasady działania i zakres SOiA w sposób przeznaczony dla osób
-podejmujących decyzje organizacyjne i zakupowe. Szczegółowe wymagania techniczne zawierają dalsze
-części podręcznika.
-
+## Część I — Cel zasady i zakres systemu
 
 ### Załącznik nr 2 — Informacja dla organów ochrony ludności i jednostek samorządu terytorialnego
 
+#### Cel i podział odpowiedzialności
 
-Załącznik jest przeznaczony dla wójtów, burmistrzów, prezydentów miast, starostów oraz komendantów
-powiatowych i miejskich Państwowej Straży Pożarnej. Przedstawia cel systemu, skutki jego wdrożenia
-dla jednostek samorządu terytorialnego oraz ograniczenia funkcjonalne. Wymagania techniczne
-określono w załączniku nr 3.
+SOiA ma umożliwiać wykonanie tej samej uprawnionej decyzji przez urządzenia różnych producentów. Właściwy organ i procedura rozstrzygają o alarmowaniu. System dostarcza polecenie, a aplikacja sterownika sprawdza jego adresata, ważność i historię, po czym wykonuje właściwą funkcję.
 
----
+KG PSP zapewnia środowisko integracji, komponenty platformy i aplikację operacyjną. Wykonawca dostarcza zgodny sprzęt, buduje obraz Yocto/OrchestraOS dla swojej płyty i zapewnia interfejsy. Właściciel odpowiada za instalację, eksploatację i dokumentację w swoim zakresie. Wymagania techniczne określa Z3; przygotowanie dostaw Z11.
 
-#### 1. Stan istniejący i potrzeba standaryzacji
+#### Co jest wspólne
 
-Eksploatowane instalacje syren alarmowych są zróżnicowane pod względem producentów, sposobów
-sterowania, interfejsów oraz zapisanych materiałów dźwiękowych. Zróżnicowanie to utrudnia
-jednoczesne i jednolite wykonanie alarmu obejmującego obszar więcej niż jednej jednostki samorządu
-terytorialnego.
+| Element | Wymagany rezultat |
+| --- | --- |
+| Platforma | OrchestraOS wydania KG PSP, zgodny system i aplikacja. |
+| Tożsamość i zarządzanie | Przygotowany egzemplarz zarejestrowany we właściwej instancji Orchestra. |
+| Polecenia | Wspólne znaczenie, sprawdzanie uprawnień, czasu, obszaru i powtórzeń. |
+| Integracja lokalna | Odebrany tor syreny elektronicznej, silnikowej lub innego urządzenia. |
+| Utrzymanie | Aktualizacje, odtworzenie, wersje i możliwość przejęcia serwisu. |
 
-Odrębnym ryzykiem jest długotrwałe uzależnienie właściciela instalacji od jednego dostawcy,
-wynikające z braku otwartych interfejsów i interoperacyjności. Zmiana dostawcy może wówczas wymagać
-wymiany znacznej części infrastruktury.
+Online w Managerze nie jest potwierdzeniem emisji. alarm.soia.info i syreny.soia.info służą zarządzaniu operacyjnemu, a Orchestra utrzymaniu technicznemu urządzeń.
 
-SOiA ogranicza oba ryzyka przez ujednolicenie elementów wspólnych dla wszystkich urządzeń oraz
-pozostawienie konkurencji w zakresie jakości, ceny, trwałości i sposobu realizacji urządzenia.
+#### Dobór klasy i zakresu zakupu
 
----
+Klasa I obejmuje rdzeń. Profil 1.5 dodaje kompaktowe wyposażenie i lokalne audio; klasa II — rozszerzone wyposażenie z audio. Klasa III obejmuje lokalną syntezę mowy i może być dodana również do profilu kompaktowego. Większa liczba głośników nie określa sama potrzeb pamięci sterownika, a TTS nie zwiększa automatycznie liczby przekaźników.
 
-#### 2. Zasada rozdzielenia odpowiedzialności
+Do prostszego punktu można zamówić I + 1.5, jeżeli mapa torów i zasoby są wystarczające. Posiadanego zgodnego urządzenia nie wymienia się tylko dlatego, że wprowadzono nowy profil. Szczegóły zawiera [profil 1.5](PROFIL_1_5.md).
 
-Rolą producenta jest dostarczenie syreny albo innego urządzenia sygnalizacyjnego zgodnego
-z wymaganiami interoperacyjności. Rolą państwa jest prowadzenie systemu ostrzegania
-i alarmowania. Jednolite znaczenie poleceń określa kontrakt SOiA.
+Zakup syreny, samego sterownika, kompletnego zestawu D i montażu sprzętu powierzonego to różne przedmioty. Należy rozdzielić sprzęt już dostarczony, brakujące elementy oraz czynności wykonawcy. Nie zamawia się ponownie aplikacji alarmowej dostarczanej przez KG PSP.
 
-Wspólny standard podłączenia umożliwia współdziałanie urządzeń różnych producentów. Jednostka
-samorządu terytorialnego może rozbudowywać instalację o urządzenia innych marek bez zmiany systemu
-centralnego, a sąsiadujące jednostki mogą wykonywać ten sam sygnał w sposób spójny.
+#### Adaptacja instalacji istniejącej
 
----
-
-#### 3. Dobrowolność przystąpienia i wymóg pełnej zgodności
-
-Wytyczne nie ustanawiają obowiązku przyłączenia syreny do SOiA. Podmiot podejmujący decyzję
-o przystąpieniu stosuje jednak wymagania w całości, ponieważ ich częściowe spełnienie może
-prowadzić do niespójnego wykonania tego samego polecenia przez różne urządzenia.
-
-**Momentem przystąpienia jest zgłoszenie urządzenia do rejestracji.** Do tej chwili urządzenie
-pobierające publiczny wykaz jest po prostu odbiorcą informacji udostępnianej powszechnie.
-
----
-
-#### 4. Przebieg procesu alarmowania
-
-Proces rozdziela czynności decyzyjne wykonywane przez uprawnione osoby od automatycznych czynności
-dystrybucji, weryfikacji i wykonania polecenia. System nie ogłasza alarmu samodzielnie.
+Przed zakupem ustala się stan syreny, jej elektronikę, dokumentację i tor sterowania. Sprawna syrena elektroniczna może korzystać z audio/PTT lub udokumentowanego API. Syrena silnikowa wymaga izolowanej aparatury napędu i programu silnikowego; nie odtworzy komunikatów słownych.
 
 ```mermaid
 flowchart TD
-    A[Organ ochrony ludności<br/>podejmuje decyzję o alarmie] --> B[Uprawniona osoba wprowadza ostrzeżenie<br/>i określa rodzaj, obszar, zalecenia oraz czas]
-    B --> C{Czy jawnie wskazano<br/>uruchomienie syren?}
-    C -->|Nie| D[Publikacja do pozostałych<br/>właściwych kanałów]
-    C -->|Tak| E[ALARM.soia publikuje ostrzeżenie<br/>oraz podpisany wykaz poleceń]
-    E --> F[Powiadomienie urządzeń zarejestrowanych]
-    E --> G[Cykliczne pobieranie wykazu<br/>przez wszystkie sterowniki]
-    F --> G
-    G --> H{Weryfikacja podpisu, profilu,<br/>obszaru, czasu i braku powtórzenia}
-    H -->|Warunek niespełniony<br/>lub wątpliwość| I[Brak emisji<br/>i zapis wyniku]
-    H -->|Wszystkie warunki spełnione| J[Uruchomienie lokalnie zapisanego<br/>pliku referencyjnego]
-    J --> K[Emisja przez czas właściwy<br/>dla danego sygnału]
-    K --> L[Samoistne zakończenie emisji]
+    A[Ocena istniejącej instalacji] --> B{Czy sterownik spełnia<br/>profil platformy KG PSP?}
+    B -->|Tak| C[Wykorzystanie i uzupełnienie konfiguracji]
+    B -->|Nie| D[Dobór zgodnego sterownika<br/>I + 1.5 lub zakres rozszerzony]
+    C --> E[Wybór właściwego toru<br/>AUDIO i PTT / API / napęd silnikowy]
+    D --> E
+    E --> F[Provisioning i rejestracja]
+    F --> G[Próby kanałów oraz odbiór obiektu]
 ```
 
-Polecenie wskazuje rodzaj sygnału, lecz nie przenosi pliku dźwiękowego. Plik referencyjny jest
-instalowany w urządzeniu podczas uruchomienia instalacji.
+Dotychczasowe wymagane sposoby uruchomienia pozostają dostępne. Ich współpracę i arbitraż trzeba odebrać. Sam dodatkowy modem GSM ani karta SIM nie zapewniają pełnej zgodności z SOIA.KGPSP.
 
----
+#### Łączność i przyłączenie
 
-#### 5. Poziomy podłączenia do SOiA
+Faza 2026–2028 zakłada GSM/LTE, z SMS jako zapasem. Internet obiektu przez Ethernet lub Wi-Fi może zapewniać dodatkową drogę IP. Po tej fazie podstawowym kanałem poleceń ma być TETRA, po jej zapewnieniu i odbiorze w lokalizacji. GSM pozostaje aktywnym zapasem. Usługi kart, operator i szczegółowe terminy określa plan obiektu; nie wynikają automatycznie z kalendarza.
 
-SOiA przewiduje trzy kumulatywne poziomy podłączenia urządzenia.
+Poziom 0 jest publicznym odczytem feedu. Rejestracja platformy i odbiór oficjalnej instalacji są osobnymi wymaganiami. Poziomy 1 i 2 dodają uprawnione kanały i usługi według profilu. Sam wniosek nie potwierdza przyjęcia urządzenia, a publiczny odczyt nie nadaje uprawnień do kanałów zamkniętych.
 
-```mermaid
-flowchart TB
-    L0[Poziom 0 — otwarty<br/>publiczny podpisany wykaz poleceń<br/>bez rejestracji] --> L1[Poziom 1 — zarejestrowany<br/>poziom 0 + indywidualna tożsamość<br/>+ kanał niezwłocznego powiadomienia]
-    L1 --> L2[Poziom 2 — sieć wydzielona<br/>poziom 1 + wydzielona sieć operatora<br/>+ kanał wiadomości tekstowych]
-    L2 -. zachowuje .-> L1
-    L1 -. zachowuje .-> L0
-```
+#### Warunek gotowości
 
-**Poziom 0** umożliwia pobieranie publicznego wykazu poleceń przez Internet i nie wymaga
-rejestracji, zgody ani zawiadomienia Komendy Głównej PSP. Mogą z niego korzystać podmioty publiczne
-i niepubliczne, pod warunkiem poprawnego skonfigurowania obszaru oraz weryfikacji poleceń.
+Model i obraz → przygotowanie egzemplarza → rejestracja i przypisanie → gotowość aplikacji → sprawdzenie kanałów → odbiór fizycznego toru. Pierwsze podłączenie nie wyzwala próby dźwiękowej.
 
-**Poziom 1** jest przeznaczony dla urządzeń podmiotów publicznych dopuszczonych przez administratora
-SOiA. Urządzenie otrzymuje indywidualną tożsamość kryptograficzną i kanał niezwłocznego
-powiadomienia. Profil jednostki porządkuje zgłoszenia, lecz dopuszczenie jest rozstrzygane odrębnie
-dla każdego urządzenia po potwierdzeniu jego tożsamości, lokalizacji i obszaru działania.
-
-**Poziom 2** uzupełnia poziom 1 o pracę w wydzielonej sieci operatora oraz kanał wiadomości
-tekstowych.
-
-Poziom wyższy nie zastępuje poziomu niższego. Cykliczne pobieranie podpisanego wykazu pozostaje
-obowiązkowe, dlatego niedostępność kanału powiadomienia wpływa na czas reakcji, lecz nie znosi
-możliwości pobrania i wykonania polecenia z poziomu 0. Rejestracja nie jest warunkiem technicznego
-działania urządzenia na poziomie 0 podczas oczekiwania na rozstrzygnięcie administratora.
-
----
-
-#### 6. Zakres zakupów po stronie jednostki samorządu terytorialnego
-
-Zakres zakupów i świadczeń przewidzianych w projekcie przedstawia poniższe zestawienie.
-
-| Zakres | Sposób zapewnienia |
-|---|---|
-| Syrena, sterownik, montaż, uruchomienie i serwis | przedmiot zamówienia jednostki samorządu terytorialnego |
-| Łączność urządzenia | w okresie przejściowym 2026–2027 — karty operatorów wybranych przez jednostkę; docelowo projekt przewiduje karty zapewniane centralnie przez KG PSP |
-| System centralny | element SOiA; nie wymaga zakupu pulpitu dyspozytorskiego ani oprogramowania serwerowego producenta syreny |
-| Pliki referencyjne sygnałów | udostępniane przez KG PSP; instalowane w urządzeniu podczas uruchomienia |
-
-Urządzenie powinno umożliwiać późniejszą wymianę karty abonenckiej i zmianę konfiguracji bez
-wymiany sprzętu.
-
-Zakres funkcji określa się w zamówieniu przez wskazanie klas zdolności:
-
-- **klasa I — rdzeń:** wymagana dla każdego urządzenia przyłączanego do SOiA;
-- **klasa II — tor audio:** wymagana, gdy sterownik samodzielnie odtwarza dźwięk;
-- **klasa III — profil głosowy:** stosowana, gdy zamówienie obejmuje wypowiadanie treści słownej.
-
-Dla sterowania syreną cyfrową przez jej udokumentowany interfejs wystarczająca jest klasa I.
-Modernizacja instalacji z odtwarzaniem dźwięku przez sterownik wymaga klas I i II. Klasa III
-dotyczy zdolności opcjonalnej; projekt wskazuje, że system nie przenosi obecnie treści głosowej.
-
-Załącznik nr 11 zawiera propozycje minimalnych wymagań funkcjonalnych do wykorzystania przy
-opracowaniu opisu przedmiotu zamówienia. Nie stanowi kompletnego opisu gotowego do bezpośredniego
-zastosowania. Zamawiający odpowiada za dostosowanie wymagań do przedmiotu, warunków i podstawy
-prawnej konkretnego postępowania, w tym za ograniczenie ryzyka zależności od jednego dostawcy.
-
----
-
-#### 7. Integracja istniejących instalacji syren
-
-Projekt nie wymaga automatycznej wymiany istniejących syren. Dobór wariantu integracji należy
-poprzedzić oceną stanu instalacji, dostępnych interfejsów, dokumentacji producenta, warunków
-gwarancji oraz bezpieczeństwa technicznego.
-
-```mermaid
-flowchart TD
-    A[Istniejąca instalacja syreny] --> B{Czy możliwe jest dołączenie kanału SOiA<br/>bez wymiany sterownika?}
-    B -->|Tak| C[Dołączenie kanału SOiA<br/>jako toru równoległego]
-    B -->|Nie| D[Wymiana sterownika<br/>z zachowaniem wymaganych sposobów uruchomienia]
-    C --> E{Czy istnieje otwarty<br/>i udokumentowany interfejs syreny?}
-    E -->|Tak| F[Integracja przez interfejs syreny]
-    E -->|Nie| G{Czy dostępne są wejście audio<br/>i wejście sterowania nadawaniem?}
-    G -->|Tak| H[Sterownik odtwarza plik referencyjny<br/>i steruje torem nadawania]
-    G -->|Nie| D
-    F --> I[Sprawdzenie przy odbiorze]
-    H --> I
-    D --> I
-    I --> J[Potwierdzenie działania toru SOiA,<br/>uruchomienia lokalnego i wszystkich torów<br/>wymaganych do zachowania]
-```
-
-Dołączenie kanału SOiA nie powinno wyłączać ani ograniczać istniejącego systemu dyspozytorskiego,
-pulpitu lokalnego, przycisku ręcznego ani kanału radiowego. Wszystkie tory powinny pracować
-równolegle, a możliwość uruchomienia lokalnego powinna pozostać niezależna od łączności.
-
-Zachowanie dotychczasowych sposobów uruchomienia podlega sprawdzeniu przy odbiorze zgodnie
-z załącznikiem nr 10 oraz powinno zostać odzwierciedlone w postanowieniach umowy przygotowanych
-z wykorzystaniem załącznika nr 11.
-
-W wariancie audio sterownik odtwarza lokalnie plik referencyjny, podaje sygnał na wejście audio
-syreny i równolegle uruchamia jej tor nadawania. Dopuszczalność tego wariantu wymaga potwierdzenia
-zgodności z dokumentacją urządzenia, wymaganiami bezpieczeństwa oraz warunkami konkretnej umowy.
-
----
-
-#### 8. Ograniczenia funkcjonalne systemu
-
-Prawidłowe określenie zakresu wdrożenia wymaga uwzględnienia następujących ograniczeń:
-
-| Ograniczenie | Znaczenie operacyjne |
-|---|---|
-| SOiA nie zastępuje decyzji organu ochrony ludności | system przenosi i wykonuje decyzję podjętą przez właściwy organ; nie ogłasza alarmu samodzielnie |
-| Potwierdzenie wykonania nie jest potwierdzeniem słyszalności | zasięg i skuteczność akustyczna podlegają projektowi instalacji oraz sprawdzeniom lokalnym |
-| Trwająca emisja nie podlega zdalnemu zatrzymaniu | rozpoczęta sekwencja jest wykonywana do końca; odwołanie alarmu stanowi odrębny sygnał akustyczny |
-| Jedno polecenie powoduje jedną emisję | ponowienie sygnału wymaga odrębnej decyzji i odrębnego polecenia |
-| Obecny zakres nie obejmuje wywoływania jednostek ochrony przeciwpożarowej | dotychczasowe środki wywoływania pozostają odrębne; rozszerzenie zakresu wymaga osobnego etapu |
-| Polecenie nie przenosi pliku dźwiękowego | pliki referencyjne muszą zostać zainstalowane i zweryfikowane podczas uruchomienia instalacji |
-| System nie przenosi obecnie treści głosowej | klasa III opisuje opcjonalną zdolność urządzenia, a nie aktualnie dostępną usługę centralną |
-| Kanał publiczny nie zapewnia informacji zwrotnej o stanie urządzenia | sprawność potwierdza się w toku odbioru, sprawdzeń okresowych i czynności właściciela instalacji |
-| Nie ustanowiono liczbowego progu czasu reakcji | czas od wydania polecenia do rozpoczęcia emisji podlega pomiarowi i zapisowi; zastosowanie ma wymóg niezwłoczności |
-| Brak wszystkich kanałów łączności uniemożliwia odebranie nowego polecenia | urządzenie nie może uruchamiać emisji na podstawie domniemania lub treści przeterminowanej |
-
----
-
-#### 9. Podział odpowiedzialności
-
-Projekt przyjmuje następujący podział odpowiedzialności:
-
-```mermaid
-flowchart LR
-    KG[Komenda Główna PSP] --> KGZ[Prowadzenie SOiA, publikacja materiałów,<br/>dopuszczanie urządzeń do kanałów zamkniętych<br/>oraz docelowe zapewnienie kart abonenckich]
-    KW[Komendant wojewódzki PSP] --> KWZ[Udostępnianie Wytycznych<br/>i materiałów na obszarze właściwości]
-    KP[Komendant powiatowy lub miejski PSP] --> KPZ[Uwzględnianie stanu podłączenia w ustaleniach<br/>oraz prowadzenie ewidencji urządzeń]
-    OOL[Organ ochrony ludności] --> OOLZ[Ogłaszanie i odwoływanie alarmu<br/>oraz określanie obszaru]
-    WL[Właściciel urządzenia] --> WLZ[Stan techniczny, konfiguracja,<br/>sprawdzenia okresowe i eksploatacja]
-    WY[Wykonawca] --> WYZ[Zgodność dostawy z wymaganiami<br/>oraz prawidłowe uruchomienie instalacji]
-```
-
-Odpowiedzialność za stan techniczny i eksploatację instalacji pozostaje po stronie jej właściciela;
-nie przechodzi na dostawcę systemu centralnego. Projekt przewiduje ponadto centralne przygotowanie
-i publiczne udostępnienie polskiego głosu do syntezy mowy, co wymaga odrębnej realizacji.
-
----
-
-#### 10. Zalecane działania wdrożeniowe
-
-Jednostka samorządu terytorialnego planująca zakup powinna określić wymagane klasy zdolności,
-przeanalizować propozycje zawarte w załączniku nr 11 i uwzględnić w opisie przedmiotu zamówienia
-wymagania ograniczające zależność od jednego dostawcy.
-
-W przypadku istniejącej instalacji należy ocenić warianty opisane w rozdziale 7 oraz pozyskać
-dokumentację interfejsu sterowania. Brak wystarczającej dokumentacji może przemawiać za oceną
-wariantu audio, z uwzględnieniem warunków technicznych, gwarancyjnych i umownych.
-
-Działające urządzenie może korzystać z poziomu 0 bez uprzedniej rejestracji. Zgłoszenie urządzenia
-publicznego do poziomu 1 albo 2 może być prowadzone równolegle, bez wstrzymywania technicznego
-działania na poziomie 0.
-
-Publiczny wykaz poleceń jest dostępny również dla podmiotów niepublicznych. Warunkiem bezpiecznego
-wykorzystania jest pełna weryfikacja polecenia przed jego wykonaniem. Rejestracja oraz kanały
-zamknięte pozostają przeznaczone dla podmiotów publicznych, a wykorzystanie poziomu 0 bez
-rejestracji odbywa się poza zakresem dopuszczenia do kanałów zamkniętych.
+Przyjęcie, doręczenie, ACK i dźwięk to różne etapy. Odbiór obejmuje także polecenia, których urządzenie ma nie wykonać, restart, zasilanie i zbieg kanałów. Nie wolno deklarować gotowości funkcji planowanej wyłącznie na podstawie wyposażenia sprzętu. Dostępny kontrakt sprawdza się według Z4/Z6, a instalację według Z9/Z10.
 
 
 ---
 
-
-
-[Powrót do spisu treści](#spis-tresci){ .section-return }
-## Część II. Terminologia i zasady interpretacji
-
-Jednoznaczna terminologia jest warunkiem prawidłowego przygotowania zamówienia, wdrożenia
-i odbioru instalacji. W szczególności potoczne określenie „włączenie syreny” obejmuje kilka
-odrębnych czynności technicznych i prawnych, które należy rozróżniać.
-
+## Część II — Terminologia i zasady interpretacji
 
 ### Załącznik nr 1 — Słownik pojęć
 
+#### System i odpowiedzialność
 
-Załącznik określa terminologię stosowaną w odniesieniu do SOiA. Nie obejmuje pojęć
-ogólnotechnicznych; definiuje terminy mające w systemie znaczenie szczególne oraz terminy, których
-zamienne używanie może prowadzić do niejednoznaczności.
+**SOiA / SOIA.KGPSP** — system ostrzegania i alarmowania obejmujący przygotowanie, dystrybucję i wykonanie poleceń oraz utrzymanie urządzeń. Decyzja o alarmowaniu wynika z właściwej procedury i uprawnień, a system ją wykonuje.
 
-Każdemu hasłu przypisano jedno znaczenie. Określenia niezalecane wskazano pod adnotacją
-*Określenia niezalecane*. Pozostałe części dokumentu powinny stosować terminologię z niniejszego
-załącznika.
+**ALARM.soia** — warstwa operacyjna dostępna pod adresem `alarm.soia.info`, publikująca komunikaty i podpisany IoT Feed. **SYRENY.soia** — warstwa operacyjnego zarządzania uruchamianiem syren pod adresem `syreny.soia.info`, w tym właściwe profile SMS. Relacje, uprawnienia i wersje integracji wskazuje KG PSP; same adresy nie potwierdzają uruchomienia każdej planowanej funkcji.
 
----
+**Orchestra Manager** — techniczne zarządzanie urządzeniami: rejestracja, konfiguracja, stan, telemetria, dostęp i aktualizacje. Nie jest odrębnym źródłem decyzji alarmowej. **Orchestra SDN** — właściwa dla instancji droga kontrolowanej komunikacji zarządczej.
 
-#### System i jego komponenty
+**Organ ochrony ludności** — organ podejmujący decyzje w granicach właściwości ustawowej. **Administrator KG PSP** — podmiot uprawniony do przyjęcia konfiguracji, rejestracji egzemplarza i nadania dostępu w określonym zakresie. **Właściciel instalacji** — podmiot odpowiedzialny za jej stan, eksploatację i dokumentację. **Wykonawca** — dostawca platformy, integracji lub montażu w zakresie zamówienia.
 
-W obszarze ostrzegania i alarmowania funkcjonują przedsięwzięcia o podobnych oznaczeniach.
-Poniższe rozróżnienia służą zapewnieniu ich jednoznacznej identyfikacji.
+**PL-CAP** — profil komunikatu ostrzegawczego oparty na CAP. **IoT Feed** — podpisany, jednokierunkowy wykaz poleceń wykonawczych w profilu `PL-CAP-DIST-IOT`. Feed nie jest samym komunikatem CAP ani potwierdzeniem emisji.
 
-**SOiA**
-System ostrzegania i alarmowania — całość rozwiązania, obejmująca tworzenie komunikatu
-ostrzegawczego, jego dystrybucję kanałami i wykonanie na urządzeniach w terenie.
-*Określenia niezalecane*: „system syren”, „platforma alarmowa”.
+#### Platforma i przygotowanie urządzenia
 
-**ALARM.soia**
-System oparty na standardzie CAP, integrujący i publikujący komunikaty ostrzegawcze do urządzeń
-IoT, telefonów, aplikacji i pozostałych kanałów. Jest jedynym miejscem, w którym powstaje polecenie
-dla syreny. Działa według zasady **„jeden alert — wiele urządzeń naraz”**: uprawniona osoba wydaje
-ostrzeżenie raz, a system zapewnia, że identyczna treść trafia jednocześnie do wszystkich kanałów.
-Dostępny pod adresem `alarm.soia.info`, gdzie publikowana jest także jego dokumentacja.
-*Określenia niezalecane*: `CAP_ALERT` — nazwa robocza z wcześniejszego etapu prac; `demo.soia.info` oraz
-„serwer demonstracyjny” — **nazwy wycofane**, nadal obecne w starszych materiałach.
+**Sterownik** — urządzenie brzegowe z mikrokomputerem, tożsamością i systemem bazowym, na którym aplikacja KG PSP kwalifikuje polecenia i steruje lokalnym interfejsem. Może być osobnym modułem lub częścią zestawu. Modem i bramka nie są jego synonimami.
 
-**ZKWSD.soia**
-Zarządzanie Kryzysowe — System Wspomagania Decyzji SOiA. Odrębna aplikacja obiegu zdarzeń między
-centrami zarządzania kryzysowego, w kaskadzie RCB → WCZK → PCZK/MCZK → GCZK → PSP.
-**Nie jest to system sterowania syrenami** i te dwie nazwy nie są zamienne.
-*Określenia niezalecane*: `SOiA-ALERT` — nazwa wycofana.
+**OrchestraOS** — system bazowy używany w platformie KG PSP. **Yocto Project** — środowisko budowy systemu Linux dla określonego sprzętu. **BSP** — pakiet obsługi konkretnej płyty, jej rozruchu i urządzeń. Wykonawca buduje obraz ze wskazanego wydania komponentów udostępnionych przez KG PSP na wniosek.
 
-**Odbiorca komunikatu**
-Kanał albo urządzenie, do którego trafia opublikowane ostrzeżenie: telefon przez wiadomość tekstową
-i aplikację, komputer przez portal publiczny i strony, tablet, syrena alarmowa oraz urządzenia
-z modułem sieciowym — domofony, tablice informacyjne, systemy radiowe, huby domowe, znaki zmiennej
-treści i inne. Syrena jest **jednym z odbiorców**, a nie osobnym systemem.
+**Provisioning** — przygotowanie egzemplarza: obraz, indywidualna tożsamość, konfiguracja startowa, rejestracja i przypisanie. **ZTP** — automatyzacja pierwszego przyłączenia dzięki wcześniejszemu przygotowaniu. Samo pojawienie się urządzenia w sieci nie nadaje mu zaufania.
 
-**PL-CAP**
-Krajowy profil interoperacyjności ostrzegania, oparty na standardzie OASIS CAP 1.2. Określa
-format komunikatu ostrzegawczego, jego walidację i dystrybucję.
+**Przyjęcie modelu** — sprawdzenie konkretnej konfiguracji sprzętu i oprogramowania. **Rejestracja egzemplarza** — przyjęcie tożsamości konkretnej sztuki do właściwego środowiska. **Odbiór obiektu** — potwierdzenie funkcji w rzeczywistej instalacji. Są to odrębne etapy.
 
-**IoT Feed**
-Jednokierunkowy, podpisany wykaz poleceń wykonawczych, publikowany przez ALARM.soia i pobierany
-przez sterowniki. Nie jest komunikatem CAP i nie jest dowodem, że alarmowanie faktycznie nastąpiło.
+**Flota** — grupa zgodnych urządzeń używana do zarządzania. Nie wyznacza obszaru alarmowania. **Karta konfiguracji** — dokument modelu lub egzemplarza z wersjami, przypisaniem, portami i dowodami. Wypełniona karta i jej sekrety pozostają poza publikacją.
 
-**`PL-CAP-DIST-IOT`**
-Formalna nazwa profilu, w którym publikowany jest IoT Feed. Występuje w treści koperty i służy
-sterownikowi do sprawdzenia, że rozmawia z właściwym kontraktem.
+**Bramka LoRaWAN** — osobny element przekazujący ruch radiowy urządzeń końcowych do LNS. **LNS** — serwer sieci LoRaWAN. **CUPS** — usługa konfiguracji bramki. Żaden z tych elementów nie jest aplikacją interpretującą IoT Feed.
 
-!!! note "PL-CAP, IoT Feed i urządzenie — dla odbiorcy nietechnicznego"
+#### Cztery niezależne osie doboru
 
-    PL-CAP opisuje ostrzeżenie przeznaczone do wielu kanałów. IoT Feed jest podpisanym wykazem poleceń dla urządzeń korzystających z toru danych. ALARM.soia publikuje Feed, a sterownik automatycznie go pobiera, weryfikuje i interpretuje; JST nie wykonuje tych czynności ręcznie. Obecność ostrzeżenia w części informacyjnej nie uruchamia syreny. Wykonanie następuje wyłącznie po dostarczeniu polecenia właściwym kanałem oraz jego kwalifikacji i weryfikacji przez urządzenie zgodnie z profilem tego kanału.
+| Pojęcie | Znaczenie |
+| --- | --- |
+| Klasa odbiorcy w komendzie | Do jakiej kategorii urządzenia jest skierowane polecenie, np. `SIREN_CONTROLLER`. |
+| Klasa zdolności | I — rdzeń; 1.5 — profil kompaktowy z audio; II — rozszerzony z audio; III — lokalny TTS. Wymagania określa Z3. |
+| Profil wykonawczy i tryb połączenia | Syrena elektroniczna, silnikowa lub inny odbiornik; AUDIO/PTT, API albo izolowane sterowanie stykowe. |
+| Poziom podłączenia | 0 — odczyt publiczny; 1 — kanały rejestrowane; 2 — dodatkowe usługi wydzielone/SMS według profilu. |
 
----
+Oznaczenie 1.5 nie jest wersją feedu ani poziomem rejestracji. Profil modernizacji oznacza adaptację instalacji istniejącej, nie osobny rodzaj dźwięku lub tożsamości urządzenia. Otwartość odczytu poziomu 0 nie jest potwierdzeniem zgodności platformy z Z3.
 
-#### Uczestnicy i zakresy odpowiedzialności
+#### Polecenie i efekt
 
-**Organ ochrony ludności**
-Organ właściwy do ogłoszenia alarmu w rozumieniu ustawy o ochronie ludności i obronie cywilnej —
-w szczególności wójt, burmistrz, prezydent miasta, starosta i wojewoda. To on ogłasza alarm;
-system jedynie przenosi jego decyzję.
+**Komenda** — pojedyncze polecenie wykonawcze z tożsamością operacji. **Kod sygnału** — identyfikator funkcji określonej w kontrakcie, nie plik dźwiękowy. **Sygnał alarmowy** — przebieg określony w katalogu Z4 i właściwym przepisie.
 
-**Administrator SOiA**
-Osoba lub komórka rozstrzygająca o dopuszczeniu **każdego zgłoszonego urządzenia z osobna** do
-kanałów zamkniętych, przydzielająca tożsamość, kartę abonencką i numer. Decyzja administratora nie
-jest czynnością techniczną i nie następuje automatycznie po złożeniu zgłoszenia.
+**Plik referencyjny** — zatwierdzony zasób lokalny o określonej wersji i sumie. **Manifest pakietu audio** — wykaz plików, ich parametrów i skrótów powiązany z akceptacją KG PSP. Nie jest IoT Feed. Aktualizacja zasobów jest czynnością utrzymaniową, a wykonanie alarmu nie zależy od pobierania audio.
 
-**Przystąpienie**
-Zgłoszenie urządzenia do rejestracji — chwila, od której podmiot stosuje Wytyczne w całości.
-Do tego momentu urządzenie pobierające publiczny wykaz poleceń jest odbiorcą informacji
-udostępnianej powszechnie. Stosowanie Wytycznych jest dobrowolne; przystąpienie nie jest.
-*Określenia niezalecane*: „podłączenie” w znaczeniu prawnym — podłączyć można się bez przystąpienia.
+**TTS** — lokalne przekształcenie zatwierdzonego tekstu w mowę. Odtwarzanie gotowego nagrania nie jest TTS. Syrena silnikowa nie odtwarza ani plików, ani mowy.
 
-**Profil gminy**
-Konto zakładane jednostce samorządu terytorialnego, w którym rejestruje ona własne urządzenia.
-Porządkuje wnioski i wiąże je z podmiotem odpowiedzialnym; **nie zastępuje decyzji** administratora
-o dopuszczeniu pojedynczego urządzenia.
+**Okno rozpoczęcia** — czas, w którym można rozpocząć lokalną operację. Nie jest czasem trwania dźwięku ani ważnością całego ostrzeżenia. **Emisja** — fizyczne wytworzenie dźwięku; aktywacja wyjścia jest wcześniejszym, odrębnym etapem.
 
-**Właściciel urządzenia**
-Podmiot odpowiadający za instalację, jej stan techniczny i skutki działania — jednostka samorządu
-terytorialnego, jednostka ochrony przeciwpożarowej, zakład pracy albo osoba prywatna.
+**CANCEL_PENDING** — anulowanie określonej, znanej akcji oczekującej zgodnie z kontraktem. Nie jest sygnałem odwołania i nie zatrzymuje emisji trwającej. **Odwołanie alarmu** — odrębna funkcja akustyczna, w profilu dla ludności sygnał ciągły 180 s. **Techniczne STOP** — funkcja właściwego kontraktu, jeśli została przewidziana i odebrana; nie zastępuje odwołania. **Odcięcie lokalne** — czynność sprzętowa o pierwszeństwie bezpieczeństwa. Dla silnika odcina napęd, lecz wirnik może jeszcze wybiegać.
 
-**Wykonawca**
-Podmiot montujący i uruchamiający instalację. Może być tożsamy z producentem sterownika, ale
-nie musi.
+**Arbitraż** — wspólne rozstrzygnięcie dostępu do tego samego toru. **Odrzucenie** kończy kwalifikację tej operacji. **Odroczenie** zachowuje operację do ponownej kwalifikacji na warunkach profilu. **Wynik niepewny** oznacza brak dowodu pozwalającego rozstrzygnąć, czy nastąpiło wykonanie; nie uprawnia do automatycznego ponowienia.
+
+#### Obszar i zaufanie
+
+**TERYT** — krajowy rejestr podziału terytorialnego. **TERC** — kody jednostek: dwie cyfry województwa, cztery powiatu i siedem gminy. Tor konfiguruje się siedmiocyfrowym kodem gminy. Cyfra rodzaju jest znacząca; miasto i obszar wiejski gminy miejsko-wiejskiej nie są zamienne.
+
+**Reguła zawierania** — geokod polecenia musi obejmować teren przypisany danemu torowi. Nie porównuje się w ten sposób kodów ulic ani miejscowości. Zasięg akustyczny nie rozszerza samodzielnie adresowania.
+
+**Podpis feedu**, **indywidualna tożsamość urządzenia** oraz **zaufanie aktualizacji i rozruchu** są trzema odrębnymi domenami. Publiczne klucze weryfikacji mogą być wspólne; prywatnych kluczy i sekretów egzemplarzy nie współdzieli się. Nieznany klucz nie uzyskuje zaufania tylko przez wystąpienie w odebranej treści.
+
+**Fail-closed** — niespełnienie warunków kwalifikacji powoduje brak nowego wykonania. **Świeżość** — ważność podpisanej treści i komendy. **Ochrona przed powtórzeniem** — trwała historia zapobiegająca ponownemu wykonaniu, także po restarcie i zmianie kanału.
+
+**Potwierdzenie** — informacja o określonym etapie: przyjęciu, starcie, końcu lub błędzie. Doręczenie SMS, ACK, stan przekaźnika i pomiar akustyczny nie są tym samym. Numery nadawców i odbiorców statusu określa się oddzielnie.
+
 
 ---
 
-#### Urządzenia i elementy instalacji
-
-**Punkt alarmowy**
-Miejsce, w którym zainstalowano syrenę wraz z jej sterownikiem i zasilaniem. Jeden punkt alarmowy
-może obejmować więcej niż jedną syrenę.
-
-**Syrena**
-Urządzenie wytwarzające sygnał akustyczny. Sama nie podejmuje decyzji.
-
-**Sterownik**
-Warstwa pośrednia między SOiA a syreną: odbiera polecenia dowolnym kanałem, weryfikuje je,
-prowadzi własną maszynę stanów i uruchamia wyjście wykonawcze. To sterownik, a nie system
-centralny, wie, jak fizycznie uruchomić daną syrenę.
-*Określenia niezalecane*: „moduł GSM”, „bramka” — to elementy sterownika, nie jego synonimy.
-
-**Bramka**
-Urządzenie pośredniczące w transmisji — w kanale SMS przyjmuje komendę i przekazuje ją do
-sterownika. Nie interpretuje treści polecenia.
-
-**Profil sterownika**
-Sposób, w jaki sterownik zamienia znaczenie polecenia na fizyczne działanie. Wyróżnia się profil
-**elektroniczny** (odtworzenie pliku dźwiękowego przez wzmacniacz), **silnikowy** (sterowanie
-układem wykonawczym syreny mechanicznej) oraz **modernizacyjny (retrofit)** (dołączenie kanału SOiA
-do istniejącej instalacji przez adapter).
-
-**Klasa urządzenia**
-Kategoria **odbiorcy polecenia**, zapisana w treści IoT Feed. Sterownik wykonuje wyłącznie polecenia
-skierowane do jego klasy.
-
-**Klasa zdolności**
-Zakres wymagań, którym urządzenie podlega — **klasa I** (rdzeń, obowiązuje zawsze), **klasa II**
-(tor audio, gdy sterownik sam odtwarza dźwięk), **klasa III** (profil głosowy, opcjonalna).
-Zamawiający wskazuje w zamówieniu klasy zdolności, których wymaga.
-
-!!! warning "Rozróżnienie pojęć"
-
-    *Klasa urządzenia* określa, **do kogo** skierowane
-    jest polecenie, i wynika z kontraktu. *Klasa zdolności* określa, **jakich zdolności wymaga się** od urządzenia,
-    i wynika z Wytycznych. Terminu „klasa” nie należy używać bez właściwego określenia.
-
-**Poziom podłączenia**
-Zakres kanałów, którymi urządzenie łączy się z SOiA. **Poziom 0** to publiczny IoT Feed bez
-rejestracji, **poziom 1** dokłada kanał niezwłocznego powiadomienia po dopuszczeniu przez administratora,
-**poziom 2** dokłada prywatną sieć APN i kanał SMS. Poziomy są **kumulatywne**: wyższy dokłada
-kanał, nie zastępuje niższego.
-*Określenia niezalecane*: „tryb podstawowy/rozszerzony” — sugeruje, że jeden wyklucza drugi.
-
-**Karta konfiguracji**
-Dokument przekazywany instalatorowi, zawierający wartości właściwe dla jednej instalacji: numery,
-hasło sterujące, mapę komend i identyfikator urządzenia. Nie jest publikowany i nie stanowi
-części dokumentacji rozsyłanej.
-
----
-
-#### Polecenia wykonawcze, sygnały alarmowe i emisja
-
-Poniższe pojęcia rozróżniają czynności, które w języku potocznym mogą być określane zbiorczo jako
-„włączenie syreny”. Ich konsekwentne stosowanie jest wymagane przy przygotowaniu zamówienia
-i implementacji.
-
-**Komenda**
-Pojedyncze polecenie wykonawcze w IoT Feed, opatrzone własnym identyfikatorem. Komenda **nie jest
-alarmem** — jest technicznym poleceniem wynikającym z alarmu ogłoszonego przez organ.
-
-**Kod sygnału**
-Symbol wskazujący, **który** sygnał akustyczny ma zabrzmieć. Kod nie zawiera dźwięku ani jego
-parametrów — wskazuje pozycję w katalogu sygnałów.
-
-**Sygnał alarmowy**
-Dźwięk o strukturze i czasie trwania określonym w rozporządzeniu o alarmach i komunikatach
-ostrzegawczych. Rozporządzenie określa cztery: ogłoszenie alarmu dla ludności cywilnej, odwołanie
-alarmu, alarm dla jednostki ochrony przeciwpożarowej oraz alarm ćwiczebny lub treningowy.
-
-Urządzenie MUSI umieć wyemitować **wszystkie cztery**. System wydaje obecnie wyłącznie sygnały
-skierowane **do ludności**; alarm dla jednostki ochrony przeciwpożarowej pozostaje poza obecnym
-zakresem SOiA i jest wywoływany dotychczasowymi środkami. Zdolność urządzenia i zakres usługi
-to dwie różne rzeczy.
-
-**Plik referencyjny**
-Wzorcowy plik dźwiękowy zatwierdzony przez KG PSP, opatrzony sumą kontrolną. Jedyna obowiązująca
-postać sygnału; modyfikacja brzmienia, długości lub struktury jest niedopuszczalna.
-
-**System nie przenosi plików referencyjnych.** Udostępnia się je do pobrania na stronie SOiA,
-a wgrywa **przy instalacji**. Źródłem rozstrzygającym dla sumy kontrolnej są Wytyczne z dnia
-28 maja 2025 r. — dokument podpisany, a nie strona internetowa, z której plik pobrano.
-
-**Emisja**
-Pojedyncze, konkretne odtworzenie sygnału przez syrenę — od załączenia wyjścia do jego wyłączenia.
-Jedna komenda oznacza **jedną** emisję. Emisja kończy się sama, po czasie wynikającym z sygnału.
-
-**Okno rozpoczęcia**
-Przedział czasu, w którym wolno rozpocząć emisję. Poza tym oknem sterownik nie uruchamia syreny,
-nawet jeśli alarm nadal obowiązuje. Czas obowiązywania alarmu, okno rozpoczęcia i czas emisji
-to **trzy różne rzeczy**. Obowiązująca długość okna publikowana jest maszynowo pod adresem
-produkcyjnym (§ 4 ust. 2 aktu); od niej wyprowadzony jest próg dryfu zegara z W-A13.
-
-**Odwołanie akcji nierozpoczętej**
-Polecenie „nie zaczynaj”, skuteczne wyłącznie wobec emisji, która jeszcze się nie rozpoczęła.
-Nie zatrzymuje emisji trwającej.
-*Określenie niezalecane*: „stop”. Jest to operacja odrębna od zatrzymania emisji.
-
-**Odwołanie alarmu**
-Prawnie określony **sygnał akustyczny** oznaczający koniec zagrożenia: ciągły dźwięk syreny
-trwający trzy minuty. Odwołanie alarmu jest **emisją, nie ciszą** — to jedno z najczęstszych
-nieporozumień w tym obszarze.
-
-**Zatrzymanie emisji**
-Polecenie „przerwij trwający sygnał”, wydane z systemu. **Nie istnieje** — żaden kanał go nie
-przenosi. Rozpoczęta sekwencja wykonuje się do końca; sprawdzono to na urządzeniu, a właściwość tę
-przyjęto jako wymaganie.
-*Określenia niezalecane*: „STOP”, „stop zdalny” — sugerują istnienie polecenia, którego nie ma.
-
-**Odcięcie lokalne**
-Czynność **na obiekcie**, przerywająca tor wykonawczy niezależnie od łączności i od oprogramowania:
-element obsługowy, rozłącznik albo odjęcie zasilania. Ma pierwszeństwo przed poleceniem zdalnym
-i jest wymagane niezależnie od kanału.
-
-Rozróżnienie jest wiążące: **zatrzymania nie ma, odcięcie jest zawsze.** Pierwsze byłoby funkcją
-systemu, drugie jest uprawnieniem człowieka stojącego przy urządzeniu.
-
-**Zakończenie emisji**
-Naturalne wygaśnięcie sygnału po upływie jego czasu. Nie wymaga żadnego polecenia i nie jest
-zdarzeniem sterowanym z zewnątrz.
-
----
-
-#### Obszar działania i reguły przypisania terytorialnego
-
-**TERYT**
-Krajowy rejestr podziału terytorialnego. W SOiA stosuje się wyłącznie kody jednostek podziału
-(TERC): dwie cyfry oznaczają województwo, cztery powiat, siedem gminę.
-
-**Cyfra rodzaju**
-Siódma cyfra kodu gminy, rozróżniająca gminę miejską, wiejską i miejsko-wiejską oraz — w tej
-ostatniej — samo miasto i sam obszar wiejski. Jest **znacząca**: dwa kody o wspólnych sześciu
-cyfrach mogą opisywać tereny rozłączne.
-
-**Reguła zawierania**
-Zasada rozstrzygająca, czy polecenie dotyczy danego urządzenia: kod obszaru w poleceniu musi być
-równy kodowi urządzenia albo wobec niego nadrzędny. Zależność w drugą stronę nie wystarcza —
-ostrzeżenie dla jednej gminy nie uruchamia syreny opisanej kodem całego powiatu.
-
-**Obszar urządzenia**
-Lista **siedmiocyfrowych** kodów gmin, na których syrena fizycznie oddziałuje. Konfiguracja kodem
-województwa lub powiatu jest niedopuszczalna i musi zostać przez sterownik odrzucona albo
-zgłoszona jako błąd — urządzenie tak skonfigurowane pominie alerty rysowane po jego terenie.
-
----
-
-#### Model zaufania i zasady weryfikacji
-
-Model zaufania SOiA opiera się na jednej zasadzie: **sam fakt, że wiadomość dotarła zaufaną
-drogą, nie uprawnia do uruchomienia syreny.** Uprawnia dopiero zweryfikowana treść.
-
-**Podpis**
-Kryptograficzne potwierdzenie, że treść IoT Feed pochodzi z ALARM.soia i nie została zmieniona po
-drodze. Szyfrowanie połączenia go nie zastępuje.
-
-**Identyfikator klucza**
-Oznaczenie klucza użytego do podpisu, pozwalające sterownikowi wybrać właściwy klucz publiczny
-i przejść wymianę klucza bez przerwy w działaniu. Nieznany identyfikator powoduje odmowę
-wykonania polecenia.
-
-**Świeżość**
-Termin ważności treści IoT Feed. Po jego upływie sterownik nie wykonuje żadnego zawartego tam
-polecenia, choćby połączenie działało poprawnie.
-
-**Ochrona przed powtórzeniem**
-Mechanizm gwarantujący, że to samo polecenie — odebrane ponownie, innym kanałem albo po restarcie
-urządzenia — nie spowoduje drugiej emisji. Musi przetrwać zanik zasilania.
-
-**Fail-closed**
-Zasada, według której każda wątpliwość skutkuje **niewykonaniem** polecenia. Nierozpoznany kod
-obszaru, nieznany identyfikator klucza, przeterminowana treść, niepełny format — każde z nich
-oznacza brak emisji. Niedopuszczalne jest wykonanie polecenia na podstawie domniemania.
-
-**Klucz podpisujący**
-Klucz, którym system podpisuje wydawaną treść. Jest **jeden**, pozostaje po stronie KG PSP i nigdy
-nie trafia do urządzenia. Nie należy go mylić z **tożsamością urządzenia**, która jest indywidualna
-dla każdego egzemplarza i którą urządzenie dowodzi, kim jest.
-
-**Źródło czasu**
-Zewnętrzne odniesienie służące do synchronizacji zegara urządzenia. Projekt wskazuje państwowe
-serwery czasu jako źródło podstawowe i wymaga co najmniej dwóch niezależnych źródeł. Nawigacja
-satelitarna może stanowić źródło uzupełniające.
-
-**Dryf**
-Rozbieżność zegara urządzenia wobec czasu odniesienia. Po przekroczeniu progu urządzenie odmawia
-wykonania polecenia, ponieważ ocena okna rozpoczęcia zależy od wiarygodnego czasu urządzenia.
-
-**Niezwłoczność**
-Obowiązująca miara czasu od wydania polecenia do rozpoczęcia emisji: najszybciej, jak jest to
-technicznie możliwe. **Progu liczbowego nie ustanowiono**, ponieważ nie istnieje norma, z której
-dałoby się go wyprowadzić; czas mierzy się przy odbiorze i zapisuje bez oceny.
-
-**Zamknięta grupa abonencka**
-Grupa numerów w sieci operatora — ruch odbywa się wyłącznie między numerami
-należącymi do grupy. Ogranicza, kto może wysłać wiadomość; nie potwierdza, kto ją wysłał.
-
-**Hasło sterujące**
-Ciąg poprzedzający komendę SMS, weryfikowany przez urządzenie. Zabezpiecza przed skutkiem
-wiadomości wysłanej omyłkowo wewnątrz grupy. Nie jest podpisem.
-
-**Numery uprawnione**
-Wykaz numerów uprawnionych do wydania komendy danemu urządzeniu i otrzymujących potwierdzenia.
-*Określenia niezalecane*: „lista zaufanych”, „numery autoryzowane” — sugeruje zaufanie szersze niż uprawnienie do jednej syreny.
-
-**Potwierdzenie**
-Wiadomość zwrotna urządzenia. Rozróżnia się **przyjęcie komendy** i **wykonanie** — są to dwa różne
-zdarzenia i żadne z nich nie dowodzi, że sygnał był słyszalny.
-
----
-
-!!! note "Trzy domeny zaufania"
-
-    W dokumencie występują trzy odrębne domeny zaufania. W pierwszej `keyId` wskazuje właściwy klucz podpisujący. Klucz podpisujący pozostaje po stronie podpisującej, a odpowiadający mu klucz publiczny służy urządzeniu do weryfikacji podpisu IoT Feed. Indywidualna tożsamość urządzenia służy do rozpoznawania go w kanałach zamkniętych. Klucze aktualizacji i bezpiecznego rozruchu chronią oprogramowanie urządzenia. Tych domen nie należy łączyć ani używać zamiennie.
-
-#### Terminologia wycofana
-
-Poniższe określenia pojawiają się w starszych materiałach i nie należy ich używać.
-
-**„Alarm główny”, „alarm OSP”**
-Nazewnictwo z uchylonego rozporządzenia z 2013 r. Obowiązujące nazwy to „alarm dla ludności
-cywilnej” i „alarm dla jednostki ochrony przeciwpożarowej”.
-
-**`demo.soia.info`, „serwer demonstracyjny”**
-Wcześniejsze oznaczenie adresu produkcyjnego. Obowiązuje `alarm.soia.info`.
-
-**„Manifest audio”, „podpisany wykaz plików referencyjnych”**
-Pojęcie z wcześniejszego etapu prac, gdy zakładano, że system będzie rozprowadzał zawartość
-dźwiękową. **Nie powstało i nie powstanie** — system przenosi polecenie, nie dźwięk.
-
-**„STOP”, „stop zdalny”, „polecenie zatrzymania”**
-Sugerują istnienie funkcji, której nie ma. Zobacz **Zatrzymanie emisji** i **Odcięcie lokalne**.
-
-**„Syrena podłączona do systemu producenta”**
-Nie jest to poziom podłączenia do SOiA. Urządzenie sterowane wyłącznie z platformy producenta
-pozostaje poza systemem, dopóki nie odbiera i nie weryfikuje poleceń SOiA którymś z opisanych
-kanałów.
-
-
----
-
-
-
-[Powrót do spisu treści](#spis-tresci){ .section-return }
-## Część III. Wymagania techniczne i funkcjonalne dla urządzeń
-
-Ta część określa wymagania wobec urządzenia, katalog wykonywanych sygnałów oraz dopuszczalne
-sposoby sprzężenia sterownika z syreną.
-
+## Część III — Wymagania techniczne i funkcjonalne
 
 ### Załącznik nr 3 — Wymagania minimalne dla urządzenia
 
+#### Zakres i pierwszeństwo wymagań
 
-#### Zakres i sposób stosowania załącznika
+Wymagania dotyczą nowej platformy sterującej włączanej do zarządzanego systemu KG PSP oraz właściwego zakresu modernizacji. Publiczny odczyt IoT Feed pozostaje otwarty. Możliwość zbudowania własnego czytnika feedu nie oznacza zgodności zakupowej ani dopuszczenia punktu alarmowego według tego załącznika.
 
-Załącznik określa zdolności wymagane do podłączenia urządzenia do SOiA i zapewnienia jego
-przewidywalnego działania. Nie określa mocy akustycznej, zasięgu ani zasad doboru głośników;
-zagadnienia te należą do projektu instalacji i pozostają w zakresie odpowiedzialności zamawiającego.
+**MUSI** oznacza warunek konieczny w wybranym zakresie. **POWINIEN** oznacza zalecenie, którego pominięcie należy uzasadnić w karcie. Braku wymaganej funkcji nie oznacza się jako „nie dotyczy”. Każde wymaganie ocenia się na rzeczywistej konfiguracji, z dowodem, bez automatycznego uznania modelu lub nazwy handlowej za zgodny.
 
-Każde wymaganie ma identyfikator, pod którym można je przywołać w opisie przedmiotu zamówienia
-i w protokole odbioru.
+Wspólną platformę opisuje [OrchestraOS i provisioning KG PSP](PLATFORMA_KG_PSP.md). Nazwy OrchestraOS, Orchestra Manager, Orchestra SDN, Yocto i RAUC identyfikują wymagane środowisko współpracy. Sprzęt, BSP i wykonawcę dobiera się konkurencyjnie; kryteria równoważności oraz uzasadnienie wymagań ujmuje konkretne zamówienie. Aplikację alarmową zapewnia KG PSP, a wykonawca dostarcza kompatybilną platformę i interfejsy.
 
-**Moc wymagania.** **MUSI** oznacza warunek konieczny — urządzenie niespełniające go nie jest
-urządzeniem zgodnym z SOiA. **POWINIEN** oznacza wymaganie zalecane, którego pominięcie wymaga
-świadomej decyzji zamawiającego i którego nie należy pomijać milcząco.
+#### Klasy zdolności i profil 1.5
 
-**Klasa zdolności** określa funkcjonalny zakres stosowania wymagania:
+| Oznaczenie | Zakres | Zastosowanie |
+| --- | --- | --- |
+| **I** | Wspólny rdzeń platformy, bezpieczeństwa i wykonania | Obowiązuje wszystkie zgodne sterowniki; nie wymaga automatycznie wyposażenia rozszerzonego. |
+| **1.5** | Kompaktowy profil z lokalnym audio | Dodawany do I dla mniejszej liczby torów. Zachowuje wymagania jakości audio i ochrony; TTS nie jest obowiązkowy. |
+| **II** | Rozszerzony profil z lokalnym audio | Dodawany do I, gdy potrzebna jest większa liczba portów i I/O. |
+| **III** | Lokalna synteza mowy | Dodawana po zamówieniu TTS, także do konfiguracji 1.5. Wymaga większych zasobów, lecz sama nie zwiększa liczby I/O. |
+| **D** | Kompletny zestaw i montaż | Zakres dostawy, nie klasa zdolności. |
+| **P** | Wymagania wobec producenta syreny | Stosowane do właściwej części wykonawczej. |
 
-| Klasa | Zakres | Warunek stosowania |
-|---|---|---|
-| **I** | rdzeń | zawsze, dla każdego urządzenia przyłączanego do SOiA |
-| **II** | tor audio | gdy sterownik **sam odtwarza dźwięk**; nie dotyczy sterowania syreną cyfrową przez jej własny interfejs |
-| **III** | profil głosowy | opcjonalnie, gdy urządzenie ma wypowiadać treść słowną |
+Zestaw I + 1.5 nie musi mieć czterech Ethernetów ani sześciu styków. Wspólne wymagania I obowiązują w nim w całości, z liczbami portów określonymi poniżej. Funkcje audio oznaczone **1.5 / II** dotyczą obu profili. I + 1.5 + III ma zasoby TTS z W-F07/08, a liczbę I/O nadal dobiera się z profilu kompaktowego. Nie wprowadza się odrębnej klasy 2.5.
 
-Symbole **D** i **P** nie są klasami zdolności. Oznaczają zakres przedmiotu zamówienia lub adresata
-wymagania:
+Klasa zdolności nie jest `deviceClass` w komendzie ani wersją profilu IoT. Oznaczenie 1.5 nie zmienia wartości `SIREN_CONTROLLER`, profilu `0.1` lub słownika publikowanego przez centralę. Profil elektroniczny/silnikowy i tryb AUDIO/PTT/API/stykowy są osobnymi osiami opisanymi w Z5.
 
-| Symbol | Zakres | Warunek stosowania |
-|---|---|---|
-| **D** | dostawa i montaż | gdy przedmiotem zamówienia jest **kompletny zestaw**; nie stosuje się do dostawy samego sterownika |
-| **P** | wobec producenta syreny | nie jest wymaganiem wobec sterownika — trafia do zamówienia na syrenę |
+##### Macierz wyposażenia
 
-Zamawiający wskazuje w zamówieniu wymagane klasy zdolności oraz właściwe symbole zakresu. Klasa I
-stanowi podstawowy i obowiązkowy zakres zgodności z SOiA. Sterowanie syreną cyfrową przez jej
-udokumentowany interfejs wymaga klasy I; modernizacja, w której sterownik odtwarza dźwięk, wymaga
-klas I i II; klasę III stosuje się wyłącznie po objęciu zamówieniem funkcji głosowych.
+| Element | I — rdzeń | I + 1.5 — kompaktowy | I + II — rozszerzony |
+| --- | --- | --- | --- |
+| OrchestraOS, Yocto, aplikacja KG PSP i provisioning | Wymagane | Wymagane | Wymagane |
+| Ethernet | Minimum 1 | Minimum 1; bez obowiązku osobnego managed switch | Minimum 4 zarządzalne tory |
+| LTE/IP, SMS MO/MT, SIM i antena | Wymagane | Wymagane | Wymagane |
+| Wi-Fi, GNSS, LoRa/LoRaWAN | Zgodnie z W-D08/10/16 | Dostarczone wymagane moduły i anteny | Zgodnie z W-D08/10/16 |
+| Styki bezpotencjałowe | Minimum 2 | Minimum 2; PTT może używać jednego | Minimum 6; PTT może używać jednego |
+| GPI / GPO | Według karty | Minimum 2 / 2 | Minimum 6 / 6 |
+| RS-232 / USB | Bilans torów i rozbudowy | Minimum 2 pełne RS-232 i 2 USB | Liczba według karty oraz planu rozbudowy |
+| Lokalne audio | Gdy wybrano profil audio | Dwa kanały LINE OUT, osobne PTT i lokalny pakiet | Te same wymagania audio |
+| Pamięć audio | Dla profilu audio | Minimum 32 MB i miejsce na dwie wersje pakietu | Tak samo |
+| TTS | Po zamówieniu III | Niewymagany; po dodaniu III wymagania głosowe | Po zamówieniu III |
+| Odcięcie, watchdog, historia i autoryzacja | Wymagane | Wymagane | Wymagane |
 
-Podział na klasy zachowuje neutralność technologiczną. Weryfikacja podpisu i porównanie kodów gmin
-mogą być realizowane na mikrokontrolerze; klasa I nie wymaga zastosowania komputera klasy
-aplikacyjnej.
+Minima portów, styków i GPI/GPO profilu 1.5 dotyczą także dostawy samego sterownika. Zakres D dodatkowo obejmuje kompletny zestaw i montaż. RS-232, USB, audio oraz interfejs terminala muszą być rzeczywiście dostępne z systemu. Wspólne złącze nie może zostać policzone jako dwa niezależne tory używane równocześnie. Wejście audio, dodatkowe I/O i kolejne moduły ujmuje się jawnie w karcie. Dla potrzeb wskazanych przez KG PSP opcja Audio IN ma być dostarczona i odebrana, a nie jedynie wymieniona jako możliwość przyszłego zakupu.
 
-!!! note "Jak czytać tabelę wymagań"
-
-    Najpierw ustala się przedmiot dostawy, następnie wybiera klasy zdolności i symbole zakresu. `MUSI` oznacza warunek konieczny, a `POWINIEN` wymaga świadomej decyzji zamawiającego przy pominięciu. Klasy I–III opisują zdolności urządzenia, natomiast D i P wskazują zakres dostawy albo adresata. Na końcu wymaganie łączy się z właściwym scenariuszem odbiorowym; objaśnienie nie zastępuje tekstu wiersza W-*.
-
-#### Wyłączenia z zakresu załącznika
-
-**Nazwy własne.** Załącznik nie wskazuje firm, marek, modeli ani oprogramowania, również przy opisie
-stanu faktycznie osiągniętego. Elementy rozwiązania określa się przez funkcje i właściwości, aby
-zachować neutralność technologiczną oraz zasadę interoperacyjności z § 1.
-
-**Konstrukcja urządzenia.** Gabaryty, materiał obudowy, sposób montażu i rozmieszczenie podzespołów
-nie są wymaganiami. Dobiera je wykonawca. Przedmiotem wymagań są funkcje, a wartości liczbowe
-stosuje się wyłącznie w przypadkach, w których są konieczne do jednoznacznej weryfikacji funkcji.
-
-Trzon wymagań pozostaje wyprowadzony ze **stanu faktycznie zrealizowanego**, a nie z wymagań
-postawionych w postępowaniu: opisuje poziom, który rynek już dostarczył. Zestawienie tych wymagań
-z dokumentacją dostarczonego zestawu prowadzone jest odrębnie, w dokumencie roboczym, który nie
-stanowi części materiału przeznaczonego do rozpowszechniania.
-
-**Rozróżnienie istotne przy zakupie.** Sterownik może być **platformą sprzętową,
-a nie centralą alarmową**: wiele urządzeń tej klasy wprost wyłącza ze swojej dokumentacji logikę
-alarmową, protokoły aplikacyjne i uwierzytelnianie. Wymagania z części A, B i C dotyczą więc
-**oprogramowania**, a nie wyłącznie sprzętu. Dostawa samej platformy sprzętowej nie oznacza
-spełnienia wymagań SOiA.
-
----
+W profilu silnikowym zdolność audio platformy może pozostać niewykorzystana. Dźwięk tworzy silnik z wirnikiem; wymagania plików i TTS nie są sposobem jego sterowania. Dwa wyjścia mogą służyć funkcjom RUN/CYKL, lecz nazwy i parametry muszą zostać zmapowane na konkretny sprzęt.
 
 #### A. Weryfikacja polecenia
 
-Weryfikacja polecenia stanowi podstawowy mechanizm zapobiegający uruchomieniu syreny bez spełnienia
-warunków wykonania. Poziom 0 nie wymaga rejestracji urządzenia, dlatego poprawność implementacji
-tego mechanizmu musi zostać potwierdzona w ramach badań zgodności i odbioru.
+Droga komunikacji nie jest uprawnieniem do uruchomienia. IoT Feed wymaga podpisu i kwalifikacji całej koperty; SMS lub radio stosują własny, jawny kontrakt. Nowy kanał nie tworzy drugiej logiki alarmowania.
 
-Zasada nadrzędna brzmi: **sam fakt, że wiadomość dotarła zaufaną drogą, nie uprawnia do uruchomienia
-syreny.** Uprawnia dopiero zweryfikowana treść. Dotyczy to każdego kanału bez wyjątku — sieci
-wydzielonej, zamkniętej grupy abonenckiej, radiostacji i połączenia przewodowego tak samo jak
-publicznego Internetu.
-
-!!! info "SMS, IoT Feed i powiadomienie — trzy różne funkcje"
-
-    Wymagania podpisu oraz pól podpisanej treści w tej części opisują IoT Feed używany w torze danych. Kanał powiadomienia tylko informuje o zmianie Feedu i wyzwala jego pobranie. SMS jest odrębnym kanałem wykonawczym SYRENY.soia; jego profil i kontrole opisują część D oraz załącznik nr 8. Niezależnie od kanału urządzenie stosuje właściwą dla niego walidację, ochronę przed powtórzeniem, regułę obszaru, kontrolę czasu i zasadę fail-closed.
-
-| ID | Moc | Klasa zdolności | Wymaganie |
-|---|---|---|---|
+| ID | Moc | Klasa lub zakres | Wymaganie |
+| --- | --- | --- | --- |
 | W-A01 | MUSI | **I** | Zweryfikować podpis odebranej treści przed jakimkolwiek działaniem wykonawczym |
 | W-A02 | MUSI | **I** | Odrzucić całą treść przy niepowodzeniu weryfikacji — nie wykonywać jej części |
 | W-A03 | MUSI | **I** | Rozpoznawać identyfikator klucza i odrzucać treść podpisaną kluczem nieznanym |
-| W-A04 | MUSI | **I** | Obsłużyć okres nakładania się klucza bieżącego i poprzedniego, żeby wymiana klucza nie przerywała pracy |
+| W-A04 | MUSI | **I** | Obsługiwać kontrolowaną zmianę zaufanych kluczy z oknem nakładania, zakresem ważności i możliwością odwołania. Sam nieznany identyfikator w feedzie nie upoważnia do zaufania nowemu kluczowi. |
 | W-A05 | MUSI | **I** | Sprawdzić zgodność profilu, środowiska i wersji słowników |
 | W-A06 | MUSI | **I** | Odrzucić treść po upływie jej terminu ważności, niezależnie od stanu łączności |
 | W-A07 | MUSI | **I** | Wykonać wyłącznie polecenia skierowane do własnej klasy urządzenia |
@@ -864,417 +299,137 @@ publicznego Internetu.
 | W-A12 | MUSI | **I** | Traktować każdą wątpliwość jako powód niewykonania polecenia (fail-closed) |
 | W-A13 | MUSI | **I** | Odmówić wykonania polecenia przy dryfie zegara przekraczającym **30 sekund** względem czasu odniesienia |
 | W-A14 | POWINIEN | **I** | Zapisywać w rejestrze zdarzeń wynik każdej weryfikacji, także zakończonej odmową, wraz z przyczyną |
-| W-A15 | MUSI | **I** | Utrzymywać czas z co najmniej **dwóch niezależnych źródeł**, posiadać zegar podtrzymywany na czas ich niedostępności, znać **wiek własnej ostatniej synchronizacji** i sygnalizować jego przekroczenie ponad dobę |
-| W-A16 | POWINIEN | **I** | Na kanale umożliwiającym odpowiedź — potwierdzić **przyjęcie** polecenia, odrębnie od jego **wykonania** |
-| W-A17 | MUSI | **I** | Odrzucić treść przekraczającą **ogłoszony limit rozmiaru** — wykazu jako całości i pojedynczego polecenia — traktując przekroczenie jako błąd, a nie jako brak poleceń |
-
-Wymaganie W-A08 bywa pomijane, a jest krytyczne dla przyszłości: katalog sygnałów będzie się
-rozszerzał, a urządzenie, które na nieznany kod reaguje zawieszeniem albo odrzuceniem całej treści,
-przestanie działać w dniu rozszerzenia słownika.
-
-##### Uzasadnienie progu 30 sekund i znaczenie źródeł czasu
-
-Ocena dopuszczalności rozpoczęcia emisji zależy od znacznika czasu w poleceniu i od zegara
-urządzenia. Istotna rozbieżność czasu może spowodować odrzucenie prawidłowego polecenia.
-
-Próg 30 sekund przyjęto jako wartość istotnie mniejszą od trzyminutowego okna rozpoczęcia.
-Odpowiada on jednej szóstej długości tego okna i ogranicza wpływ dryfu na kwalifikację polecenia.
-
-!!! note "Państwowe źródła czasu"
-
-    Zgodnie z przyjętym modelem urządzenie konfiguruje co najmniej dwa państwowe serwery NTP wskazane w obowiązującym profilu. Próg dryfu 30 sekund pozostaje bez zmian. Zegar podtrzymywany zachowuje ciągłość podczas niedostępności serwerów, ale nie zastępuje źródła odniesienia. Urządzenie zna wiek ostatniej synchronizacji i sygnalizuje jego przekroczenie zgodnie z W-A15.
-
-Moduł pozycjonowania pozostaje wymaganiem urządzenia służącym między innymi ustaleniu położenia. W tym dokumencie nie jest przedstawiany jako podstawowe źródło czasu, ponieważ przyjętym źródłem odniesienia są państwowe serwery NTP.
-
-##### Uzasadnienie limitów rozmiaru danych
-
-Rdzeń może być realizowany na mikrokontrolerze o ograniczonej pamięci. Brak ogłoszonej górnej
-granicy rozmiaru wykazu stanowiłby jednocześnie ryzyko bezpieczeństwa i dostępności, ponieważ
-odpowiedź przekraczająca zasoby urządzenia mogłaby przerwać jego działanie.
-
-Dlatego limity są ogłaszane maszynowo pod adresem produkcyjnym, na zasadach z § 4 Wytycznych,
-a urządzenie odrzuca treść, która je przekracza. Wartości proponowane do przyjęcia: **8 kB** dla
-pojedynczego polecenia i **2 MB** dla całego wykazu — z zapasem na obszar obejmujący kilkaset gmin.
-
-Z tego wynika też wskazówka konstrukcyjna, a nie wymaganie: urządzenie o małej pamięci powinno
-weryfikować i przetwarzać wykaz **strumieniowo**, nie buforując go w całości.
-
-**Kanał tekstowy ma odrębne ograniczenie.** Polecenie musi mieścić się w jednej wiadomości
-— 160 znaków w podstawowym alfabecie. Składnia poleceń używa więc wyłącznie znaków tego alfabetu:
-**polskie znaki diakrytyczne przełączają kodowanie i skracają wiadomość do 70 znaków**, co przy
-dłuższym poleceniu wymusiłoby podział. Wiadomości wieloczęściowe są niedopuszczalne (W-D24), ponieważ wiadomość
-wieloczęściowa potrafi dotrzeć niekompletna albo w innej kolejności, a polecenie sklejane
-z fragmentów przestaje być poleceniem, którego treść dało się zweryfikować.
-
----
+| W-A15 | MUSI | **I** | Utrzymywać wiarygodny czas z co najmniej dwóch źródeł wskazanych w profilu KG PSP, mieć zegar podtrzymywany, znać wiek synchronizacji i sygnalizować przekroczenie doby. Utrata wiarygodności czasu blokuje nowe wykonanie. |
+| W-A16 | POWINIEN | **I** | Rozróżniać przyjęcie, start, zakończenie, błąd i niepewny wynik zgodnie z profilem odpowiedzi. Test bez emisji ma własny wynik; ACK nie zastępuje pomiaru efektu. |
+| W-A17 | MUSI | **I** | Stosować udokumentowane limity rozmiaru odpowiedzi i polecenia, zgodne z kontraktem oraz zasobami. Przekroczenie jest błędem, nie pustą listą. Brak limitu w metadanych API wymaga uzupełnienia profilu integracji przed odbiorem. |
 
 #### B. Obszar działania
 
-Reguła obszaru rozstrzyga, czy polecenie dotyczy tego konkretnego urządzenia. Błąd w tym miejscu
-oznacza albo milczenie syreny podczas realnego zagrożenia, albo uruchomienie alarmu tam, gdzie
-zagrożenia nie ma. Oba są poważne, ale drugi jest trudniejszy do odwrócenia.
+TERC określa administracyjnego adresata niezależnego toru. Nie jest obliczeniem akustycznego zasięgu syreny. Wiele geokodów polecenia porównuje się z przypisaniem danego toru.
 
-Kod obszaru w poleceniu musi być równy kodowi urządzenia albo wobec niego nadrzędny. Zależność
-w drugą stronę nie wystarcza: ostrzeżenie dla jednej gminy nie uruchamia syreny opisanej kodem
-całego powiatu.
-
-| ID | Moc | Klasa zdolności | Wymaganie |
-|---|---|---|---|
-| W-B01 | MUSI | **I** | Przechowywać obszar działania jako listę **siedmiocyfrowych** kodów gmin |
-| W-B02 | MUSI | **I** | Odrzucić albo zgłosić jako błąd konfigurację kodem dwucyfrowym lub czterocyfrowym |
+| ID | Moc | Klasa lub zakres | Wymaganie |
+| --- | --- | --- | --- |
+| W-B01 | MUSI | **I** | Przypisać każdemu niezależnemu torowi wykonawczemu dokładnie jeden siedmiocyfrowy TERC gminy. Wiele torów wymaga jawnej mapy tor–TERC; zasięg akustyczny poza gminą nie tworzy dodatkowego adresata. |
+| W-B02 | MUSI | **I** | Odrzucić konfigurację toru kodem dwucyfrowym albo czterocyfrowym lub oznaczyć błąd uniemożliwiający dopuszczenie toru do wykonania. |
 | W-B03 | MUSI | **I** | Odrzucić kod sześciocyfrowy, bez cyfry rodzaju, jako niepełny |
 | W-B04 | MUSI | **I** | Uwzględniać cyfrę rodzaju gminy: kod gminy miejsko-wiejskiej obejmuje jej miasto i jej obszar wiejski, a te dwa są względem siebie rozłączne |
 | W-B05 | MUSI | **I** | Pomijać kody miejscowości i ulic — mają własną numerację i porównanie prefiksowe daje trafienia przypadkowe |
-| W-B06 | MUSI | **I** | Uznać polecenie za dotyczące urządzenia, gdy pasuje co najmniej jeden kod obszaru |
+| W-B06 | MUSI | **I** | Uruchamiać wyłącznie tor, którego przypisany TERC jest objęty geokodem polecenia. Dopasowanie jednego toru nie uruchamia pozostałych torów urządzenia. |
 | W-B07 | MUSI | **I** | Traktować kod nierozpoznany — o innej długości albo nienumeryczny — jako brak dopasowania; nigdy nie „naprawiać” go przez obcięcie ani dopełnienie |
 | W-B08 | POWINIEN | **I** | Udostępniać skonfigurowany obszar do odczytu w rejestrze zdarzeń i w eksporcie konfiguracji |
 
-Wymaganie W-B02 wynika z realnego ograniczenia systemu i nie jest formalnością. Dyżurny może zadać
-obszar alertu, rysując kształt na mapie. Taki alert niesie kody wszystkich objętych **gmin**, a nie
-kod powiatu — bo jawny kod jednostki oznaczałby całą jednostkę, także tam, gdzie kształt jej nie
-objął. Urządzenie skonfigurowane kodem powiatu na taki alert **nie zareaguje**. Ciche przyjęcie
-takiej konfiguracji jest błędem, który ujawni się dopiero podczas zagrożenia.
+#### C. Sygnały i komunikaty
 
----
+Nominalne sygnały określa katalog Z4. Lokalny pakiet audio i program silnikowy mają oddzielną postać. Wymagane zasoby muszą być gotowe przed przyjęciem polecenia, niezależnie od dostępności internetu.
 
-#### C. Sygnały akustyczne i komunikaty
-
-Urządzenie ma odtwarzać sygnał wzorcowy, a nie własną interpretację opisu słownego. Wzorcem są
-pliki referencyjne zatwierdzone przez KG PSP; ich modyfikacja jest niedopuszczalna, a zgodność
-sprawdza się sumą kontrolną, nie odsłuchem.
-
-**System nie przenosi dźwięku.** Pliki udostępnia się do pobrania ze strony SOiA, a wgrywa
-**przy instalacji** — dokładnie tak, jak robiono to dotychczas. W instalacji, w której pliki
-znajdują się w pamięci samej syreny, sterownik nie przechowuje ich w ogóle i **nie podlega
-wymaganiom klasy II**.
-
-| ID | Moc | Klasa zdolności | Wymaganie |
-|---|---|---|---|
-| W-C01 | MUSI | **I** | Umieć wyemitować **wszystkie cztery** sygnały akustyczne określone w rozporządzeniu, niezależnie od tego, które są w danym czasie wyzwalane centralnie |
-| W-C02 | MUSI | **II** | Odtwarzać wyłącznie niezmodyfikowane pliki referencyjne |
-| W-C03 | MUSI | **I** | Potwierdzić sumę kontrolną pliku przed jego instalacją, **względem wartości podanej w Wytycznych z dnia 28 maja 2025 r.** |
-| W-C04 | MUSI | **II** | Obsługiwać format plików referencyjnych: WAV PCM 16 bit mono, próbkowanie nie mniejsze niż 8 kHz |
-| W-C05 | MUSI | **I** | Zachować czas trwania sygnału w tolerancji ±5 % względem wzorca |
+| ID | Moc | Klasa lub zakres | Wymaganie |
+| --- | --- | --- | --- |
+| W-C01 | MUSI | **I** | Obsługiwać co najmniej ogłoszenie i odwołanie alarmu dla ludności; pozostałe funkcje katalogu zgodnie z profilem zastosowania i uprawnieniami. Zdolność lokalna nie potwierdza dostępności komendy centralnej. |
+| W-C02 | MUSI | **1.5 / II** | Dla sygnałów alarmowych odtwarzać wyłącznie niezmodyfikowane pliki referencyjne; zatwierdzone nagrania słowne i TTS mają odrębny zakres. |
+| W-C03 | MUSI | **I** | Przed instalacją i użyciem plików potwierdzać ich zgodność z zatwierdzonym pakietem i manifestem KG PSP. Dla profilu silnikowego weryfikować wersję programu wykonawczego; suma z przypadkowej kopii dokumentu nie jest kotwicą zaufania. |
+| W-C04 | MUSI | **1.5 / II** | Obsługiwać zatwierdzony format pakietu audio, w tym WAV PCM 16 bit mono o próbkowaniu co najmniej 8 kHz. Plików nie przeliczać ani nie skracać samodzielnie. |
+| W-C05 | MUSI | **I** | Zachowywać nominalny czas sygnału z katalogu. Metoda pomiaru, tolerancja i niepewność muszą być wskazane w zatwierdzonym profilu odbioru; nie zmieniają nominalnych 180 s lub 60 s. |
 | W-C06 | MUSI | **I** | Zachować strukturę czasową sygnału — modulację oraz liczbę i długość przerw |
-| W-C07 | MUSI | **II** | Utrzymać poziom w granicach ±3 dB względem wzorca, bez przesterowania, w zadeklarowanym i udokumentowanym punkcie pomiarowym |
-| W-C08 | MUSI | **I** | Zakończyć emisję samoistnie po czasie właściwym dla sygnału, bez polecenia z zewnątrz |
+| W-C07 | MUSI | **1.5 / II** | Utrzymać poziom w granicach ±3 dB względem wzorca, bez przesterowania, w zadeklarowanym i udokumentowanym punkcie pomiarowym |
+| W-C08 | MUSI | **I** | Kończyć funkcję lokalnie po właściwym czasie. Oddzielnie nadzorować odtwarzanie i zwolnienie PTT, a dla silnika okno programu i odcięcie napędu; nadzór nie może zależeć wyłącznie od procesu odbiornika poleceń. |
 | W-C09 | MUSI | **I** | Traktować odwołanie alarmu jako **emisję sygnału**, a nie jako zaprzestanie emisji |
-| W-C10 | MUSI | **II** | Przechowywać komplet plików referencyjnych z zapasem na **dwie wersje pakietu** — co najmniej 32 MB pamięci trwałej przeznaczonej na pakiet dźwiękowy |
-| W-C11 | POWINIEN | **III** | Umożliwiać odtworzenie komunikatu nagranego oraz komunikatu wygenerowanego z tekstu w języku polskim |
-| W-C12 | POWINIEN | **III** | Wykonywać syntezę mowy **lokalnie na urządzeniu**, bez łączności z usługą zewnętrzną |
+| W-C10 | MUSI | **1.5 / II** | Przechowywać zatwierdzony pakiet lokalnie w pamięci trwałej, z miejscem na dwie wersje i co najmniej 32 MB na audio. Wykonanie alarmu nie może wymagać pobrania ani strumieniowania pliku. |
+| W-C11 | MUSI | **III** | Zapewniać pełną ścieżkę od zatwierdzonego tekstu do zrozumiałej polskiej mowy, z prawem użycia silnika i głosu, kontrolą długości oraz wersjonowaniem. Sam odtwarzacz nagrań nie jest TTS. |
+| W-C12 | MUSI | **III** | Wykonywać zamówioną syntezę lokalnie, bez zależności od usługi zewnętrznej w chwili wykonania. |
 | W-C13 | POWINIEN | **III** | Syntezować komunikat **do bufora przed rozpoczęciem odtwarzania**, nigdy w trakcie emisji |
 | W-C14 | POWINIEN | **III** | Zapewniać powtarzalność: ten sam tekst przy tej samej wersji modelu daje ten sam dźwięk |
 | W-C15 | POWINIEN | **III** | Przypinać i odnotowywać w rejestrze zdarzeń wersję modelu i głosu |
 | W-C16 | POWINIEN | **III** | Umożliwiać nadpisanie wymowy nazw miejscowości, skrótów, jednostek, liczb, dat i godzin |
 | W-C17 | MUSI | **III** | Zapewnić, że komunikat głosowy **nigdy nie opóźnia ani nie zastępuje** sygnału akustycznego z pliku referencyjnego |
 
-##### Uzasadnienie pojemności określonej w wymaganiu W-C10
-
-Cztery pliki o łącznym czasie 600 sekund, w formacie PCM 16 bitów przy 8 kHz mono, zajmują 9,6 MB.
-Zapas na dwie wersje pakietu wymaga niespełna 20 MB. Minimalna pojemność 32 MB wynika z tego
-obliczenia i zapewnia dodatkowy margines eksploatacyjny.
-
-##### Status wymagań klasy III
-
-Kontrakt SOiA nie przenosi obecnie treści głosowej. Wymagania W-C11–W-C16 opisują zatem zdolność
-opcjonalną, której system centralny obecnie nie uruchamia.
-
-Pominięcie klasy III nie ogranicza funkcji alarmowania akustycznego. Uwzględnienie tej klasy
-oznacza przygotowanie urządzenia do przyszłej obsługi treści głosowej, a nie zakup aktualnie
-dostępnej usługi centralnej.
-
-**Drogą podstawową jest treść przygotowana wcześniej.** Dla syreny większość komunikatów jest znana
-z góry — ostrzeżenia typowe, komunikaty ewakuacyjne, informacje porządkowe. Wygenerowanie ich raz,
-na komputerze, i odtwarzanie z pamięci znosi całe wymaganie obliczeniowe: urządzenie potrzebuje
-wtedy wyłącznie odtwarzacza, czyli klasy II. Synteza na urządzeniu jest potrzebna dokładnie tam,
-gdzie treść jest zmienna: nazwa miejscowości, godzina, kierunek, numer sektora.
-
-##### Uzasadnienie lokalnego wykonywania syntezy mowy
-
-Komunikat głosowy jest potrzebny dokładnie wtedy, kiedy najbardziej prawdopodobna jest awaria
-łączności — podczas zdarzenia masowego, przy przeciążonej sieci albo przy zaniku zasilania
-w okolicy. Synteza wykonywana zdalnie jest w takim przypadku zależna od dostępności usługi
-i łączności. Synteza lokalna ogranicza tę zależność oraz potrzebę przekazywania treści do usługi
-zewnętrznej.
-
-**Poziom odniesienia sprzętowego dla klasy III.** Wymagania W-F07 i W-F08 podają poziom wyższy niż
-sam próg wykonalności syntezy — bo wynikają ze **stanu faktycznie zrealizowanego**, a nie z minimum
-obliczeniowego. Poniższe wartości opisują, gdzie leży sam próg. Synteza neuronowa wymaga systemu 64-bitowego,
-czterordzeniowego procesora klasy aplikacyjnej, co najmniej 512 MB pamięci operacyjnej — praktycznie
-1 GB — i co najmniej 512 MB wolnej pamięci masowej. Model powinien pozostawać załadowany w pamięci,
-aby czas jego inicjalizacji nie opóźniał komunikatu alarmowego. Projekt nie wymaga akceleratora
-sprzętowego — obliczenia mają wykonywać się na procesorze ogólnego
-przeznaczenia, bo uzależnienie od układu neuronowego konkretnego producenta byłoby nowym
-uzależnieniem.
-
-**Kategorie rozwiązań.** Projekt nie wskazuje konkretnego narzędzia, lecz opisuje dwie kategorie
-technologiczne.
-
-*Synteza neuronowa*: model kilkudziesięciu megabajtów, uruchamiany na procesorze, syntezujący
-szybciej niż w czasie rzeczywistym na sprzęcie opisanej klasy. Naturalność zbliżona do mowy ludzkiej.
-
-*Synteza formantowa*: wielokrotnie mniejsza — dane dla języka polskiego mieszczą się w niecałym
-megabajcie — i wielokrotnie szybsza, wykonalna nawet na mikrokontrolerze. Głos wyraźnie syntetyczny,
-ale zrozumiały i praktycznie niezawodny. Dla komunikatu ostrzegawczego liczy się zrozumiałość, nie
-naturalność, więc jest to rozwiązanie dopuszczalne, a nie tylko zapasowe.
-
-**Licencja stanowi element wymagania.** W materiale źródłowym wskazano, że przegląd rynku
-przeprowadzony w sierpniu 2026 r. wykazał ograniczoną dostępność polskich głosów o warunkach
-licencyjnych odpowiednich do zamierzonego zastosowania. Wniosek ten wymaga udokumentowania
-i ponownego potwierdzenia przed podpisaniem projektu.
-
-Projekt przewiduje centralne zamówienie polskiego głosu przez KG PSP i jego publiczne
-udostępnienie. Do czasu odrębnej realizacji zapis ten należy traktować jako działanie planowane.
-Wykonawca może zastosować własne rozwiązanie, o ile wykaże odpowiednie prawa licencyjne.
-
-**Aktualizacja modelu jest zmianą, nie poprawką.** Zmieniona wymowa nazwy miejscowości w komunikacie
-alarmowym to realny problem — stąd wymóg przypięcia wersji z W-C15.
-
----
-
 #### D. Kanały i łączność
 
-Uniwersalność sterownika polega na tym, że przyjmuje polecenia z wielu niezależnych źródeł
-i traktuje je jednakowo. Kanał zmienia sposób dostarczenia, nigdy znaczenie polecenia ani zakres
-weryfikacji z części A.
+W fazie 2026–2028 podstawowa łączność zestawu jest komórkowa GSM/LTE, a SMS jest zapasem. Ethernet i Wi-Fi mogą zapewniać dodatkową drogę IP. Po tej fazie TETRA ma być podstawowym kanałem poleceń, po odbiorze lokalizacji; GSM pozostaje aktywnym zapasem. Zmiana SIM i APN jest osobnym procesem od integracji TETRA.
 
-| ID | Moc | Klasa zdolności | Wymaganie |
-|---|---|---|---|
-| W-D01 | MUSI | **I** | Pobierać wykaz poleceń z publicznego punktu dostępu nie rzadziej niż co 30 s |
-| W-D02 | MUSI | **I** | Stosować warunkowe pobranie i obsługiwać odpowiedź „bez zmian” |
+| ID | Moc | Klasa lub zakres | Wymaganie |
+| --- | --- | --- | --- |
+| W-D01 | MUSI | **I** | W normalnej pracy pobierać podpisany wykaz co 30 s między początkami żądań, z rozłożeniem faz urządzeń. Odpowiedź 429, Retry-After i błąd uruchamiają kontrolowane odroczenie zgodnie z Z6. |
+| W-D02 | MUSI | **I** | Stosować warunkowe pobranie przez ETag/If-None-Match; odpowiedź 304 nie odnawia podpisanej ważności zachowanej kopii. |
 | W-D03 | MUSI | **I** | Honorować odpowiedź o przekroczeniu limitu zapytań wraz ze wskazanym czasem wstrzymania |
 | W-D04 | MUSI | **I** | Stosować kontrolowane wycofanie po błędach i losowe rozproszenie momentu odpytania |
 | W-D05 | MUSI | **I** | Utrzymywać cykliczne pobieranie **także wtedy**, gdy działa kanał niezwłocznego powiadomienia |
 | W-D06 | MUSI | **I** | Umożliwiać podłączenie do sieci lokalnej obiektu przewodowo, bez modemu i bez karty abonenckiej |
-| W-D07 | MUSI | **I** | Obsługiwać **co najmniej cztery niezależne tory sieciowe przewodowe**, zarządzalne z poziomu systemu: identyfikacja toru, odczyt stanu i parametrów łącza oraz administracyjne włączenie i wyłączenie każdego z nich |
-| W-D08 | MUSI | **I** | Posiadać interfejs bezprzewodowy pracujący co najmniej w dwóch pasmach, z obsługą aktualnego standardu zabezpieczeń |
-| W-D09 | MUSI | **I** | Posiadać **odrębny interfejs stacji radiowej** — port sieciowy albo szeregowy przeznaczony do podłączenia stacji dyspozytorskiej jako kolejnego źródła polecenia. Interfejs ten jest niezależny od toru audio i od sterowania nadawaniem |
-| W-D10 | MUSI | **I** | Posiadać interfejs radiowy dalekiego zasięgu małej przepływności, interoperacyjny z serwerem sieciowym wskazanym przez zamawiającego |
-| W-D11 | MUSI | **I** | Posiadać moduł komunikacji komórkowej z obsługą wiadomości tekstowych, **bez blokady operatorskiej karty abonenckiej** |
+| W-D07 | MUSI | **I** | Udostępniać co najmniej jeden zarządzalny interfejs Ethernet w rdzeniu I i profilu 1.5; dla rozszerzonego profilu II co najmniej cztery tory. Udokumentować stan, konfigurację i separację. Profil 1.5 nie wymaga osobnego przełącznika zarządzalnego. |
+| W-D08 | MUSI | **I** | Zapewniać Wi-Fi z obsługą zabezpieczeń wskazanych w profilu KG PSP i samoczynnym powrotem do połączenia. Wymaganą opcję dostarczyć i uruchomić; nie zastępuje jej samo gniazdo rozszerzeń. |
+| W-D09 | MUSI | **I** | Zapewniać udokumentowany interfejs danych dla stacji radiowej lub przyszłego terminala TETRA, niezależny funkcjonalnie od audio/PTT. Bilans portów i zgodny adapter określa karta; samo złącze nie potwierdza działania protokołu. |
+| W-D10 | MUSI | **I** | Zapewniać LoRa/LoRaWAN jako urządzenie końcowe interoperacyjne z profilem serwera sieciowego wskazanym przez KG PSP. Bramka i jej onboarding są osobnym zakresem dostawy. |
+| W-D11 | MUSI | **I** | Posiadać własny modem komórkowy LTE z transmisją IP oraz SMS przychodzącymi i wychodzącymi, anteną i obsługą SIM, bez blokady operatorskiej. Udostępniać aplikacji pełną treść i metadane. |
 | W-D12 | MUSI | **I** | Umożliwiać wymianę karty abonenckiej oraz samodzielną konfigurację parametrów dostępu do sieci |
-| W-D13 | MUSI | **I** | Przy odbiorze polecenia tekstowego stosować łącznie: wykaz numerów uprawnionych, walidację treści, rejestrację zdarzenia z numerem nadawcy, czasem, treścią polecenia i wynikiem oraz możliwość wyłączenia tej funkcji |
-| W-D14 | MUSI | **I** | Nie wykonywać tego samego polecenia tekstowego powtórnie w zdefiniowanym oknie i odnotować odrzucenie |
+| W-D13 | MUSI | **I** | Dla SMS stosować walidację właściwego kontraktu, uprawnienia nadawców, kontrolę treści, historii i ważności oraz rejestrację bez ujawniania sekretów. Nowy profil aplikacji KG PSP wymaga kryptograficznej autentyczności i integralności treści. |
+| W-D14 | MUSI | **I** | Nie wykonywać ponownie tej samej operacji odebranej przez SMS lub inny kanał. Wspólne ID i trwałą historię określa kontrakt; starego SMS bez ID nie uznawać za pełną deduplikację między kanałami. |
 | W-D15 | MUSI | **I** | Przyjmować **konfigurowalny** adres punktu dostępu, adres kanału powiadomienia i numery uprawnione |
 | W-D16 | MUSI | **I** | Posiadać wielokonstelacyjny moduł pozycjonowania satelitarnego z odczytem współrzędnych i statusu ustalenia pozycji |
 | W-D17 | POWINIEN | **I** | Kontynuować pracę na kanale zapasowym przy utracie kanału podstawowego, bez zmiany zakresu weryfikacji |
-| W-D18 | MUSI | **I** | Stosować **hasło sterujące unikalne dla urządzenia**; hasło wspólne dla floty jest niedopuszczalne |
-| W-D19 | MUSI | **I** | Rejestrować i sygnalizować **odrzucenie polecenia tekstowego** — nieznany numer, błędne hasło, polecenie spoza mapy — wraz z numerem nadawcy i czasem |
+| W-D18 | MUSI | **I** | Stosować indywidualne sekrety uwierzytelniające urządzenia. W starszym profilu z hasłem kod jest unikalny, lecz nie zastępuje podpisu/MAC; w nowym profilu sposób ochrony określa kontrakt aplikacji KG PSP. |
+| W-D19 | MUSI | **I** | Rejestrować odrzucenia SMS wraz z przyczyną i metadanymi potrzebnymi do audytu, maskując hasła i inne sekrety także w zapisanej treści. |
 | W-D20 | MUSI | **I** | Przyjąć bez wymiany sprzętu kartę abonencką i konfigurację sieci wydzielonej wprowadzane w fazie docelowej |
 | W-D21 | MUSI | **D** | Posiadać gniazdo wymiennej karty abonenckiej **dostępne bez demontażu urządzenia z uchwytu**, z mocowaniem zabezpieczającym kartę przed wysunięciem przy drganiach; dokumentacja wskazuje, czy wymiana wymaga wyłączenia urządzenia |
 | W-D22 | POWINIEN | **D** | Obsługiwać kartę klasy przemysłowej — o rozszerzonym zakresie temperatur pracy i podwyższonej wytrzymałości zapisu względem karty konsumenckiej |
 | W-D23 | POWINIEN | **D** | Obsługiwać kartę zdalnie prowizjonowaną, w postaci wymiennej lub wlutowanej |
-| W-D24 | MUSI | **I** | Przyjmować polecenie tekstowe wyłącznie jako **pojedynczą wiadomość** — do 160 znaków podstawowego alfabetu, bez sklejania wiadomości wieloczęściowych — i odrzucać wszystko, co tego warunku nie spełnia |
-| W-D25 | MUSI | **I** | Weryfikować w poleceniu tekstowym **znacznik czasu i monotoniczny licznik**; odrzucać wiadomość, której znacznik odbiega od czasu urządzenia bardziej niż o dopuszczalny margines albo której licznik nie jest wyższy od ostatnio przyjętego |
-
-##### Wymagania dotyczące kart abonenckich
-
-Karta abonencka jest eksploatowana przez wiele lat w urządzeniu narażonym na zmiany temperatury
-i drgania. Jej fizyczna wymiana wymaga obsługi w miejscu instalacji, co ma wpływ na koszty
-i organizację utrzymania.
-
-**Klasa przemysłowa.** Istnieje osobna norma dla kart maszynowych, obejmująca formaty wlutowane
-oraz klasy temperaturowe wykraczające poza zakres kart konsumenckich, wraz z podwyższoną
-wytrzymałością zapisu. Dla urządzenia pracującego w nieogrzewanym obiekcie ma to znaczenie
-praktyczne.
-
-**Możliwość zdalnej zmiany operatora.** Waga tego wymagania ujawnia się dopiero przy skali
-docelowej. Przejście z kart własnych jednostek samorządu na karty KG PSP w sieci wydzielonej
-oznacza — przy karcie zwykłej — **fizyczną wymianę karty w każdym urządzeniu**, czyli ogólnokrajową
-kampanię terenową przy około dwudziestu trzech tysiącach lokalizacji. Karta zdalnie prowizjonowana
-zamienia tę kampanię w operację wykonywaną zdalnie.
-
-Wymaganie jest zalecane, a nie bezwzględne, bo dostępność takich kart u operatorów bywa różna
-i podlega negocjacji handlowej. Zamawiający powinien jednak policzyć koszt jego pominięcia: jest to
-koszt jednego wyjazdu serwisowego pomnożony przez liczbę zainstalowanych urządzeń.
-
-**Dostępność gniazda.** Wymaganie W-D21 wygląda na oczywiste, dopóki nie okaże się, że wymiana karty
-wymaga zdjęcia szafki ze ściany albo — co bywa równie kłopotliwe — pełnego wyłączenia instalacji
-z eksploatacji. Dlatego dokumentacja ma tę drugą okoliczność wskazać wprost.
-
-Wymaganie W-D06 zasługuje na komentarz, bo bywa pomijane przy projektowaniu. Wiele syren stoi na
-obiektach, które mają już sieć — remiza, urząd gminy albo szkoła. Połączenie przewodowe może w takim
-przypadku stanowić stabilny tor podstawowy, a łączność komórkowa — tor zapasowy. Wymóg użycia karty
-abonenckiej nie powinien wykluczać możliwości pracy przez istniejącą sieć lokalną.
-
-##### Zasady funkcjonowania kanału tekstowego w okresie przejściowym 2026–2027
-
-Projekt zakłada, że w okresie przejściowym 2026–2027 jednostki samorządu terytorialnego korzystają
-z kart abonenckich własnych operatorów, a nie z kart KG PSP w sieci wydzielonej. Zamknięta grupa
-abonencka nie jest wówczas dostępna, a kanał tekstowy zabezpieczają reguły konfigurowane
-na urządzeniu, hasło sterujące, znacznik czasu i licznik.
-
-Brak zamkniętej grupy zmienia rozkład ryzyka, ponieważ sieć nie ogranicza możliwości wysłania
-wiadomości do numeru urządzenia wyłącznie do uczestników grupy. Ze względu na możliwość podszycia
-się pod numer nadawcy na niektórych trasach sama lista numerów uprawnionych nie jest wystarczająca.
-Wymaganie W-D18 przewiduje zatem hasło unikalne dla każdego urządzenia, aby kompromitacja jednego
-sekretu nie obejmowała całej floty.
-
-W okresie przejściowym, jeżeli dostępny jest tor IP, kanał tekstowy powinien mieć charakter
-uzupełniający. Odrzucone polecenie z nieznanego numeru stanowi zdarzenie bezpieczeństwa i podlega
-rejestracji zgodnie z W-D19.
-
-Przejście do fazy docelowej nie zmienia składni poleceń ani kontraktu. Zmienia się karta abonencka
-i numery uprawnione, dlatego W-D20 wymaga, żeby urządzenie kupione dziś przyjęło konfigurację fazy
-docelowej bez wymiany sprzętu.
-
-##### Zakres funkcjonalny interfejsu stacji radiowej
-
-Wymaganie W-D09 opisuje **punkt wpięcia**, a nie protokół konkretnego producenta. Stacja radiowa
-dostarcza polecenie, sterownik weryfikuje je tak samo jak polecenie z każdego innego kanału.
-Adapter stacji deklaruje, jakie funkcje obsługuje i jak mapuje sygnały; nie tworzy własnej
-semantyki alarmu. Interfejs ten ma być otwarty dla niezależnego wykonawcy — ograniczenie go do
-jednej, zamkniętej funkcji aplikacyjnej producenta jest sprzeczne z częścią I — Swobodą wyboru dostawcy.
-
-Interfejsu stacji radiowej **nie wolno mylić z torem audio i sterowaniem nadawaniem syreny**
-(W-E02 i W-E05). Pierwszy służy do przyjęcia polecenia z zewnątrz, drugie — do wysterowania
-syreny. Są to osobne funkcje na osobnych złączach i urządzenie musi mieć oba.
-
----
+| W-D24 | MUSI | **I** | Udostępniać aplikacji pełne SMS i metadane części. Profil wykonawczy określa kodowanie, limit części, rozmiaru i czasu kompletowania; nie wykonywać fragmentu. Profil dopuszczający tylko jedną wiadomość odrzuca multipart. |
+| W-D25 | MUSI | **I** | Weryfikować integralność i autentyczność całego nowego polecenia SMS, jego tożsamość operacji, adresata i ważność oraz trwałą ochronę przed odtworzeniem. Pola czasu i licznika bez uwierzytelnienia nie zapewniają tej ochrony. |
+| W-D26 | MUSI | **I** | Przewidzieć rozbudowę o terminal TETRA: obsługiwany port, miejsce, moc i antenę oraz wersjonowany adapter. Docelową usługę i drogę centralną odbiera się oddzielnie, także przy odłączonym GSM i internecie obiektu. |
 
 #### E. Wysterowanie syreny
 
-Sterownik obsługuje oba profile wykonawcze, bo o tym, który zostanie użyty, decyduje instalacja,
-a nie model urządzenia. Wymagania elektryczne są tu wiążące, bo od nich zależy zgodność brzmienia
-z wzorcem i bezpieczeństwo pracy.
+Dobiera się tor zgodny z funkcją i udokumentowanym wejściem syreny. AUDIO/PTT, API oraz sterowanie silnikiem nie są zamiennymi sposobami połączenia zacisków. Zasady zakończenia, odcięcia i arbitrażu zawiera Z5.
 
-| ID | Moc | Klasa zdolności | Wymaganie |
-|---|---|---|---|
-| W-E01 | MUSI | **I** | Zapewniać co najmniej dwa niezależne sposoby wysterowania syreny |
-| W-E02 | MUSI | **II** | Posiadać wyjście audio liniowe o poziomie nie niższym niż 1,0 V RMS, **z zadeklarowaną tolerancją** i **regulacją poziomu realizowaną programowo** — nie elementem regulacyjnym na płycie — o impedancji wyjściowej nie większej niż 50 Ω, stosunku sygnału do szumu nie gorszym niż 90 dB i zniekształceniach nie większych niż 0,1 %, z dwoma kanałami przypisywanymi programowo niezależnie |
-| W-E03 | MUSI | **I** | Zapewniać co najmniej **sześć niezależnych torów stykowych** bezpotencjałowych w układzie NO/NC/COM, o obciążalności nie mniejszej niż 8 A przy 250 V AC i trwałości łączeniowej nie mniejszej niż milion cykli |
-| W-E04 | MUSI | **I** | Zapewnić co najmniej jedno wyjście do obwodu 230 V z izolacją galwaniczną nie mniejszą niż **4 kV** między obwodem sterowania a torem mocy oraz fizyczną izolację chroniącą przed porażeniem podczas prac serwisowych |
-| W-E05 | MUSI | **II** | Zapewnić **niezależne sterowanie nadawaniem** — zwarciowe wejście nadawania syreny — działające równolegle z wyjściem audio i sterowane osobno od niego, z udokumentowanymi parametrami elektrycznymi |
+| ID | Moc | Klasa lub zakres | Wymaganie |
+| --- | --- | --- | --- |
+| W-E01 | MUSI | **I** | Zapewniać rozróżnialne wykonanie ogłoszenia i odwołania przez właściwy tor lokalny. Dwie funkcje nie oznaczają automatycznie dwóch osobnych metod integracji ani dwóch dodatkowych przekaźników. |
+| W-E02 | MUSI | **1.5 / II** | Posiadać wyjście audio liniowe o poziomie nie niższym niż 1,0 V RMS, **z zadeklarowaną tolerancją** i **regulacją poziomu realizowaną programowo** — nie elementem regulacyjnym na płycie — o impedancji wyjściowej nie większej niż 50 Ω, stosunku sygnału do szumu nie gorszym niż 90 dB i zniekształceniach nie większych niż 0,1 %, z dwoma kanałami przypisywanymi programowo niezależnie |
+| W-E03 | MUSI | **I** | Zapewniać co najmniej dwa niezależne bezpotencjałowe tory NO/NC/COM w rdzeniu I i profilu 1.5, a co najmniej sześć w rozszerzonym profilu II. Napięcie, prąd, izolację i trwałość dobrać do interfejsu oraz cyklu pracy; nie prowadzić prądu silnika przez styki sterownika. |
+| W-E04 | MUSI | **I** | Zapewnić izolację torów sterowania od niebezpiecznych napięć i ochronę serwisową odpowiednią do zastosowania. Gdy obiekt wymaga 230 V, stosować właściwą izolowaną aparaturę wykonawczą; mały sterownik może pracować wyłącznie po stronie sygnałowej. |
+| W-E05 | MUSI | **1.5 / II** | Sterować PTT osobno od audio, z udokumentowanymi parametrami. PTT może wykorzystywać jeden z już policzonych przekaźników; nie wymaga automatycznie trzeciego albo siódmego styku. |
 | W-E06 | MUSI | **I** | Nie sterować obwodem mocy syreny silnikowej bezpośrednio z wyjść ogólnego przeznaczenia — wyłącznie przez certyfikowaną, izolowaną warstwę wykonawczą |
-| W-E07 | MUSI | **I** | Ograniczać maksymalny czas ciągłego zasilania układu wykonawczego syreny silnikowej |
+| W-E07 | MUSI | **I** | Ograniczać niezależnie od procesu aplikacji maksymalne okno zasilania napędu syreny silnikowej, z kontrolą programu i bez samoczynnego wznowienia po awarii. |
 | W-E08 | MUSI | **I** | Posiadać lokalne, sprzętowe **odcięcie** toru wykonawczego, niezależne od łączności i od oprogramowania, mające pierwszeństwo przed poleceniem zdalnym |
 | W-E09 | MUSI | **I** | Nie wznawiać samoczynnie przerwanej emisji po niekontrolowanym restarcie |
-| W-E10 | MUSI | **II** | Umożliwiać wysterowanie istniejącej syreny **jako systemu nagłośnieniowego** — przez podanie sygnału liniowego na jej wejście audio przy jednoczesnym zwarciu jej wejścia nadawania — bez korzystania z jakiegokolwiek interfejsu programowego producenta syreny |
+| W-E10 | MUSI | **1.5 / II** | Umożliwiać sterowanie syreną elektroniczną przez lokalne audio i osobne PTT. Wejście MIC wymaga właściwego dopasowania poziomu i izolacji; zgodność wynika z dokumentacji konkretnego interfejsu, nie kształtu gniazda. |
 | W-E11 | POWINIEN | **I** | Wykrywać stan układu wykonawczego — obecność obciążenia, gotowość wzmacniacza, stan stycznika |
 | W-E12 | POWINIEN | **I** | Rozróżniać w rejestrze zdarzeń przyjęcie polecenia, zaplanowanie akcji, aktywowanie wyjścia, wykrycie obciążenia i zakończenie emisji |
-| W-E13 | MUSI | **I** | Zapewnić, że **pojedyncze uszkodzenie obwodu obiektowego** — zwarcie albo przeciążenie wyjścia — nie wyłącza urządzenia ani nie uniemożliwia pracy toru wykonawczego |
+| W-E13 | MUSI | **I** | Izolować zwarcie lub przeciążenie obwodu obiektowego, zachowując pracę sterownika i pozostałych sprawnych torów. Uszkodzony tor zgłaszać jako błąd, bez deklarowania jego zdolności emisji. |
 | W-E14 | MUSI | **I** | Wykrywać na wejściu uruchomienia lokalnego impuls o czasie trwania nie dłuższym niż **200 ms** i podać w dokumentacji częstotliwość próbkowania wejść |
 
-Rozróżnienie określone w W-E12 ma znaczenie przy ustalaniu przyczyny braku emisji.
-Potwierdzenie, że wyjście zostało aktywowane, **nie jest dowodem słyszalności** — i żaden zapis
-w tym załączniku takiego dowodu nie zastępuje.
+#### F. Platforma i cykl życia
 
-Wymagania W-E13 i W-E14 wynikają z obserwacji rzeczywistej konstrukcji. Brak indywidualnego
-zabezpieczenia wyjść może spowodować, że pojedynczy błąd okablowania albo uszkodzenie izolacji
-wyłączy cały sterownik. Zbyt mała częstotliwość próbkowania wejścia może natomiast uniemożliwić
-wykrycie krótkiego impulsu uruchomienia lokalnego.
+KG PSP udostępnia na wniosek wersjonowane komponenty do budowy Yocto/OrchestraOS. Wykonawca buduje, utrzymuje i dokumentuje obraz dla swojej płyty, zapewnia integrację z Orchestra i lokalne interfejsy. KG PSP dostarcza aplikację alarmową. Szczegóły procesu opisuje dokument platformy.
 
-##### Tryby sprzężenia sterownika z syreną
-
-Sposób, w jaki sterownik uruchamia syrenę, zależy od tego, co syrena potrafi. Wytyczne uznają trzy
-tryby za równoprawne — każdy musi wystarczać do pełnego alarmowania, a zamawiający wybiera stosownie
-do instalacji.
-
-**Tryb cyfrowy — przez interfejs syreny.** Syrena ma własny odtwarzacz i sloty dźwiękowe, a sterownik
-wywołuje jej udokumentowane polecenia: odtwórz wskazany slot, podaj stan. Połączenie realizowane
-jest standardową warstwą fizyczną — szeregową, sieciową, uniwersalną albo wejściami i wyjściami ogólnego
-przeznaczenia — a nie złączem autorskim. Warunkiem stosowania tego trybu jest otwarta dokumentacja
-producenta syreny (W-I11 do W-I14). **W tym trybie sterownik nie odtwarza dźwięku i nie podlega
-klasie II.**
-
-**Tryb audio — syrena jako system nagłośnieniowy.** Sterownik sam odtwarza plik referencyjny i podaje
-sygnał liniowy na wejście audio syreny, jednocześnie zwierając jej wejście nadawania. Syrena pełni
-wtedy rolę wzmacniacza z przetwornikiem i nie musi wiedzieć nic o SOiA, o slotach ani o katalogu
-sygnałów. **Ten tryb wymaga klasy II.**
-
-Tryb audio ogranicza zależność od nieudokumentowanego interfejsu programowego producenta. Wymaga
-dwóch fizycznych punktów integracji: wejścia liniowego i sterowania nadawaniem. Jego zastosowanie
-podlega ocenie zgodności z dokumentacją, warunkami gwarancji i wymaganiami bezpieczeństwa.
-Wierność sygnału zapewnia w tym wariancie sterownik odtwarzający zweryfikowany plik referencyjny.
-
-**Tryb stykowy — syrena silnikowa.** Sterownik zamyka obwód przez tor stykowy, a modulację realizuje
-programem sterującym układem wykonawczym. Wymaga certyfikowanej, izolowanej warstwy mocy
-i ograniczenia czasu pracy ciągłej.
-
-Kryteria odbioru sprawdzają **tryb faktycznie zastosowany w danej instalacji**, a nie deklarowany
-w ofercie.
-
-##### Zasada niepodzielności emisji
-
-Zgodnie z przyjętym wymaganiem rozpoczęta sekwencja sygnału jest wykonywana do końca. Jedno
-zakwalifikowane polecenie oznacza jedną pełną emisję, a jej rozpoczęciu można zapobiec wyłącznie
-przed wejściem urządzenia w stan `EMITTING`.
-
-Urządzenie MUSI dokończyć rozpoczętą sekwencję i MUSI odrzucić próbę jej przerwania poleceniem
-zdalnym. Jednolite zachowanie urządzeń jest warunkiem interoperacyjności określonej w § 1.
-
-**Odcięcie z W-E08 to co innego niż zatrzymanie.** Jest czynnością na obwodzie wykonawczym —
-przerwaniem zasilania wzmacniacza albo układu rozruchowego — a nie poleceniem przerwania sekwencji.
-Dla syreny silnikowej oznacza zatrzymanie wirnika pracującego pod obciążeniem, ze wszystkimi tego
-skutkami mechanicznymi, więc jest środkiem awaryjnym, a nie zwykłą operacją.
-
-Jeżeli alarm ogłoszono omyłkowo po rozpoczęciu emisji, sekwencja trwa przez pełny czas właściwy
-dla danego sygnału. Działaniem operacyjnym jest odwołanie alarmu, stanowiące odrębny sygnał ciągły
-trwający trzy minuty.
-
----
-
-#### F. Platforma sterownika
-
-Wymagania platformowe wynikają z tego, że urządzenie ma pracować kilkanaście lat i przyjmować
-aktualizacje. **Rdzeń nie wymaga komputera** — mieści się na mikrokontrolerze. Komputera wymaga
-dopiero profil głosowy, i dlatego wartości liczbowe opisujące platformę występują wyłącznie
-w klasie III — poza pojemnością pakietu dźwiękowego z W-C10, która jest wyliczeniem, a nie parametrem
-platformy.
-
-| ID | Moc | Klasa zdolności | Wymaganie |
-|---|---|---|---|
-| W-F01 | MUSI | **I** | Posiadać **udokumentowaną ścieżkę aktualizacji bezpieczeństwa przez cały deklarowany okres wsparcia**: z podpisem, wersjonowaniem i możliwością odtworzenia dowolnej wydanej wersji |
+| ID | Moc | Klasa lub zakres | Wymaganie |
+| --- | --- | --- | --- |
+| W-F01 | MUSI | **I** | Uruchamiać utrzymywany dla konkretnej płyty Linux oparty na Yocto Project i OrchestraOS wydania KG PSP. Zapewniać wersjonowane aktualizacje bezpieczeństwa oraz odtworzenie dopuszczonej wersji przez deklarowany okres wsparcia. |
 | W-F02 | MUSI | **I** | Umożliwiać aktualizację **bez dostępu do publicznego Internetu**, z zachowaniem podpisów |
-| W-F03 | MUSI | **I** | Mieć konfigurację utwardzoną: wyłączone zbędne usługi, ograniczone porty, lokalną zaporę, brak kont i haseł domyślnych |
+| W-F03 | MUSI | **I** | Utwardzić konfigurację: wyłączyć zbędne usługi i konta domyślne, ograniczyć porty i dostęp serwisowy/debugowy. Urządzenie eksploatowane nie może udostępniać trybu obchodzącego wymagane zabezpieczenia. |
 | W-F04 | MUSI | **I** | Udostępniać zdalny dostęp administracyjny wyłącznie z uwierzytelnieniem kluczem; hasło nie może być jedynym mechanizmem |
-| W-F05 | MUSI | **I** | Przechowywać klucze w sposób **nieeksportowalny** — w układzie dyskretnym albo bezpiecznej enklawie procesora — oraz weryfikować integralność rozruchu |
+| W-F05 | MUSI | **I** | Chronić indywidualne klucze prywatne i sekrety w nieeksportowalnym magazynie sprzętowym lub bezpiecznej enklawie. Odmawiać uruchomienia nieautoryzowanego obrazu, także po podmianie nośnika. Publiczne klucze weryfikacji mogą być wspólne. Model zagrożeń obejmuje również szynę procesor–radio: ochronę treści i kluczy przed odczytem, wstrzyknięciem oraz odtworzeniem. |
 | W-F06 | MUSI | **I** | Posiadać sprzętowy układ nadzoru pracy, samoczynnie restartujący urządzenie przy zawieszeniu oprogramowania |
 | W-F07 | MUSI | **III** | Mieć procesor 64-bitowy o co najmniej **czterech rdzeniach** i taktowaniu nie mniejszym niż **1,5 GHz** |
 | W-F08 | MUSI | **III** | Mieć co najmniej **4 GB** pamięci operacyjnej i co najmniej **32 GB** pamięci trwałej klasy przemysłowej |
-| W-F09 | MUSI | **I** | Prowadzić zapis logów bieżących w pamięci ulotnej z cykliczną synchronizacją i rotacją, żeby nie zużyć przedwcześnie pamięci trwałej — **przy zachowaniu trwałości wymaganej w W-G11** |
-| W-F10 | MUSI | **I** | Przyjmować podpisane aktualizacje w układzie dwóch obrazów, z automatycznym powrotem do poprzedniej wersji przy nieudanej aktualizacji i **z zachowaniem materiału kryptograficznego** |
-| W-F11 | POWINIEN | **I** | Udostępniać udokumentowany lokalny interfejs integracyjny do sterowania funkcjami urządzenia |
-| W-F12 | POWINIEN | **I** | Umożliwiać właścicielowi uruchamianie własnych komponentów jako usług systemowych albo w kontenerach |
-| W-F13 | MUSI | **D** | Udostępniać w zestawie porty rozszerzeń ogólnego przeznaczenia oraz **co najmniej sześć wejść dwustanowych i sześć wyjść** ogólnego przeznaczenia, z podaniem parametrów elektrycznych i przepustowości portów |
+| W-F09 | MUSI | **I** | Rozdzielić buforowane i rotowane logi diagnostyczne od trwałego transakcyjnego zapisu historii poleceń. Stan decydujący o jednokrotnym wykonaniu zapisać przed aktywacją wyjścia; okresowa synchronizacja nie zastępuje tego zapisu. |
+| W-F10 | MUSI | **I** | Obsługiwać podpisane RAUC bundle zgodne z instancją KG PSP, dwa zestawy partycji A/B i kontrolowany rollback. Zachować odrębne dane aplikacji, tożsamość i historię poleceń. Podpis aktualizacji nie zastępuje ochrony rozruchu. |
+| W-F11 | MUSI | **I** | Zapewniać wersjonowany lokalny kontrakt sprzętowy dostępny z aplikacji KG PSP: metody, pola, jednostki, statusy, błędy i uprawnienia. Wykonawca dostarcza potrzebny adapter dla swojej płyty. |
+| W-F12 | MUSI | **I** | Uruchamiać wskazany pakiet aplikacji KG PSP, z autostartem, nadzorem, trwałym obszarem danych i uprawnieniami do interfejsów, bez zmiany pakietu i bez obchodzenia zabezpieczeń. |
+| W-F13 | MUSI | **D** | Zapewniać udokumentowane porty rozszerzeń i co najmniej 2 GPI oraz 2 GPO dla zestawu kompaktowego, a 6 GPI i 6 GPO dla zestawu rozszerzonego II. Liczyć oddzielnie styki, GPI/GPO i zajęcie PTT; klasa III sama nie zwiększa liczby I/O. |
 | W-F14 | MUSI | **I** | Udostępnić **udokumentowaną procedurę przekazania właścicielowi zdolności podpisywania obrazów** albo depozyt kluczy podpisujących — tak, żeby weryfikacja rozruchu z W-F05 nie zamykała urządzenia trwale u producenta |
+| W-F15 | MUSI | **I** | Budować obraz z komponentów Yocto/OrchestraOS udostępnionych przez KG PSP na wniosek, dla wskazanej płyty i BSP. Przekazać manifest, wersje, konfigurację, zmiany, artefakty i instrukcję odtworzenia budowy. |
+| W-F16 | MUSI | **I** | Przeprowadzić chroniony provisioning indywidualnej tożsamości i rejestrację we właściwej instancji Orchestra KG PSP. Wykazać identyfikację, konfigurację, telemetrię, wersje, aktualizację i odwołanie dostępu. |
+| W-F17 | MUSI | **I** | Zapewnić uwierzytelnione zarządzanie przed instalacją aplikacji KG PSP, z ograniczonymi rolami i bez publicznego panelu lub powłoki. Rozdzielić certyfikaty urządzenia, zaufanie feedu i klucze podpisywania obrazów. |
+| W-F18 | MUSI | **I** | Powiązać model, rewizję, obraz, adaptery, pakiet aplikacji i egzemplarz z kartą obiektu. Flota aktualizacyjna nie zmienia samodzielnie TERC ani uprawnień do alarmowania. |
+| W-F19 | MUSI | **1.5** | Zapewnić co najmniej 64-bitowy procesor o 2 rdzeniach, 2 GB RAM i 16 GB przemysłowej pamięci trwałej oraz działającą konfigurację z macierzy 1.5. Wykazać bilans OS A/B, aplikacji, danych i rezerwy; wyższe wymagania klasy III obowiązują przy jej zamówieniu. |
 
-##### Uzasadnienie neutralności technologicznej wymagania W-F01
+#### G. Tryby pracy i dowody
 
-Wcześniejsza wersja tego wymagania żądała systemu z repozytoriami bezpieczeństwa i menedżerem
-pakietów. Był to opis **jednego ze sposobów**, a nie wymaganie wynikowe — i wykluczał rozwiązania
-oparte na wymianie całego obrazu systemu, które dla urządzenia stojącego bez obsługi kilkanaście lat
-są **lepsze**, bo nie pozostawiają miejsca na częściową, przerwaną aktualizację.
+Dziennik ma odróżniać przyjęcie, wykonanie lokalne, zmierzony efekt oraz brak dowodu. Utrata łączności zarządczej nie jest dowodem awarii syreny, a stan online nie potwierdza emisji.
 
-Liczy się skutek: że w piątym i dziesiątym roku eksploatacji istnieje droga wgrania poprawki
-bezpieczeństwa, że poprawka jest podpisana i że da się wrócić do wersji poprzedniej.
-
-##### Relacja wymagań W-F05 i W-F14 do zasady swobody wyboru dostawcy
-
-Wymaganie W-F05 żąda sprzętowej ochrony kluczy i weryfikacji rozruchu. Wymagania W-I02 i W-I07
-żądają, żeby właściciel mógł zmienić punkt zaufania i wymienić materiał kryptograficzny **bez
-udziału producenta**. W praktyce spotykanej na rynku te dwa oczekiwania bywają sprzeczne: kotwica
-zaufania zapisywana jest w bezpiecznikach jednorazowych, po czym urządzenie zostaje trwale zamknięte
-i właściciel nie może uruchomić własnego obrazu **nigdy**.
-
-W-F14 ma pogodzić sprzętową weryfikację rozruchu z możliwością zmiany punktu zaufania przez
-właściciela. Wykonawca przedkłada procedurę przekazania zdolności podpisywania albo składa klucze
-do depozytu. Wybrany sposób musi zapewniać właścicielowi możliwość utrzymania urządzenia bez
-trwałej zależności od producenta.
-
-Brak realizacji W-F14 może uniemożliwić praktyczne wykonanie W-I02 i zmianę punktu zaufania
-przez cały okres eksploatacji.
-
----
-
-#### G. Tryby pracy, diagnostyka i rejestr zdarzeń
-
-Urządzenie musi jednoznacznie określać i sygnalizować swój stan. Pozostawienie trybu serwisowego
-po zakończeniu prac konserwacyjnych może uniemożliwić wykonanie późniejszego polecenia zdalnego.
-
-| ID | Moc | Klasa zdolności | Wymaganie |
-|---|---|---|---|
+| ID | Moc | Klasa lub zakres | Wymaganie |
+| --- | --- | --- | --- |
 | W-G01 | MUSI | **I** | Rozróżniać tryby: pracy operacyjnej, ćwiczebny, serwisowy, zablokowany, ograniczony i awaryjny |
-| W-G02 | MUSI | **I** | Blokować w trybie serwisowym i zablokowanym wykonanie polecenia zdalnego, zachowując możliwość testu lokalnego |
+| W-G02 | MUSI | **I** | Blokować zdalne wykonanie w trybie serwisowym i zablokowanym. Test lokalny w serwisie wymaga właściwych uprawnień; nie może omijać aktywnego odcięcia ani blokady bezpieczeństwa. |
 | W-G03 | MUSI | **I** | **Nie przełączać się samoczynnie** z trybu serwisowego lub zablokowanego do operacyjnego po restarcie |
 | W-G04 | MUSI | **I** | Odnotowywać zmianę trybu w rejestrze zdarzeń wraz z czasem i przyczyną |
 | W-G05 | MUSI | **I** | Prowadzić lokalny rejestr zdarzeń obejmujący co najmniej: źródło polecenia, wynik weryfikacji, decyzję wykonania, zmianę stanu wyjścia, restart wraz z przyczyną, zmianę trybu, aktualizację i wymianę materiału kryptograficznego |
@@ -1284,36 +439,16 @@ po zakończeniu prac konserwacyjnych może uniemożliwić wykonanie późniejsze
 | W-G08a | MUSI | **I** | Rozróżniać w sygnalizacji stan gotowości od stanu braku łączności — tak, żeby dało się je odróżnić bez odczytu rejestru |
 | W-G09 | POWINIEN | **I** | Umożliwiać eksport pełnej konfiguracji urządzenia w formacie otwartym |
 | W-G10 | POWINIEN | **I** | Umożliwiać wykonanie testu cichego, niepowodującego emisji zewnętrznej |
-| W-G11 | MUSI | **I** | Zachować rejestr zdarzeń **trwale, lokalnie i niezależnie od łączności**; restart urządzenia nie może usuwać zapisów, których nie zdążono wysłać |
+| W-G11 | MUSI | **I** | Zachować trwale i lokalnie historię decyzji oraz wyników, niezależnie od łączności. Restart nie usuwa niewysłanych zapisów potrzebnych do rozstrzygnięcia ponowienia. |
 | W-G12 | MUSI | **I** | Zapewnić rejestrowi pojemność i okres przechowywania nie krótszy niż **dwanaście miesięcy** zwykłej eksploatacji, z nadpisywaniem najstarszych zapisów po jego wyczerpaniu |
 
-##### Uzasadnienie zewnętrznej sygnalizacji stanu urządzenia
+#### H. Zasilanie i warunki pracy
 
-Wcześniejsze brzmienie W-G08 dopuszczało umieszczenie wszystkich wskaźników wewnątrz szafy
-z obwodem 230 V. Odczyt stanu wymagał wówczas otwarcia szafy przez osobę posiadającą odpowiednie
-kwalifikacje. Wymóg sygnalizacji zewnętrznej usuwa tę barierę.
+Bilans rozdziela sterownik, modem, bramkę, wzmacniacz i napęd. Podtrzymanie jednego elementu nie dowodzi gotowości całego punktu. Warunki obiektowe muszą mieścić się w deklarowanym zakresie lub wymagać odpowiedniej konfiguracji.
 
-Kanał publiczny nie zapewnia obecnie informacji zwrotnej o obecności urządzenia. Widoczna
-z zewnątrz sygnalizacja umożliwia personelowi obiektu wykrycie długotrwałego braku łączności
-bez otwierania obudowy i bez podłączania komputera.
-
-Wymagania W-G11 i W-G12 wynikają z tej samej obserwacji. Rejestr utrzymywany wyłącznie w pamięci
-ulotnej, którego niewysłane zapisy znikają po restarcie, nie jest rejestrem — a urządzenie odcięte
-od łączności traci wtedy zdolność do udowodnienia, co się stało. Oszczędzanie pamięci trwałej,
-o którym mówi W-F09, jest słuszne, ale oznacza **cykliczną synchronizację**, a nie rezygnację
-z trwałości.
-
----
-
-#### H. Zasilanie i warunki środowiskowe
-
-Wymagania z tej części dotyczą **całego zestawu** zainstalowanego w obiekcie. Zanik zasilania jest
-jednym z najczęstszych scenariuszy towarzyszących zagrożeniu, więc podtrzymanie nie jest dodatkiem,
-lecz warunkiem sensowności całej instalacji.
-
-| ID | Moc | Klasa zdolności | Wymaganie |
-|---|---|---|---|
-| W-H01 | MUSI | **D** | Zapewnić ciągłość pracy zestawu przez co najmniej **10 godzin** od zaniku zasilania sieciowego **w chwili odbioru** oraz co najmniej **8 godzin na koniec deklarowanego okresu gwarancji**; profil obciążenia przyjęty do wyznaczenia tych wartości obejmuje ciągłą emisję sygnału |
+| ID | Moc | Klasa lub zakres | Wymaganie |
+| --- | --- | --- | --- |
+| W-H01 | MUSI | **D** | Zapewnić dla kompletnego zestawu sterowania i łączności minimum 10 h podtrzymania przy odbiorze i 8 h na końcu gwarancji, dla udokumentowanego profilu obciążenia obejmującego sterowanie emisją. Zasilanie wzmacniaczy i napędu ma osobny bilans; nie wynika z akumulatora sterownika. |
 | W-H02 | MUSI | **D** | Określić model degradacji magazynu energii i przedłożyć świadectwo badania albo obliczenie dla profilu obciążenia z W-H01 |
 | W-H03 | MUSI | **I** | Monitorować stan zasilania podstawowego i rezerwowego oraz odnotowywać jego zmiany |
 | W-H04 | MUSI | **I** | Wykonać kontrolowane zamknięcie pracy przy wyczerpaniu zasilania rezerwowego |
@@ -1321,149 +456,56 @@ lecz warunkiem sensowności całej instalacji.
 | W-H06 | MUSI | **D** | Pracować w zakresie temperatur co najmniej od +10 °C do +40 °C przy wilgotności do 95 % bez kondensacji, w pomieszczeniu zamkniętym |
 | W-H07 | POWINIEN | **D** | Udostępniać wykonanie o **rozszerzonym zakresie temperatur pracy**, co najmniej od −20 °C do +55 °C, dla zamawiających, u których warunki obiektowe nie mieszczą się w zakresie z W-H06 |
 | W-H08 | POWINIEN | **I** | Sygnalizować przewidywany pozostały czas pracy na zasilaniu rezerwowym |
-| W-H09 | MUSI | **I** | Osiągać gotowość operacyjną nie później niż **60 sekund** od załączenia zasilania oraz po zakończonej aktualizacji |
+| W-H09 | MUSI | **I** | Określić i wykazać czas rozruchu platformy oraz uzyskania gotowości aplikacji dla wskazanej konfiguracji. Limit i warunki ustala się przed odbiorem; online w zarządzaniu nie jest dopuszczeniem syreny do emisji. |
 
-##### Uzasadnienie wymagań W-H01 i W-H09
+#### I. Interoperacyjność i prawa
 
-Wymaganie W-H01 określa minimalny czas podtrzymania zarówno w chwili odbioru, jak i na koniec
-okresu gwarancji. Profil obciążenia przyjęty do obliczeń musi obejmować emisję, a nie wyłącznie
-stan czuwania.
+Zgodność z Orchestra KG PSP nie oznacza zakupu sprzętu od jednego producenta. Warunki dostępu do komponentów, budowy, podpisywania, interfejsów i utrzymania muszą umożliwiać wykonanie zamówienia oraz późniejszą zmianę serwisu.
 
-Wymaganie W-H09 ustanawia maksymalny czas przywrócenia gotowości operacyjnej po załączeniu
-zasilania lub zakończeniu aktualizacji, aby ograniczyć ryzyko pominięcia polecenia w okresie
-rozruchu urządzenia.
-
-##### Zakres odpowiedzialności za warunki obiektowe
-
-Wytyczne **nie wchodzą w obszar warunków obiektowych**. Nie nakazują ogrzewania remizy, nie stawiają
-wymagań budynkowi i nie rozstrzygają, kto ma za to zapłacić.
-
-Urządzenie **deklaruje zakres, w którym pracuje** — i to jest wymaganie. Zapewnienie warunków
-mieszczących się w tym zakresie, albo zamówienie wykonania o zakresie szerszym (W-H07), należy
-do właściciela obiektu i projektanta instalacji. Przy odbiorze odnotowuje się zmierzoną temperaturę
-pomieszczenia, ale jest to **zapis stanu**, a nie warunek dopuszczenia — protokół dokumentuje,
-w jakich warunkach urządzenie postawiono, i tyle.
-
----
-
-#### I. Swoboda wyboru dostawcy
-
-Urządzenie kupowane jest raz, a eksploatowane kilkanaście lat, w czasie których zmieni się operator
-łączności, dostawca serwisu, a być może i system centralny. Wymagania z tej części chronią
-właściciela przed sytuacją, w której każda taka zmiana wymaga zgody producenta.
-
-| ID | Moc | Klasa zdolności | Wymaganie |
-|---|---|---|---|
-| W-I01 | MUSI | **I** | Działać w pełnym zakresie funkcji alarmowania **bez połączenia z platformą producenta** |
+| ID | Moc | Klasa lub zakres | Wymaganie |
+| --- | --- | --- | --- |
+| W-I01 | MUSI | **I** | Zachować lokalne funkcje alarmowania przy niedostępności technicznego zarządzania Orchestra lub usługi producenta, jeśli polecenie dotarło właściwym kanałem i spełnia wszystkie warunki. Brak zarządzania nie tworzy nowego polecenia. |
 | W-I02 | MUSI | **I** | Umożliwiać zmianę adresu punktu dostępu, kanału powiadomienia i punktu zaufania bez udziału producenta |
 | W-I03 | MUSI | **I** | Umożliwiać wyłączenie i włączenie poszczególnych kanałów |
 | W-I04 | MUSI | **I** | Umożliwiać wymianę karty abonenckiej bez utraty gwarancji i bez wizyty serwisu producenta |
 | W-I05 | MUSI | **I** | Nie wymagać stałego abonamentu u producenta dla podstawowego alarmowania |
-| W-I06 | MUSI | **I** | Nie stosować materiału kryptograficznego współdzielonego między urządzeniami |
+| W-I06 | MUSI | **I** | Nie współdzielić między egzemplarzami indywidualnych kluczy prywatnych ani sekretów urządzeń. Wspólne publiczne klucze weryfikacji feedu, aktualizacji i rozruchu są dopuszczalne i nie są tożsamością egzemplarza. |
 | W-I07 | MUSI | **I** | Udostępniać procedurę wymiany i odwołania materiału kryptograficznego |
 | W-I08 | MUSI | **I** | Dostarczyć dokumentację interfejsów elektrycznych, audio i integracyjnych **wraz ze schematem elektrycznym** w zakresie umożliwiającym samodzielny serwis |
-| W-I09 | POWINIEN | **I** | Dostarczyć wykaz składników oprogramowania oraz zasady zgłaszania i usuwania podatności |
+| W-I09 | MUSI | **I** | Dostarczać SBOM dla wydania oraz proces zgłaszania podatności, okres wsparcia i terminy poprawek. Prawa i zależności muszą pozwalać KG PSP utrzymywać system oraz powierzyć obsługę innemu wykonawcy. |
 | W-I10 | POWINIEN | **I** | Wykazać w odbiorze możliwość przełączenia urządzenia na alternatywny punkt dostępu |
 | W-I15 | MUSI | **D** | Dostarczyć **deklarację zgodności**, wykaz zastosowanych norm zharmonizowanych oraz sprawozdania z badań kompatybilności elektromagnetycznej, badań radiowych i badań bezpieczeństwa |
-| W-I11 | MUSI | **P** | **Producent syreny** — udostępnić otwarty, udokumentowany interfejs sterowania: wykaz poleceń wraz ze składnią, mapę slotów, format i sposób wgrania plików dźwiękowych, kody odpowiedzi i błędów, sposób odczytu stanu oraz parametry elektryczne złącza |
+| W-I11 | MUSI | **P** | Producent elektronicznej syreny udostępnia udokumentowany interfejs sterowania wraz z funkcjami, formatem komend, zasobami lokalnymi, statusami i parametrami. Dla syreny silnikowej dokumentuje się jej tor sterowania i wymagania napędu. |
 | W-I12 | MUSI | **P** | **Producent syreny** — zrealizować ten interfejs na standardowej warstwie fizycznej: szeregowej, sieciowej, uniwersalnej albo na wejściach i wyjściach ogólnego przeznaczenia; złącza i protokoły autorskie bez opublikowanej specyfikacji nie spełniają wymagania |
 | W-I13 | MUSI | **P** | **Producent syreny** — określić warunki licencyjne dopuszczające integrację przez podmiot trzeci, bez opłat za samo podłączenie i bez utraty gwarancji |
-| W-I14 | MUSI | **P** | **Producent syreny** — udostępnić wejście liniowe audio oraz zwarciowe wejście nadawania, umożliwiające wysterowanie syreny w trybie audio niezależnie od jej interfejsu programowego |
+| W-I14 | MUSI | **P** | Producent nowej syreny elektronicznej zapewnia udokumentowane wejście audio i osobne PTT lub przyjęty równoważny profil integracji. Wymagania odtwarzania plików nie stosuje się do napędu syreny silnikowej. |
 
-Wymaganie W-I01 oznacza, że zakończenie działalności producenta albo wyłączenie jego usługi nie może
-pozbawić instalacji zdolności alarmowania. Wszystkie elementy niezbędne do podstawowego działania
-muszą znajdować się w urządzeniu i w dokumentacji przekazanej właścicielowi.
+#### J. Współistnienie i arbitraż
 
-Wymaganie W-I15 dopisano po stwierdzeniu, że dokumentacja produktu odebranego w liczbie kilku
-tysięcy sztuk zawierała **puste rubryki** w miejscach: dyrektywy, normy zharmonizowane, badania
-kompatybilności elektromagnetycznej, badania radiowe i deklaracja zgodności. Formalnie niczego nie
-naruszono, bo żadne wymaganie tych dokumentów nie żądało. Teraz żąda.
+Zachowuje się wymagane dotychczasowe funkcje lokalne i radiowe. Wszystkie kanały mają wspólny arbitraż. „Odrzucono”, „odroczono”, „wykonano” i „wynik niepewny” nie są synonimami.
 
-##### Granica integracyjna między sterownikiem a syreną
-
-Wymagania W-I11–W-I14 są skierowane do producenta syreny, a nie do producenta sterownika.
-Interoperacyjność systemu centralnego nie jest wystarczająca, jeżeli granica między sterownikiem
-a syreną pozostaje zamknięta.
-
-Wiele syren ma wbudowany odtwarzacz, pamięć slotów i własną automatykę. Brak udokumentowanego
-sposobu ich wywołania tworzy długotrwałą zależność od jednego dostawcy. Dokumentacja powinna być
-wystarczająca do wykonania integracji przez niezależnego wykonawcę; sama deklaracja dostępności
-interfejsu, bez specyfikacji protokołu, warunków licencyjnych i testu zgodności, nie jest
-wystarczająca.
-
-W postępowaniu zakupowym podstawowym mechanizmem egzekwowania tych wymagań wobec wykonawcy jest
-umowa zawierana przez zamawiającego. Niniejszy projekt nie tworzy samodzielnie obowiązków po
-stronie producenta syreny; dlatego wymagania te ujęto również w załączniku nr 11.
-
-Wymaganie W-I14 jest zabezpieczeniem na wypadek, gdy pozostałe zawiodą. Nawet syrena o całkowicie
-zamkniętym oprogramowaniu daje się podłączyć do SOiA, jeżeli ma wejście liniowe i wejście nadawania —
-sterownik wykorzystuje ją wtedy po prostu jako system audio.
-
----
-
-#### J. Współistnienie z systemem istniejącym
-
-Dołączenie kanału SOiA **nie może wyłączyć ani ograniczyć tego, co działa dzisiaj**. Zasada dotyczy
-przede wszystkim instalacji istniejących, ale nie tylko ich — także nowa instalacja musi zachować
-możliwość uruchomienia lokalnego, niezależną od jakiejkolwiek łączności.
-
-Prace przy instalacji nie mogą powodować okresowej utraty zdolności alarmowania. W razie błędnej
-konfiguracji, braku zasięgu albo awarii nowego kanału dotychczasowy tor powinien pozostać dostępny.
-Uruchomienie lokalne musi być niezależne od dostępności sieci.
-
-| ID | Moc | Klasa zdolności | Wymaganie |
-|---|---|---|---|
+| ID | Moc | Klasa lub zakres | Wymaganie |
+| --- | --- | --- | --- |
 | W-J01 | MUSI | **I** | Nie wyłączać ani nie ograniczać dotychczasowych sposobów uruchomienia syreny — istniejącego systemu dyspozytorskiego, pulpitu lokalnego, przycisku ręcznego ani kanału radiowego |
 | W-J02 | MUSI | **I** | Zachować możliwość **uruchomienia lokalnego**, działającego przy całkowitym braku łączności z SOiA |
-| W-J03 | MUSI | **I** | Nie warunkować dołączenia kanału SOiA wyłączeniem, przeprogramowaniem ani utratą gwarancji istniejącego systemu |
-| W-J04 | MUSI | **I** | Przy zbiegu poleceń wykonać do końca **wyłącznie to, które pierwsze rozpoczęło sekwencję**; polecenie odebrane w trakcie emisji odrzucić i odnotować, bez kolejkowania i bez drugiej emisji |
+| W-J03 | MUSI | **I** | Zapewniać współpracę z instalacją istniejącą bez utraty jej wymaganych funkcji i uprawnień gwarancyjnych. Niezbędne nastawy integracyjne dokumentować i uzgadniać; nie utożsamiać ich z wyłączeniem dotychczasowego systemu. |
+| W-J04 | MUSI | **I** | Przy zbiegu poleceń stosować jedną wersjonowaną tabelę arbitrażu dla wszystkich torów. Rozróżniać końcowe odrzucenie, kontrolowane odroczenie i duplikat; bez automatycznej kolejnej emisji oraz bez niejawnego przerwania bieżącej. |
 | W-J05 | MUSI | **I** | Zachować pierwszeństwo lokalnego odcięcia i trybu serwisowego **niezależnie od toru**, z którego przyszło polecenie |
 | W-J06 | MUSI | **I** | Po dołączeniu kanału SOiA potwierdzić w odbiorze, że **dotychczasowy sposób uruchomienia nadal działa** |
 | W-J07 | POWINIEN | **I** | Odnotowywać w rejestrze zdarzeń tor, z którego przyszło polecenie |
-| W-J08 | MUSI | **I** | **Ponowić** polecenie odrzucone na podstawie W-J04 po zakończeniu bieżącej emisji, jeżeli jego okno rozpoczęcia pozostaje otwarte, i odnotować zarówno odroczenie, jak i ponowienie |
+| W-J08 | MUSI | **I** | Po zakończeniu bieżącej funkcji ponownie kwalifikować wyłącznie operację świadomie odroczoną przez przyjęty profil: sprawdzić ważność, historię, adresata i stan toru. Odrzuconej końcowo albo wykonanej operacji nie ponawiać. |
 
-Wymaganie W-J04 ogranicza ryzyko automatycznego wykonania kolejnej emisji w trakcie trwania
-poprzedniej. Zakolejkowanie dwóch niezależnych poleceń mogłoby utworzyć sześciominutową sekwencję
-niezgodną ze strukturą sygnałów określoną w przepisach.
+#### K. Zestaw i instalacja
 
-Wymaganie W-J08 dotyczy sytuacji, w której podczas emisji z toru istniejącego zostaje odebrane
-odwołanie alarmu z SOiA. Materiał źródłowy określa takie polecenie jako odrzucone bez kolejkowania,
-a jednocześnie nakazuje jego ponowienie po zakończeniu emisji, jeżeli okno pozostaje otwarte.
+Zakres D oznacza dostawę określoną kartą: może korzystać z istniejącej syreny, bramki i zasilania. Wykaz elementów rozdziela rzeczy dostarczane, powierzone i zapewniane przez instalatora. Nie przepisuje się konkretnego zestawu KPO do każdego małego urządzenia.
 
-!!! danger "Wymaga decyzji przed akceptacją — W-J04 i W-J08"
-
-    Przed podpisaniem projektu należy jednoznacznie zdefiniować relację między odrzuceniem,
-    odroczeniem, zakazem kolejkowania i ponowieniem polecenia w W-J04 oraz W-J08. Redakcja V2
-    zachowuje brzmienie i intencję materiału źródłowego, ale nie rozstrzyga modelu wykonawczego.
-
-Wymaganie W-J06 przenosi zasadę z deklaracji do odbioru. Bez sprawdzenia, że stary tor nadal działa,
-zapis W-J01 pozostałby obietnicą.
-
----
-
-#### K. Zestaw instalacyjny
-
-Wymagania z poprzednich części dotyczą **funkcji**. Ta część opisuje, co wchodzi w skład dostawy
-i czego wymaga montaż — bo przedmiotem zamówienia bywa nie sam sterownik, tylko kompletny zestaw
-gotowy do zamocowania na obiekcie. Nie opisuje natomiast **konstrukcji**: gabaryty, materiał
-obudowy i rozmieszczenie podzespołów dobiera wykonawca.
-
-##### Topologia zestawu instalacyjnego
-
-Zestaw pracuje zwykle w dwóch częściach, w różnych warunkach, i to rozdzielenie jest **celowe**.
-Część wewnętrzna — sterownik wraz z zasilaniem buforowym i magazynem energii — pracuje
-w pomieszczeniu zamkniętym. Część zewnętrzna — urządzenie radiowe wraz z antenami — pracuje
-na elewacji albo na maszcie, w pełnej ekspozycji atmosferycznej. Pozwala to trzymać elektronikę
-i akumulator w łagodnych warunkach, a na zewnątrz wystawiać wyłącznie urządzenie do tego
-przeznaczone.
-
-| ID | Moc | Klasa zdolności | Wymaganie |
-|---|---|---|---|
-| W-K01 | MUSI | **D** | Być dostarczany jako **kompletny zestaw** gotowy do zamocowania: część wewnętrzna, część zewnętrzna, magazyn energii, komplet anten i akcesoria montażowe |
+| ID | Moc | Klasa lub zakres | Wymaganie |
+| --- | --- | --- | --- |
+| W-K01 | MUSI | **D** | Dostarczać kompletny zestaw zgodny z kartą zakresu: sterownik, wymagane moduły, zasilanie, anteny i akcesoria. Osobna bramka oraz podział na część wewnętrzną i zewnętrzną wynikają z projektu, nie z samego oznaczenia 1.5. |
 | W-K02 | MUSI | **D** | Zawierać **listę zawartości zestawu** umożliwiającą kontrolę kompletności dostawy przed montażem, z rozróżnieniem pozycji pakunkowych i elementów fabrycznie zabudowanych oraz z **procedurą postępowania przy stwierdzeniu niezgodności** |
 | W-K03 | MUSI | **D** | Wskazywać w dokumentacji **elementy zapewniane przez instalatora** — okablowanie, puszki, dławnice, kotwy, konstrukcje wsporcze — żeby ich brak nie był mylony z niekompletnością dostawy |
-| W-K04 | MUSI | **D** | Zapewnić części zewnętrznej stopień ochrony i zakres temperatur właściwy dla pracy na wolnym powietrzu, nie gorszy niż **IP67** oraz **−40 °C do +70 °C** |
-| W-K05 | MUSI | **D** | Zapewnić łączność między częścią wewnętrzną a zewnętrzną przewodem sieciowym oraz zasilanie części zewnętrznej z części wewnętrznej |
+| W-K04 | MUSI | **D** | Zapewnić częściom pracującym na zewnątrz ochronę środowiskową i temperatury odpowiednie do lokalizacji, określone przed zakupem. Parametry dla elementów wewnętrznych i zewnętrznych oceniać oddzielnie. |
+| W-K05 | MUSI | **D** | Udokumentować połączenia i zasilanie części zestawu, w tym rzeczywistą drogę do bramki, jeżeli występuje. Nie wymagać osobnej bramki przy każdej syrenie bez uzasadnienia projektu sieci. |
 | W-K20 | MUSI | **D** | Zawierać w zestawie **ochronniki przepięciowe** torów sygnałowego i zasilającego prowadzonych między częścią zewnętrzną a wewnętrzną |
 | W-K21 | MUSI | **D** | Traktować część zewnętrzną jako element istotny dla bezpieczeństwa: podać sposób jej utwardzenia, ścieżkę aktualizacji jej oprogramowania, sposób uwierzytelnienia sterownika do jej interfejsów oraz sposób nadzoru jej zasilania |
 | W-K22 | MUSI | **D** | Podać dopuszczalny **budżet napięciowy zasilania części zewnętrznej pod obciążeniem** oraz maksymalną długość trasy; wartość mierzy się przy odbiorze |
@@ -1471,1601 +513,572 @@ przeznaczone.
 | W-K24 | MUSI | **D** | Podać dla magazynu energii **datę produkcji i datę ostatniego ładowania odświeżającego**; napięcie mierzy się przed pierwszym uruchomieniem |
 | W-K25 | MUSI | **D** | Zapewnić, że pierwsze załączenie **nie wyzwala zabezpieczenia obwodu obiektowego**, albo podać wymaganą charakterystykę tego zabezpieczenia |
 | W-K26 | MUSI | **D** | Wskazać wymagane umiejscowienie anten części wewnętrznej i przewidzieć **zapis zmierzonej jakości toru radiowego** w dokumentacji odbiorowej |
-
-##### Przyłącza
-
-Sposób, w jaki instalator podłącza się do urządzenia, decyduje o tym, czy instalację da się
-później serwisować bez producenta.
-
-| ID | Moc | Klasa zdolności | Wymaganie |
-|---|---|---|---|
 | W-K06 | MUSI | **D** | Udostępniać **oznaczoną, ponumerowaną listwę przyłączeniową** dla wszystkich sygnałów obiektowych: zasilania, wejść dwustanowych, wyjść, torów stykowych i toru audio |
 | W-K07 | MUSI | **D** | Dołączać do dokumentacji **mapę listwy** wiążącą numer zacisku z sygnałem i z oznaczeniem barwnym złączki, wraz z wymogiem oznaczenia obu końców przewodu obiektowego przez instalatora |
 | W-K08 | MUSI | **D** | Umożliwiać podłączenie bez lutowania i bez narzędzi specjalistycznych producenta |
 | W-K09 | MUSI | **D** | Zapewnić dostęp do gniazda karty abonenckiej i do magazynu energii **bez demontażu urządzenia z uchwytu** |
 | W-K10 | POWINIEN | **D** | Umożliwiać otwarcie obudowy bez kolizji z instalacją obiektową |
-
-Wymaganie W-K07 jest tym, które w praktyce najbardziej się liczy. Mapa zacisków w dokumentacji
-oznacza, że każdy elektryk z uprawnieniami podłączy instalację i każdy serwisant ją później
-odczyta. Jej brak zamienia prostą czynność w zależność od jednej firmy. Wcześniejsza wersja żądała
-oznaczenia barwnego **przewodu** — było to niewykonalne, bo przewody obiektowe dobiera instalator;
-producent oznacza złączkę, instalator oba końce przewodu.
-
-##### Bezpieczeństwo elektryczne
-
-| ID | Moc | Klasa zdolności | Wymaganie |
-|---|---|---|---|
-| W-K11 | MUSI | **D** | Być urządzeniem **I klasy ochronności** z obowiązkowym przewodem ochronnym, podłączanym przed przewodami roboczymi |
-| W-K12 | MUSI | **D** | Zawierać wewnątrz obudowy **zabezpieczenie nadprądowe** obwodu zasilającego o charakterystyce dobranej do prądu udarowego i zdolności zwarciowej nie mniejszej niż **6 kA**, dostępne bez narzędzi specjalistycznych |
+| W-K11 | MUSI | **D** | Dla zestawu z obwodami sieciowymi zapewnić właściwą klasę ochronności i połączenia ochronne zgodnie z projektem oraz dokumentacją. Obowiązkowego PE nie przerywać; sam moduł zasilany bezpiecznym napięciem nie jest automatycznie urządzeniem I klasy ochronności. |
+| W-K12 | MUSI | **D** | Zapewnić zabezpieczenia zasilania dobrane do prądu udarowego, obciążenia i warunków zwarciowych obiektu, z udokumentowanym miejscem montażu i dostępem serwisowym. |
 | W-K13 | MUSI | **D** | Zapewnić **fizyczną przegrodę albo osłonę** oddzielającą obwody sieciowe od obwodów niskiego napięcia na listwie przyłączeniowej, chroniącą przed dotykiem podczas prac serwisowych |
 | W-K14 | MUSI | **D** | Wymagać indywidualnego zaizolowania żył niewykorzystanych w przewodach wielożyłowych |
 | W-K15 | MUSI | **D** | Zawierać w dokumentacji **listę kontrolną przed pierwszym załączeniem**, obejmującą kontrolę mechaniczną i elektryczną |
-
-Wymaganie W-K13 zaostrzono po stwierdzeniu, że zaciski z napięciem sieciowym i zaciski
-niskonapięciowe potrafią leżeć na jednej listwie, bez żadnej przegrody. Serwisant podłączający tor
-audio pracuje wtedy na tej samej listwie, na której jest faza.
-
-##### Instalacja
-
-| ID | Moc | Klasa zdolności | Wymaganie |
-|---|---|---|---|
 | W-K16 | MUSI | **D** | Dołączać **instrukcję instalacji** obejmującą kolejność prac, dobór mocowania do rodzaju podłoża, montaż magazynu energii, montaż anten i uruchomienie |
 | W-K17 | MUSI | **D** | Wskazywać wymagane **kwalifikacje personelu** — osobno dla prac przy napięciu sieciowym, dla kotwienia obudowy o znacznej masie i dla prac na wysokości — wraz z wykazem środków ochrony indywidualnej i warunkami przerwania pracy |
 | W-K18 | MUSI | **D** | Przewidywać przy pierwszym załączeniu **sprawdzenie bezprzerwowego przejścia na zasilanie rezerwowe** i powrotu do zasilania sieciowego |
 | W-K19 | POWINIEN | **D** | Zawierać wzór protokołu przekazania instalacji |
 
----
+#### Stosowanie i odbiór
+
+Wartości połączeń elektrycznych, konfiguracja sieci, role i sekrety nie są publikowane w wytycznych. Trafiają do karty modelu i egzemplarza. Wymagania dotyczące wskazanego profilu ocenia się z odpowiednimi scenariuszami [Z10](zalaczniki/Z10-TESTY-I-ODBIOR.md). Dobór opisuje [profil 1.5](PROFIL_1_5.md), a zakres zamówienia [Z11](zalaczniki/Z11-ZAPISY-DO-OPZ.md).
+
+Brak funkcji w bieżącym kontrakcie centrali oznacza zależność do zamknięcia przed odbiorem tej funkcji, a nie podstawę do mapowania innej komendy. Samo wpisanie numeru 1.5 lub 0.5 nie aktualizuje oprogramowania urządzeń.
 
 #### Zestawienie liczbowe
 
-| Część | Wymagań | z tego MUSI |
-|---|---|---|
-| A — weryfikacja polecenia | 17 | 15 |
-| B — obszar działania | 8 | 7 |
-| C — sygnały i komunikaty | 17 | 11 |
-| D — kanały i łączność | 25 | 22 |
-| E — wysterowanie syreny | 14 | 12 |
-| F — platforma sterownika | 14 | 12 |
-| G — tryby i diagnostyka | 13 | 11 |
-| H — zasilanie i środowisko | 9 | 7 |
-| I — swoboda wyboru dostawcy | 15 | 13 |
-| J — współistnienie | 8 | 7 |
-| K — zestaw instalacyjny | 26 | 24 |
-| **Razem** | **166** | **141** |
+| Część | Wymagań | MUSI |
+| --- | --- | --- |
+| A — Weryfikacja polecenia | 17 | 15 |
+| B — Obszar działania | 8 | 7 |
+| C — Sygnały i komunikaty | 17 | 13 |
+| D — Kanały i łączność | 26 | 23 |
+| E — Wysterowanie syreny | 14 | 12 |
+| F — Platforma i cykl życia | 19 | 19 |
+| G — Tryby pracy i dowody | 13 | 11 |
+| H — Zasilanie i warunki pracy | 9 | 7 |
+| I — Interoperacyjność i prawa | 15 | 14 |
+| J — Współistnienie i arbitraż | 8 | 7 |
+| K — Zestaw i instalacja | 26 | 24 |
+| **Razem** | **172** | **152** |
 
-Rozkład według klas zdolności: **I — 111**, **II — 7**, **III — 9**; znaki adresata: **D — 35**, **P — 4**.
-
-W porównaniu z wersją 0.2 dodano osiemnaście wymagań: szesnaście na podstawie zestawienia
-dotychczasowych zapisów z dokumentacją faktycznie dostarczonego produktu oraz dwa w związku
-z określeniem granic rozmiaru polecenia. Dziewięć wymagań przeredagowano z powodu niewykonalności,
-sprzeczności wewnętrznych lub możliwości ich formalnego spełnienia bez realizacji celu. Siedem
-wymagań dostosowano do poziomu rozwiązań dostępnych na rynku.
-
-
----
-
+Identyfikatory 166 wymagań wydania 0.4 zachowano. Dodano W-D26 i W-F15–W-F19; zmiany zakresu są jawne i dotyczą nowego wydania dokumentacji, bez zmiany wcześniejszych umów lub protokołów odbioru.
 
 ### Załącznik nr 4 — Katalog sygnałów i plików referencyjnych
 
+#### Sygnał, plik i komenda
 
-#### Cel i zakres załącznika
+Sygnał akustyczny, jego plik referencyjny i kod w protokole są różnymi pojęciami. Przepisy określają rodzaj i nominalny przebieg sygnału. KG PSP określa zatwierdzony pakiet lokalny. Kontrakt centrali określa, jakie funkcje można aktualnie wywołać danym kanałem. Zmiana wytycznych nie wdraża nowego kodu w centrali.
 
-W obiegu funkcjonują trzy sposoby oznaczania tego samego dźwięku: opis w rozporządzeniu, nazwa
-pliku referencyjnego i kod stosowany w kanałach technicznych. Załącznik przedstawia ich
-jednoznaczne powiązanie, w tym równoważność oznaczeń „modulowany trzy minuty”,
-`1_alarm_ludnosci.wav` i `SIREN_ALARM_MODULATED_3M`.
+#### Katalog akustyczny
 
-Załącznik jest też jedynym miejscem, w którym te powiązania są zapisane w tekście. Wartości
-maszynowe — wykaz plików, sumy kontrolne, wersje — publikowane są pod adresem produkcyjnym SOiA
-i to one są rozstrzygające przy wdrożeniu.
+Podstawa: [rozporządzenie MSWiA z 14 maja 2025 r., Dz.U. poz. 645](https://api.sejm.gov.pl/eli/acts/DU/2025/645/text.pdf), załącznik, strona 4.
 
----
+| Funkcja | Przebieg nominalny |
+| --- | --- |
+| Ogłoszenie alarmu dla ludności cywilnej | Sygnał modulowany, 180 s. |
+| Odwołanie alarmu dla ludności cywilnej | Sygnał ciągły, 180 s. |
+| Alarm dla jednostki ochrony przeciwpożarowej | Trzykrotnie wzrastający i opadający dźwięk, z przerwami 30 s, łącznie 180 s. |
+| Alarm ćwiczebny lub treningowy | Sygnał ciągły, 60 s. |
 
-#### Cztery sygnały akustyczne
+W profilu podstawowym dla ludności wymagane są ogłoszenie i odwołanie alarmu. Pozostałe funkcje dobiera się do profilu zastosowania i uprawnień, zachowując ich właściwe przebiegi. Dostępność lokalna nie jest uprawnieniem do zdalnego uruchomienia.
 
-Rozporządzenie Ministra Spraw Wewnętrznych i Administracji z dnia 14 maja 2025 r. w sprawie alarmów
-i komunikatów ostrzegawczych określa w załączniku cztery sygnały akustyczne syreny. Nie ma ich
-więcej i nie wolno tworzyć własnych.
+Odwołanie jest odrębną emisją, nie ciszą, STOP ani anulowaniem akcji oczekującej. Syrena silnikowa realizuje sygnał programem napędu, a elektroniczna odtwarza zasób we właściwym torze. Zapowiedzi słowne i sygnalizacja wizualna wymagają odpowiednich profili.
 
-**Alarm dla ludności cywilnej — ogłoszenie.** Modulowany dźwięk syreny alarmowej trwający trzy
-minuty. To jest jeden z sygnałów skierowanych do ludności
-i wyzwalanych centralnie.
+#### Stan publicznego kontraktu
 
-**Alarm dla ludności cywilnej — odwołanie.** Ciągły dźwięk syreny alarmowej trwający trzy minuty.
-Rozporządzenie umieszcza go w kolumnie „odwołanie alarmu”, co bywa źródłem nieporozumienia:
-odwołanie alarmu **jest emisją dźwięku, a nie jej zaprzestaniem**. Cisza nie odwołuje niczego.
+Odczyt publicznych metadanych 10.09.2026 potwierdził profil `PL-CAP-DIST-IOT` w wersji `0.1`, słownik `2026.1` i klasę odbiorcy `SIREN_CONTROLLER`.
 
-**Alarm dla jednostki ochrony przeciwpożarowej.** Trzykrotnie wzrastający i opadający dźwięk syreny
-z przerwami trzydziestosekundowymi, łącznie trzy minuty. Służy do wezwania strażaków, a nie do
-ostrzegania ludności — to inny odbiorca i inne uprawnienie do uruchomienia.
+| Kod ogłoszony w metadanych | Znaczenie |
+| --- | --- |
+| `SIREN_ALARM_MODULATED_3M` | Ogłoszenie alarmu, z kwalifikacją według kontraktu. |
+| `SIREN_CANCEL_PENDING` | Anulowanie wskazanej znanej akcji oczekującej; bez dźwięku odwołania. |
 
-**Alarm ćwiczebny lub treningowy.** Ciągły dźwięk syreny trwający jedną minutę. Różni się od odwołania
-alarmu **wyłącznie czasem trwania** — jedna minuta zamiast trzech. Jest to najłatwiejsza do pomylenia
-para w całym katalogu i warto o tym pamiętać przy konfiguracji urządzenia.
+Źródła: [profil](https://alarm.soia.info/api/v1/iot/profile) i [słowniki](https://alarm.soia.info/api/v1/iot/dictionaries). Jest to datowany odczyt. Przed odbiorem sprawdza się wersję przeznaczoną do współpracy z urządzeniem.
 
-Rozporządzenie dopuszcza obok sygnału akustycznego zapowiedź słowną powtarzaną trzykrotnie, oraz
-odrębnie sygnał wizualny w postaci żółtego trójkąta. Kontrakt SOiA nie przenosi dziś treści słownej,
-a sygnalizacja wizualna pozostaje poza zakresem Wytycznych.
+W tym odczycie nie potwierdzono odrębnej publicznej komendy dźwiękowego odwołania, wywołania jednostki, sygnału ćwiczebnego ani ogólnego TTS. Nie przypisuje się im z góry kodów rzekomo obowiązującego słownika 2026.2. Ich wdrożenie wymaga zgodnego kontraktu i aplikacji. Kody SMS wynikają z konkretnego profilu, a nie z uniwersalnej cyfry polecenia.
 
----
+#### Lokalny pakiet i kontrola integralności
 
-#### Pliki referencyjne
+Dla podstawowego toru elektronicznego sterownik ma lokalne zasoby ALARM i ODWOLANIE, po 180 s. Nazwy fizycznych plików, format, wersję i skróty określa zatwierdzony manifest. Pakiet musi mieścić się w pamięci oraz przetrwać restart, aktualizację i odtworzenie.
 
-Wytyczne Komendanta Głównego Państwowej Straży Pożarnej z dnia 28 maja 2025 r. w sprawie
-przygotowania, dystrybucji oraz eksploatacji cyfrowych sygnałów alarmowych syren ustanawiają dla
-każdego z czterech sygnałów **plik wzorcowy**, opatrzony sumą kontrolną. Pliki te są jedyną
-obowiązującą postacią sygnału.
+| Element manifestu | Znaczenie |
+| --- | --- |
+| Wydanie i akceptacja | Wiadomo, kto i dla jakiego profilu zatwierdził zasób. |
+| Funkcja i plik | Jednoznaczne powiązanie lokalnej funkcji z zasobem. |
+| Format i parametry | Kodowanie, kanały, próbkowanie i nominalny czas. |
+| Skrót i pochodzenie | Możliwość sprawdzenia, że dostarczono właściwy zasób. |
+| Metoda odbioru | Punkt pomiaru, tolerancja i niepewność pomiarowa. |
 
-Wszystkie mają format **WAV PCM 16 bit mono** przy próbkowaniu **8 kHz**. Urządzenie musi obsłużyć
-ten format; wyższe próbkowanie jest dopuszczalne, niższe nie.
+W obiegu istnieją materiały referencyjne z maja 2025 r. Nie przenosi się sum z dowolnej kopii jako aktualnych kotwic wdrożenia bez potwierdzenia wydania i akceptacji. Tolerancje nie zmieniają nominalnego czasu sygnału. Odsłuch nie zastępuje sprawdzenia integralności, a skrót pliku nie potwierdza akustycznego efektu instalacji.
 
-| Sygnał | Plik | Czas | Struktura | Charakterystyka |
-|---|---|---|---|---|
-| Ogłoszenie alarmu — ludność cywilna | `1_alarm_ludnosci.wav` | 180 s | ciąg przebiegów wzrastająco-opadających, bez przerw | okres przebiegu ok. 5 s, pasmo modulacji ok. 350–900 Hz |
-| Alarm dla jednostki ochrony ppoż. | `2_alarm_osp.wav` | 180 s | trzy bloki przebiegu rozdzielone przerwami 30 s | okres przebiegu ok. 5 s, pasmo ok. 350–900 Hz |
-| Alarm ćwiczebny lub treningowy | `3_alarm_cwiczebny.wav` | 60 s | dźwięk ciągły | ton ok. 600 Hz, dopuszczalnie 550–650 Hz |
-| Odwołanie alarmu — ludność cywilna | `4_odwolanie_alarmu.wav` | 180 s | dźwięk ciągły | ton ok. 600 Hz, dopuszczalnie 550–650 Hz |
+#### Dystrybucja i aktualizacja
 
-Wartości pasma i częstotliwości są poglądowe, z dopuszczalnym odchyleniem ±15 %. Wiążące są:
-**czas trwania w tolerancji ±5 %** oraz **struktura czasowa** — modulacja oraz liczba i długość
-przerw. Poziom na wyjściu wzmacniacza musi mieścić się w granicach **±3 dB** względem wzorca,
-bez przesterowania.
+Pliki dostarcza się przed uruchomieniem funkcji. Aktualizacja pakietu może korzystać z zatwierdzonego mechanizmu utrzymania KG PSP, z kontrolą wersji i integralności oraz potwierdzeniem instalacji. Jest osobna od pobierania IoT Feed; alarm nie wymaga pobrania audio ani strumieniowania z internetu.
 
-##### Sumy kontrolne
+Wariant API z plikami w syrenie wymaga odrębnego przyjęcia miejsca zasobu, jego kontroli i mapy funkcji. Nie zastępuje milcząco profilu lokalnych plików w sterowniku. Pakiet aplikacji, pakiet audio, słownik kodów i wytyczne mają odrębne wersje.
 
-Wartości sum kontrolnych są zgodne z wykazem opublikowanym wraz z pakietem. Instalacja pliku
-o niezgodnej sumie jest niedopuszczalna.
+#### Sprawdzenia okresowe
 
-| Plik | SHA-256 |
-|---|---|
-| `1_alarm_ludnosci.wav` | `1b5f5ef4223c6bcffb9205f7bba82d1349ba928fbcaac50978e5d8a90763dcfa` |
-| `2_alarm_osp.wav` | `6940ec902ba5e81b708a0d3f717200872d79b6e5ad427cc46adec55d78c23cd5` |
-| `3_alarm_cwiczebny.wav` | `16e84498292a743e44b3622b8626e5fe21b0c243f7e1f52d8e438c4123f67a0e` |
-| `4_odwolanie_alarmu.wav` | `4049bb3792210fcfd682bcbe2a7d512a310c4c0b7ca6a3e57851ec0203d7df63` |
-
-**Źródłem rozstrzygającym są Wytyczne KG PSP z dnia 28 maja 2025 r.** — dokument podpisany,
-a nie strona internetowa, z której plik pobrano. Podmiana zawartości strony niczego nie daje,
-dopóki instalator porównuje sumę z Wytycznymi. Wartości przytoczono tu dla wygody; przy rozbieżności
-obowiązują Wytyczne.
-
----
-
-#### Sposoby pozyskania plików referencyjnych
-
-Pliki referencyjne są udostępniane dwiema drogami, które prowadzą do tego samego materiału.
-
-**Dla podmiotów publicznych — kaskadą.** W trybie określonym w § 4 Wytycznych z 28 maja 2025 r.:
-Komenda Główna PSP udostępnia pakiet komendantom wojewódzkim, ci właściwym organom ochrony ludności,
-podmiotom ochrony przeciwpożarowej oraz innym podmiotom prowadzącym systemy ostrzegania.
-
-**Dla wszystkich pozostałych — publicznie, do pobrania ze strony.** Pliki wraz z opisem, czasem
-trwania i sumami kontrolnymi są dostępne na `soia.info` w miejscu przeznaczonym do pobrania przez
-człowieka.
-
-**System nie przenosi plików.** Nie ma podpisanego wykazu audio ani punktu dostępu, z którego
-sterownik pobierałby dźwięk — polecenie wskazuje sygnał, a plik jest już w urządzeniu, wgrany
-**przy instalacji**, dokładnie tak, jak robiono to dotychczas. W instalacji, w której pliki
-znajdują się w pamięci samej syreny, wgrywa je wykonawca syreny albo sterownika.
-
-Rozwiązanie to wynika z otwartości poziomu zerowego: skoro dowolny podmiot może odebrać polecenie
-i wyemitować sygnał, musi też mieć legalną drogę do materiału wzorcowego. Bez tego powstałyby
-dźwięki wymyślone samodzielnie — czyli dokładnie ta rozbieżność, której Wytyczne z 2025 r. miały
-zapobiec.
-
-Niezależnie od drogi pozyskania obowiązuje ta sama zasada: **przed instalacją pliku należy
-potwierdzić zgodność jego sumy kontrolnej**.
-
----
-
-#### Powiązanie z kodami technicznymi
-
-Ten sam sygnał występuje w kanałach SOiA pod dwiema postaciami: jako kod sygnału w podpisanym
-wykazie poleceń oraz jako cyfra komendy w kanale wiadomości tekstowych. Poniższa tabela jest
-jedynym miejscem, w którym te trzy światy są zestawione.
-
-| Sygnał | Plik referencyjny | Kod sygnału | Komenda SMS |
-|---|---|---|---|
-| Ogłoszenie alarmu — ludność cywilna | `1_alarm_ludnosci.wav` | `SIREN_ALARM_MODULATED_3M` | `*1` |
-| Odwołanie alarmu — ludność cywilna | `4_odwolanie_alarmu.wav` | `SIREN_ALL_CLEAR_STEADY_3M` | `*3` |
-| Alarm dla jednostki ochrony ppoż. *(poza obecną fazą)* | `2_alarm_osp.wav` | `SIREN_JOP_CALLOUT_3M` | `*5` |
-| Alarm ćwiczebny lub treningowy | `3_alarm_cwiczebny.wav` | `SIREN_EXERCISE_STEADY_1M` | `*7` |
-
-Kody sygnałów obowiązują od wersji słownika **2026.2**. Urządzenie sprawdza wersję słownika przy
-każdym pobraniu wykazu i **odrzuca nieznany kod, nie przerywając obsługi pozostałych poleceń** —
-inaczej rozszerzenie katalogu wyłączyłoby starsze urządzenia w terenie.
-
-##### Rozróżnienie słownika kodów i uprawnień do wydania sygnału
-
-Należy rozróżnić zakres słownika kodów od uprawnienia do wydawania sygnałów. Słownik określa kody,
-które mogą wystąpić w kontrakcie i które urządzenie MUSI obsługiwać ze względu na przewidywany
-wieloletni okres eksploatacji. Uprawnienie do wydania sygnału stanowi odrębną decyzję operacyjną.
-
-Ujęcie kodu sygnału wywołania jednostki ochrony przeciwpożarowej w słowniku 2026.2 nie oznacza
-nadania uprawnienia do jego wydania. SOiA służy obecnie ostrzeganiu ludności, a funkcja wywoływania
-jednostek pozostaje niedostępna w interfejsie operatorskim do czasu wdrożenia odrębnego etapu.
-
-Cyfry komend należą do **profilu bazowego kanału wiadomości tekstowych**, który jest wersjonowany
-i będzie się zmieniał wraz z profilami kolejnych producentów. Wiążąca jest struktura powiązania,
-a nie konkretne brzmienie cyfry; obowiązujące wartości dla danej instalacji zapisuje się w karcie
-konfiguracji.
-
----
-
-#### Czynności i polecenia niebędące sygnałami akustycznymi
-
-Dwa pojęcia bywają wciągane do katalogu, a do niego nie należą, bo nie odpowiada im żaden dźwięk.
-
-**Odwołanie akcji nierozpoczętej** to polecenie „nie zaczynaj”, skuteczne wyłącznie wobec emisji,
-która jeszcze nie ruszyła. Nie ma pliku, nie ma dźwięku i nie zatrzymuje niczego, co już trwa.
-
-**Zatrzymanie emisji** nie występuje w żadnym kanale i nie istnieje jako polecenie. Rozpoczęta
-sekwencja wykonuje się do końca — sprawdzono to na urządzeniu i nie da się jej przerwać inaczej
-niż odjęciem zasilania. Co najmniej jedna pełna sekwencja zabrzmi zawsze, niezależnie od tego,
-co zostanie wysłane po jej rozpoczęciu.
-
-Czym innym jest **odcięcie lokalne**: czynność na obiekcie, wykonywana na obwodzie wykonawczym,
-niezależna od łączności i od oprogramowania. Zatrzymania nie ma, odcięcie jest zawsze.
-
-Jeżeli alarm ogłoszono omyłkowo po rozpoczęciu emisji, sekwencja trwa przez pełny czas właściwy
-dla danego sygnału. Działaniem operacyjnym jest odwołanie alarmu, czyli odrębna emisja sygnału
-ciągłego przez trzy minuty.
-
----
-
-#### Wersjonowanie
-
-W obiegu są dwie niezależne wersje i nie wolno ich mylić.
-
-**Wersja pakietu plików referencyjnych**, w formacie `v.RRRRMMDD`, zgodnie z § 3 ust. 2 Wytycznych
-z 28 maja 2025 r. Zmienia się, gdy zmienia się materiał dźwiękowy. Każda nowa wersja otrzymuje
-protokół zmian, a urządzenie powinno umieć pobrać nowy pakiet bez wizyty serwisowej.
-
-**Wersja słownika kodów**, obecnie `2026.2`. Zmienia się, gdy dochodzi nowy kod sygnału albo zmienia
-się znaczenie istniejącego. Każda zmiana wymaga przeglądu zgodności urządzeń już zainstalowanych.
-
-Zmiana jednej z tych wersji nie pociąga automatycznie zmiany drugiej.
-
-!!! danger "Wymaga decyzji przed akceptacją — aktualizacja pakietu audio"
-
-    IoT Feed nie przenosi plików dźwiękowych. Jeżeli urządzenie ma później pobierać nową wersję pakietu bez wizyty serwisowej, trzeba odrębnie wskazać kanał dystrybucji, źródło zaufania, kontrolę integralności, zasady wersjonowania i sposób potwierdzenia instalacji. Do czasu tej decyzji nie należy utożsamiać aktualizacji pakietu z cyklicznym pobieraniem Feedu.
-
----
-
-#### Sprawdzenie okresowe
-
-Zgodność brzmienia potwierdza się **testem odsłuchowym wykonywanym nie rzadziej niż raz na
-dwanaście miesięcy** oraz po każdej modernizacji sterownika, w trybie i na wzorze protokołu
-określonym w Wytycznych z 28 maja 2025 r. Test obejmuje odtworzenie każdego pliku w trybie lokalnym,
-pomiar czasu trwania i potwierdzenie struktury sygnału.
-
-Stwierdzenie rozbieżności czasu trwania przekraczającej 5 % albo zmiany struktury sygnału powoduje
-**wyłączenie syreny z eksploatacji** do czasu ponownego wgrania pliku wzorcowego.
-
----
-
-#### Rozbieżności stwierdzone w materiale źródłowym
-
-W Wytycznych z 28 maja 2025 r. występują dwie niezgodności wewnętrzne dotyczące pliku
-`2_alarm_osp.wav`. Tabela w § 2 opisuje jego strukturę jako „ciągły x 30 s”, podczas gdy Karta
-referencyjna w tym samym dokumencie oraz brzmienie rozporządzenia wskazują trzy bloki wzrastająco-
--opadające rozdzielone przerwami trzydziestosekundowymi. Maksymalna amplituda tego pliku podana
-jest w jednym miejscu jako 0,9438, w drugim jako 0,7977.
-
-W niniejszym załączniku przyjęto brzmienie zgodne z rozporządzeniem i Kartą referencyjną.
-Rozstrzygnięcie rozbieżności w dokumencie źródłowym wymaga erraty i pozostaje poza zakresem
-Wytycznych o podłączaniu syren.
-
-
----
-
+Plan utrzymania określa częstotliwość i zakres sprawdzeń na podstawie właściwych wytycznych, DTR i oceny instalacji. Sprawdza się zasoby, sygnały, ochronę przed błędnym uruchomieniem oraz zasilanie. Niezgodność wymaga ustalenia przyczyny i zakresu ograniczenia gotowości; ponowne wgranie pliku nie naprawia automatycznie usterki toru fizycznego. Próby emisji organizuje się zgodnie z właściwą procedurą.
 
 ### Załącznik nr 5 — Profile sterownika i maszyna stanów
 
+#### Wspólny rdzeń i właściwy tor wykonania
 
-#### Architektura rdzenia wspólnego i profili wykonawczych
+System przekazuje znaczenie polecenia, a aplikacja KG PSP na zgodnej platformie wybiera lokalną funkcję. Wspólne są zaufanie, adresat, czas, historia i arbitraż. Typ syreny, tryb połączenia i wyposażenie dobiera się osobno.
 
-System centralny nie wymaga informacji o konstrukcji konkretnej syreny. Przekazuje znaczenie
-polecenia: rodzaj sygnału, obszar, okno rozpoczęcia i identyfikator. Sterownik odpowiada za
-przekształcenie zweryfikowanego polecenia w działanie właściwe dla danej instalacji.
+| Oś doboru | Warianty |
+| --- | --- |
+| Klasa zdolności | I; kompaktowe audio 1.5 albo rozszerzone II; opcjonalne TTS III. |
+| Profil wykonawczy | Elektroniczny, silnikowy albo inny jawnie zdefiniowany odbiornik. |
+| Tor lokalny | AUDIO/PTT, udokumentowany API lub izolowane sterowanie napędem. |
+| Rodzaj inwestycji | Nowy punkt, adaptacja istniejącego lub montaż sprzętu powierzonego. |
 
-Konstrukcja ma więc dwie warstwy. **Rdzeń wspólny** — jednakowy dla wszystkich urządzeń — obejmuje
-odbiór polecenia dowolnym kanałem, weryfikację, regułę obszaru, kontrolę czasu, ochronę przed
-powtórzeniem i maszynę stanów. **Profil wykonawczy** opisuje, jak dane urządzenie zamienia decyzję
-rdzenia na dźwięk.
-
-```mermaid
-flowchart TB
-    IN[Kanały wejściowe<br/>IP, sieć komórkowa, wiadomości tekstowe,<br/>radio i stacja dyspozytorska] --> ENV[Wspólna koperta polecenia]
-    ENV --> CORE[Rdzeń wspólny<br/>zaufanie, obszar, czas,<br/>ochrona przed powtórzeniem i stany]
-    CORE --> PE[Profil elektroniczny]
-    CORE --> PS[Profil silnikowy]
-    CORE --> PR[Profil modernizacji instalacji istniejącej]
-    PE --> SELECT{Dobór trybu sprzężenia}
-    PS --> SELECT
-    PR --> SELECT
-    SELECT --> TD[Tryb cyfrowy<br/>udokumentowany interfejs syreny]
-    SELECT --> TA[Tryb audio<br/>sygnał liniowy + sterowanie nadawaniem]
-    SELECT --> TS[Tryb stykowy<br/>izolowana warstwa wykonawcza]
-    TD --> OUT[Syrena lub inne urządzenie sygnalizacyjne]
-    TA --> OUT
-    TS --> OUT
-```
-
-Podział na profile mówi, **czym jest urządzenie wykonawcze**. Osobną osią jest **tryb sprzężenia** —
-czy sterownik podaje syrenie gotowy dźwięk, wywołuje jej interfejs programowy, czy zamyka obwód.
-Te dwie osie są niezależne i nie należy ich mylić.
-
-Kanały wejściowe nie zmieniają znaczenia polecenia. Sieć przewodowa, sieć bezprzewodowa, transmisja
-komórkowa, wiadomość tekstowa, radio dalekiego zasięgu i stacja radiowa przekazują dane do jednej
-wspólnej koperty i jednej maszyny stanów. Dodanie kanału łączności nie może prowadzić do utworzenia
-odrębnej logiki wykonawczej.
-
----
+Profil 1.5 zachowuje ten sam rdzeń i jakość audio co II, lecz ma mniejszą liczbę portów. Współpraca z OrchestraOS/Yocto i provisioningiem jest obowiązkiem platformy, a nie cechą zastrzeżoną dla klasy III.
 
 #### Profil elektroniczny
 
-Syrena elektroniczna to wzmacniacz z przetwornikiem. Sterownik podaje na jej wejście sygnał audio
-i uruchamia tor nadawania.
+Sterownik odtwarza zatwierdzone lokalne pliki i podaje sygnał przez LINE OUT. PTT jest sterowane osobno i może korzystać z jednego z istniejących przekaźników. Czas PTT obejmuje zmierzone przygotowanie toru, całe audio i zakończenie; nie jest automatycznie równy czasowi pliku.
 
-Profil obejmuje odtworzenie sygnału z pliku wzorcowego, odtworzenie komunikatu nagranego,
-wygenerowanie komunikatu z tekstu w języku polskim, wyjście liniowe o uzgodnionym poziomie,
-sterowanie torem nadawania oraz wykrycie gotowości wzmacniacza.
+Wejście syreny identyfikuje się z dokumentacji. Wejście MIC wymaga właściwego dopasowania poziomu, odniesienia mas i ewentualnej izolacji. Złącze podobne do RJ-45 nie musi być Ethernetem. Parametrów i numerów zacisków nie przenosi się między modelami.
 
-**Syrena elektroniczna może być sterowana także przez własny interfejs programowy**, jeżeli
-producent taki udostępnia i udokumentował go zgodnie z wymaganiami swobody wyboru dostawcy.
-Sterownik wywołuje wtedy polecenia syreny — odtwórz wskazany slot, podaj stan — zamiast
-podawać jej gotowy dźwięk. Połączenie realizowane jest **standardową warstwą fizyczną**: portem
-szeregowym, przewodem sieciowym, złączem uniwersalnym albo wejściami i wyjściami ogólnego
-przeznaczenia. Nie jest to rozwiązanie zarezerwowane dla instalacji istniejących — nowa syrena
-z udokumentowanym interfejsem korzysta z tej drogi tak samo.
-
-Wybór między sterowaniem przez interfejs a podaniem gotowego dźwięku należy do projektanta
-instalacji i zależy od tego, co syrena potrafi oraz co producent udokumentował. Oba sposoby są
-równoprawne; opisuje je rozdział o trybach sprzężenia.
-
-Należy uwzględnić dwa odrębne wymagania. Poziom sygnału musi mieścić się w granicach ±3 dB
-względem wzorca, bez przesterowania. Potwierdzenie uruchomienia toru audio nie stanowi natomiast
-dowodu słyszalności i nie zastępuje sprawdzenia zasięgu.
-
-Dostarczane urządzenia mają wyjście stereofoniczne z dwoma kanałami przypisywanymi programowo
-niezależnie. Pozwala to rozdzielić tor syreny od toru pomocniczego — na przykład nagłośnienia
-wewnętrznego albo stacji radiowej — bez dokładania sprzętu.
-
----
+TTS jest osobnym rozszerzeniem: zatwierdzony tekst, lokalny polski silnik i głos, prawa użycia, bufor, limity oraz próba offline. Gotowe nagrania nie wymagają syntezy. Wymagane funkcje głosowe nie mogą opóźniać podstawowego sygnału.
 
 #### Profil silnikowy
 
-Syrena silnikowa wytwarza dźwięk mechanicznie. Sterownik nie tworzy tu przebiegu akustycznego, tylko
-zamyka i otwiera obwód zasilania układu wykonawczego według zatwierdzonego programu.
+Syrena wytwarza dźwięk mechanicznie. Sterownik przekazuje wyłącznie sygnały sterujące do izolowanej aparatury, a silnik ma własny tor mocy, zabezpieczenia i zasilanie. Funkcje programu, np. RUN/CYKL, mapuje się na odebrany interfejs. Moc silnika nie jest prądem przełączanym przez wyjście sterownika.
 
-**Sterownik nie może sterować obwodem mocy bezpośrednio z wyjść ogólnego przeznaczenia.** Musi
-używać certyfikowanej, izolowanej warstwy wykonawczej — stycznika albo układu rozruchowego —
-z izolacją galwaniczną i fizycznym zabezpieczeniem przed porażeniem podczas prac serwisowych.
+Program uwzględnia rozbieg, wybieg i cykl łączeń. Wymagane jest niezależne ograniczenie okna pracy, lokalne odcięcie i nadzór. Odjęcie napięcia kończy napęd, ale wirnik może jeszcze wybiegać. Stan stycznika nie jest pomiarem dźwięku. Akumulator sterownika nie zapewnia automatycznie zasilania silnika.
 
-Profil obejmuje ponadto sprzętowe blokady wzajemne, ograniczenie maksymalnego czasu ciągłego
-zasilania, monitorowanie stanu stycznika, wykrywanie obecności obciążenia oraz wejście awaryjnego
-odcięcia.
+#### Wariant przez API i modernizacja
 
-Modulacja sygnału ochrony ludności jest **programem sterowania układem wykonawczym**, a nie
-przypadkowym przełączaniem z poziomu aplikacji. Parametry cyklu muszą pochodzić z zatwierdzonego
-profilu i przejść testy u producenta syreny oraz na instalacji — a nie zostać dobrane
-eksperymentalnie w terenie.
+Udokumentowany interfejs cyfrowy może służyć do wywołania funkcji syreny, jeśli obejmuje wymagany zakres, statusy, parametry i prawa integracji. Sam RS-232 lub Ethernet nie jest protokołem. Wykonawca dostarcza adapter, który zachowuje znaczenie funkcji i działa z pakietem KG PSP.
 
-Osobno trzeba pamiętać, że dla syreny silnikowej **odcięcie lokalne** oznacza **zatrzymanie wirnika
-pracującego pod obciążeniem**. Jest to czynność na obwodzie mocy, ze skutkami mechanicznymi,
-i pozostaje środkiem awaryjnym.
+Jeżeli API uruchamia generator syreny lub zasób zapisany w jej pamięci, trzeba jawnie przyjąć ten wariant, miejsce zasobu, kontrolę integralności i nadzór. Nie jest to automatycznie spełnienie wymagania plików w pamięci sterownika. Tak samo wybór gotowego nagrania przez API nie jest pełną obsługą dowolnego tekstu TTS.
 
----
+Adaptacja zachowuje wymagane dotychczasowe sterowanie lokalne i radiowe. Potrzebne nastawy integracyjne opisuje karta; nie podłącza się niezależnych nadajników do jednego portu szeregowego przez pasywny rozgałęźnik.
 
-#### Profil modernizacji instalacji istniejącej (retrofit)
+#### Znaczenie końca działania
 
-Ten profil obsługuje instalacje, które już stoją. Wytyczne przewidują dwie drogi, a wybór należy
-do zamawiającego, bo to on zna stan instalacji, umowy serwisowe i budżet.
+| Zdarzenie | Reguła |
+| --- | --- |
+| Koniec prawidłowego sygnału | Lokalny nadzór kończy odtwarzanie lub program i zwalnia właściwy tor. |
+| CANCEL_PENDING | Dotyczy wskazanej znanej operacji oczekującej; nie emituje odwołania i nie przerywa trwającego sygnału. |
+| Odwołanie alarmu | Odrębna funkcja wykonawcza, z własną kwalifikacją i właściwym sygnałem. |
+| Techniczne STOP | Tylko w profilu, który definiuje i autoryzuje tę funkcję; odnotowuje przerwanie. Nie jest odwołaniem alarmu. |
+| Odcięcie lokalne albo niezależny limit bezpieczeństwa | Ma pierwszeństwo nad poleceniami. Nie wymaga działania sieci ani aplikacji. |
+| Błąd lub niepewność po aktywacji | Bezpieczne zakończenie i trwały wynik; brak automatycznego wznowienia albo powtórzenia. |
 
-!!! info "Zasada modernizacji instalacji istniejącej"
+Normalnie zakwalifikowany sygnał jest wykonywany do końca. Wyjątkiem jest działanie ochronne albo techniczne zatrzymanie przewidziane w przyjętym profilu. Nie wolno deklarować, że żaden sprzęt i żaden kanał nie posiada funkcji STOP; nie wolno też tworzyć jej samodzielnie przez zmianę znaczenia innej komendy.
 
-    Kanał SOiA dodaje się jako tor równoległy. Dołączenie go nie może
-    wyłączyć ani ograniczyć dotychczasowych sposobów uruchomienia syreny — istniejącego systemu
-    dyspozytorskiego, pulpitu lokalnego, przycisku ręcznego ani kanału radiowego. Wykonawca nie może
-    warunkować dołączenia wyłączeniem albo przeprogramowaniem istniejącego systemu, ani uzależniać
-    od tego gwarancji. Oba tory pracują równolegle *(W-J01 do W-J08)*.
+#### Arbitraż poleceń
 
-Tryby sprzężenia z syreną są niezależne od profili wykonawczych.
-Sterowanie przez interfejs programowy syreny i podanie jej gotowego dźwięku występują zarówno
-w instalacji nowej, jak i modernizowanej; profil modernizacyjny wyróżnia to, że instalacja już istnieje,
-a nie to, jakim sposobem jest wysterowana.
+Wszystkie kanały korzystają z jednej tabeli arbitrażu określonej w profilu KG PSP przed odbiorem. Przy braku reguły umożliwiającej odroczenie konflikt jest odrzucany i zapisywany. Wykonawca nie może sam wybrać odmiennego zachowania.
 
-##### Wariant 1 — integracja przez interfejs producenta
+| Sytuacja | Wymagane rozstrzygnięcie |
+| --- | --- |
+| Ten sam ID operacji innym kanałem | Duplikat; nie powstaje drugie wykonanie. |
+| Inne polecenie przy zajętym torze | Brak równoległego przejęcia; końcowe odrzucenie albo jawne odroczenie zgodnie z tabelą. |
+| Koniec bieżącej funkcji | Ponowna kwalifikacja tylko operacji odroczonej: ważność, adresat, historia, zasoby i stan. |
+| Operacja odrzucona końcowo | Brak automatycznego ponowienia przez lokalną kolejkę. |
+| Brak ACK lub wynik niepewny | Uzgodnienie stanu; nie uznaje się tego za dowód niewykonania. |
+| Blokada, serwis albo odcięcie | Pierwszeństwo bezpieczeństwa; test lokalny nie obchodzi odcięcia. |
 
-Sterownik wywołuje udokumentowane polecenia syreny, w szczególności odtworzenie wskazanego slotu
-i odczyt stanu.
-Połączenie realizowane jest standardową warstwą fizyczną — portem szeregowym RS-232, przewodem
-sieciowym, złączem uniwersalnym albo wejściami i wyjściami ogólnego przeznaczenia.
-
-Warunkiem jest otwarta dokumentacja producenta syreny: wykaz poleceń ze składnią, mapa slotów,
-format i sposób wgrania plików dźwiękowych, kody odpowiedzi i błędów, sposób odczytu stanu oraz
-parametry elektryczne złącza. Dokumentacja ma wystarczyć, żeby **niezależny wykonawca napisał
-integrację bez kontaktu z producentem**.
-
-Ewentualna wewnętrzna funkcja zatrzymania udostępniona przez producenta syreny nie stanowi
-polecenia SOiA i nie może służyć do przerwania rozpoczętej emisji wbrew zasadzie niepodzielności.
-
-##### Wariant 2 — wykorzystanie syreny jako systemu nagłośnieniowego
-
-Sterownik sam odtwarza plik wzorcowy i podaje sygnał liniowy na wejście audio syreny, jednocześnie
-uruchamiając jej tor nadawania. Syrena pełni wtedy rolę wzmacniacza z przetwornikiem i **nie musi
-wiedzieć nic o SOiA** — ani o slotach, ani o katalogu sygnałów, ani o poleceniach.
-
-Wariant ten ogranicza zależność od nieudokumentowanego interfejsu programowego. Wymaga wejścia
-liniowego oraz wejścia nadawania, a jego dopuszczalność należy potwierdzić z uwzględnieniem
-dokumentacji, bezpieczeństwa, warunków gwarancji i postanowień umowy.
-
-Wierność sygnału zapewnia sterownik odtwarzający plik referencyjny zweryfikowany sumą kontrolną.
-W wariancie interfejsowym zależy ona od zawartości slotów syreny i prawidłowości jej okresowej
-weryfikacji.
-
-##### Wymagania niepodlegające ograniczeniu w instalacji modernizowanej
-
-Żadna z dróg nie zwalnia z rdzenia wspólnego. Weryfikacja źródła polecenia, reguła obszaru, okno
-czasu, ochrona przed powtórzeniem i lokalne odcięcie awaryjne obowiązują tak samo jak w nowej
-instalacji. Modernizacja dotyczy **sposobu wysterowania syreny**, a nie zakresu sprawdzeń przed
-uruchomieniem.
-
-##### Obsługa zbiegu poleceń z dwóch torów
-
-Przy zbiegu poleceń z równoległych torów do końca wykonuje się polecenie, które jako pierwsze
-rozpoczęło sekwencję. Polecenie odebrane w trakcie emisji podlega odnotowaniu i odroczeniu
-do ponownej kwalifikacji. Nie może zostać automatycznie zakolejkowane jako następna emisja.
-
-Lokalne odcięcie awaryjne i tryb serwisowy zachowują pierwszeństwo niezależnie od toru.
-
----
-
-#### Interfejs radiowy jako punkt integracji
-
-Stacja dyspozytorska podłącza się do **odrębnego portu** sterownika — sieciowego albo
-szeregowego — przeznaczonego wyłącznie do przyjmowania polecenia z zewnątrz. Nie należy mylić tego
-portu z torem audio i sterowaniem nadawaniem syreny, które służą do czegoś zupełnie innego.
-
-Adapter stacji radiowej musi deklarować: nazwę i wersję, obsługiwany profil, wykaz obsługiwanych
-funkcji, mapowanie wejść i wyjść, dopuszczalne czasy, zachowanie przy błędzie, możliwości
-diagnostyczne oraz test zgodności.
-
-Adapter **nie tworzy własnej semantyki alarmu**. Dostarcza polecenie; sprawdza je i wykonuje rdzeń
-wspólny, dokładnie tak samo jak polecenie z każdego innego kanału. Kanał radiowy nie jest przy tym
-dowodem uprawnienia — sam fakt, że wiadomość przyszła zaufaną drogą, nie wystarcza.
-
----
+Wpisy odroczone mają ograniczone miejsce i ważność. Nie tworzą kolejki automatycznie sklejającej dwa sygnały w dłuższą emisję. Opóźniona operacja musi ponownie spełnić wszystkie warunki.
 
 #### Maszyna stanów
 
-Stan urządzenia musi być **trwały**, to znaczy dawać się odtworzyć po restarcie i po zaniku
-zasilania. Bez tego nie da się zagwarantować, że polecenie wykonane raz nie wykona się drugi raz.
-
 ```mermaid
 stateDiagram-v2
-    [*] --> IDLE
-    IDLE --> FETCHING: odebrano wykaz poleceń
-    FETCHING --> VALIDATING: pobrano treść
-    VALIDATING --> IDLE: odrzucono
-    VALIDATING --> EXPIRED: upłynęło okno lub termin ważności
-    VALIDATING --> START_SCHEDULED: polecenie zakwalifikowane
-    START_SCHEDULED --> CANCELLED_PENDING: odwołanie przed rozpoczęciem
-    CANCELLED_PENDING --> IDLE: zapisano trwały znacznik
-    START_SCHEDULED --> EMITTING: okno rozpoczęcia otwarte
-    EMITTING --> COMPLETED: sekwencja zakończona
-    COMPLETED --> IDLE
-    EXPIRED --> IDLE
-
-    state "FAULT / LOCKED / SERVICE" as BLOCKED
-    BLOCKED --> IDLE: przywrócono warunki bezpiecznej pracy
-
-    note right of BLOCKED
-        Stan FAULT, LOCKED albo SERVICE może zostać
-        ustalony z dowolnego stanu urządzenia.
-        Nie oznacza to zdalnego przerwania emisji;
-        EMITTING nie ma takiego normalnego przejścia.
-    end note
+    [*] --> VALIDATING
+    VALIDATING --> REJECTED: odmowa
+    VALIDATING --> WAITING: oczekiwanie
+    WAITING --> VALIDATING: kwalifikacja
+    WAITING --> CANCELLED_PENDING: anulowanie
+    VALIDATING --> START_INTENT: gotowa akcja
+    START_INTENT --> EMITTING: aktywacja
+    START_INTENT --> UNKNOWN: brak dowodu
+    EMITTING --> COMPLETED: koniec
+    EMITTING --> INTERRUPTED: STOP lub odcięcie
+    EMITTING --> FAILED: błąd
+    EMITTING --> UNKNOWN: utrata dowodu
+    INTERRUPTED --> BLOCKED
+    FAILED --> BLOCKED
+    UNKNOWN --> BLOCKED
 ```
 
-!!! note "Dla odbiorcy operacyjnego"
+Model pokazuje stany jednej operacji, nie nazwy endpointów aplikacji. Po zakończeniu lub odrzuceniu urządzenie może przyjmować kolejne polecenia, zachowując historię. Wyjście z blokady wymaga wyjaśnienia stanu i przywrócenia warunków bezpiecznej pracy. Stan przed aktywacją oraz historia przetrwają restart. Przerwana albo niepewna operacja nie wraca samoczynnie do EMITTING. Ponowne uruchomienie aplikacji nie znosi utrwalonego serwisu lub blokady.
 
-    Diagram jest modelem dla producenta oprogramowania, a nie instrukcją obsługi syreny. Dla właściciela najważniejsze są trzy skutki: urządzenie odmawia przy poleceniu niespełniającym warunków, nie powtarza zakończonej emisji po restarcie i nie przerywa rozpoczętej emisji zwykłym poleceniem zdalnym. Tryb serwisowy, blokada albo awaria wymagają przywrócenia warunków bezpiecznej pracy na obiekcie.
+#### Dowody wykonania
 
-**Stan `EMITTING` ma w normalnym przebiegu wyłącznie przejście wynikające z zakończenia
-sekwencji.** Awaryjne odcięcie toru wykonawczego jest czynnością sprzętową i nie stanowi zwykłego
-przejścia maszyny stanów.
-
-**Stan `CANCELLED_PENDING` dotyczy wyłącznie polecenia, którego wykonywanie jeszcze się nie
-rozpoczęło.** Urządzenie zapisuje trwały znacznik odwołania, aby późniejsze odebranie odwołanej
-akcji nie spowodowało emisji. Znacznik musi przetrwać restart.
-
----
-
-#### Odtwarzanie stanu po restarcie i zaniku zasilania
-
-Po uruchomieniu urządzenie odtwarza stan trwały i postępuje według jego zawartości.
-
-Polecenie **zakończone** nie podlega ponownemu wykonaniu, niezależnie od liczby jego późniejszych
-wystąpień w wykazie. Polecenie **odwołane** nie jest uruchamiane. Polecenie **zaplanowane** podlega
-ponownej weryfikacji świeżości i okna rozpoczęcia. Stan **przerwanej emisji** wymaga jawnie
-określonego postępowania właściwego dla profilu sprzętowego; samoczynne wznowienie jest
-niedopuszczalne. Stan **awaryjny** utrzymuje się do czasu przywrócenia warunków bezpiecznej pracy.
-
-Zanik zasilania nie może usuwać stanu ochrony przed powtórzeniem ani powodować ponownego wykonania
-polecenia, którego okno rozpoczęcia upłynęło.
-
----
-
-#### Tryby pracy
-
-Urządzenie musi jednoznacznie wiedzieć, w jakim jest trybie, i musi to komunikować.
-
-**Operacyjny** — przyjmuje i wykonuje polecenia produkcyjne. **Ćwiczebny** — wykonuje wyłącznie
-polecenia oznaczone jako ćwiczenie i na odrębnym profilu. **Serwisowy** — blokuje wykonanie zdalne,
-dopuszcza test lokalny. **Zablokowany** — blokada awaryjna. **Ograniczony** — pracuje węższym
-zestawem kanałów, ale **zachowuje pełny zakres weryfikacji**. **Awaryjny** — nie wykonuje poleceń
-do czasu spełnienia warunków bezpiecznej pracy.
-
-Zmiana trybu jest zdarzeniem odnotowywanym lokalnie wraz z czasem i przyczyną. **Restart nie może
-samoczynnie przełączyć trybu serwisowego lub zablokowanego na operacyjny.** Najczęstszy błąd
-eksploatacyjny w tej klasie instalacji to syrena pozostawiona w trybie serwisowym po pracach
-konserwacyjnych i odkrycie tego dopiero podczas alarmu.
-
-Tryb ćwiczebny urządzenia i sygnał ćwiczebny z katalogu to **dwie różne rzeczy o myląco podobnych
-nazwach**: pierwszy jest stanem urządzenia, drugi rodzajem dźwięku. Można wyemitować sygnał
-ćwiczebny w trybie operacyjnym i można wykonać test w trybie ćwiczebnym bez emisji zewnętrznej.
-
----
-
-#### Ewidencjonowanie etapów wykonania polecenia
-
-Ustalenie przyczyny niewykonania emisji wymaga rozróżnienia kolejnych etapów. Urządzenie powinno
-ewidencjonować: przyjęcie polecenia, zaplanowanie akcji, aktywowanie wyjścia, wykrycie obciążenia,
-potwierdzenie pracy przez czujniki lokalne, zakończenie emisji oraz błąd lub wykonanie niepełne.
-
-Żaden z tych stopni **nie jest dowodem słyszalności**. Ostatnim ogniwem, którego system nie widzi,
-pozostaje akustyka — i tego załącznik nie zmienia.
+Rozróżnia się przyjęcie, zaplanowanie, próbę aktywacji, stan wyjścia, start odtwarzania, koniec i wynik z czujnika. Przekaźnik ani ACK nie potwierdzają słyszalności. Pomiar akustyczny potwierdza efekt wyłącznie w zakresie miejsca i metody pomiaru. Karta zapisuje, jaki dowód jest dostępny dla danego toru.
 
 
 ---
 
+## Część IV — Przyłączenie i kanały komunikacji
 
+### Załącznik nr 6 — Poziom 0 publiczny wykaz poleceń
 
-[Powrót do spisu treści](#spis-tresci){ .section-return }
-## Część IV. Procedury podłączenia i integracji
+#### Otwarty odczyt i zgodność urządzenia
 
-Część IV opisuje trzy kumulatywne poziomy podłączenia. Poziom 0 jest dostępny bez zgody i stanowi
-podstawowy sposób integracji; poziomy wyższe rozszerzają go o kolejne kanały, nie zastępując
-poziomów niższych.
+Poziom 0 jest jednokierunkowym odczytem publicznego IoT Feed. Nie wymaga uwierzytelnienia żądania ani rejestracji do samego pobrania. Nie zapewnia dowodu obecności i wykonania urządzenia. Rejestracja platformy Orchestra oraz odbiór punktu według Z3/Z7 są osobnymi warunkami zarządzanej instalacji KG PSP.
 
-!!! info "Mapa kanałów w stanie docelowym"
+Poniżej opisano zasady kontraktu i datowany stan metadanych. Wersję przeznaczoną do wdrożenia uzgadnia się z aplikacją KG PSP i potwierdza wektorami oraz próbami. Nowy dokument nie zmienia działania centrali.
 
-    Tor danych pobiera podpisany IoT Feed i pozostaje podstawą poziomu 0. Kanał niezwłocznego powiadomienia nie przenosi komendy — skraca czas wykrycia nowej wersji Feedu. Kanał SMS jest odrębnym kanałem wykonawczym z własnym profilem i kontrolami. Urządzenie może korzystać z wielu kanałów, lecz ta sama komenda nie może spowodować wielokrotnej emisji.
+#### Punkty dostępu
 
+Metoda GET, baza `https://alarm.soia.info`:
 
-### Załącznik nr 6 — Poziom 0: publiczny wykaz poleceń
+| Ścieżka | Rola |
+| --- | --- |
+| `/api/v1/iot/feed` | Podpisany wykaz poleceń i informacyjne okno zdarzeń. |
+| `/api/v1/iot/public-key` | Publiczne klucze i ich identyfikatory z bieżącego okna wymiany. |
+| `/api/v1/iot/public-key.pem` | Publiczny klucz w postaci PEM. |
+| `/api/v1/iot/profile` | Metadane profilu klienta, klas odbiorców i kodów. |
+| `/api/v1/iot/dictionaries` | Wersja i zawartość słowników. |
 
+Odczyt 10.09.2026: profil `PL-CAP-DIST-IOT` / `0.1`, słownik `2026.1`, klasa `SIREN_CONTROLLER`, kody `SIREN_ALARM_MODULATED_3M` i `SIREN_CANCEL_PENDING`. Metadane `/profile` nie ogłaszały w tym odczycie maksymalnych rozmiarów feedu i pojedynczej komendy. Limit klienta oraz kompletność obsługi muszą być określone w pakiecie integracyjnym; nie przyjmuje się wartości domyślnych z opisu jako parametru API.
 
-#### Adresaci i zakres załącznika
+To wykaz publicznych punktów użytych w tym profilu, nie zakaz tworzenia przyszłych usług utrzymania. IoT Feed nie zawiera pliku audio; lokalne zasoby opisuje Z4.
 
-Załącznik jest przeznaczony dla osób projektujących i implementujących oprogramowanie sterownika.
-Opisuje minimalny proces bezpiecznej integracji urządzenia z SOiA na poziomie 0, bez rejestracji
-i bez dostępu do kanałów zamkniętych.
+#### Integralność i źródło zaufania
 
-Wartości przytoczone niżej mają charakter **informacyjny**. Źródłem rozstrzygającym są punkty
-dostępu wymienione w rozdziale 2: to one publikują aktualne wersje, identyfikatory kluczy
-i słowniki. Wpisanie wartości z tego dokumentu na stałe, bez możliwości zmiany, jest błędem.
+HTTPS chroni połączenie, a podpis chroni treść. Przed kwalifikacją aplikacja sprawdza algorytm, identyfikator zaufanego klucza i podpis całego dokumentu. Nieznany klucz lub błędny podpis powodują odrzucenie całości.
 
----
+W profilu 0.1 podpis Ed25519 obejmuje dokument po usunięciu głównego pola `signature`, z kanonizacją zgodną z kontraktem. Trzeba zachować kolejność tablic, kodowanie UTF-8 i poprawną serializację wartości; samo usunięcie spacji nie jest pełnym opisem kanonizacji. Implementację sprawdza się na wektorach wzorcowych.
 
-#### 1. Zasada działania poziomu 0
+Klucz publiczny może być wspólny. Jego pochodzenie i aktualizację przyjmuje się zgodnie z konfiguracją zaufania KG PSP. Sam komunikat z nowym `kid` nie nadaje mu zaufania. Kontrolowane pobranie lub dystrybucja nowego klucza musi uwzględniać źródło, ważność, okno nakładania i odwołanie.
 
-Urządzenie pełni funkcję odbiornika. Okresowo pobiera podpisany wykaz poleceń, a następnie
-weryfikuje podpis, obszar i czas przed rozpoczęciem emisji.
+#### Kwalifikacja polecenia
 
-Na poziomie 0 urządzenie nie wysyła potwierdzeń ani telemetrii i nie posiada indywidualnej
-tożsamości w kanałach zamkniętych. Komunikacja z publicznym punktem dostępu ma charakter odczytu.
+`activeCommands` jest listą poleceń wykonawczych. `eventWindow` jest informacją o zdarzeniach i nie uruchamia syreny. Przed wykonaniem sprawdza się:
 
----
+- zgodność profilu, środowiska, słownika i klasy odbiorcy;
+- ważność feedu i operacji oraz brak niedozwolonego cofnięcia sekwencji;
+- dopasowanie geokodu do TERC konkretnego toru;
+- obsługiwaną funkcję, okno rozpoczęcia, historię ID i stan techniczny;
+- zasoby lokalne, tryb pracy i wspólny arbitraż kanałów.
 
-#### 2. Punkty dostępu
+Nieznany kod funkcji odrzuca właściwą komendę, a nie inne poprawne komendy w zweryfikowanym feedzie. Nieprawidłowy podpis odrzuca całą kopertę. Brak polecenia w kolejnej kopii nie jest zdalnym odcięciem trwającego sygnału.
 
-Wszystkie pod adresem produkcyjnym `alarm.soia.info`, metodą odczytu, bez uwierzytelnienia.
+##### Obszar
 
-| Punkt | Co zwraca |
-|---|---|
-| `/api/v1/iot/feed` | podpisany wykaz poleceń — zasadnicze źródło |
-| `/api/v1/iot/public-key` | klucz publiczny do weryfikacji podpisu, wraz z identyfikatorem i kluczami z okna wymiany |
-| `/api/v1/iot/public-key.pem` | ten sam klucz w postaci surowej |
-| `/api/v1/iot/profile` | opis profilu klienta, obsługiwane klasy urządzeń i kody sygnałów |
-| `/api/v1/iot/dictionaries` | aktualna wersja słowników klas urządzeń i kodów sygnałów |
+Tor ma jeden siedmiocyfrowy TERC gminy. Polecenie może wskazać jednostkę nadrzędną albo wiele geokodów. Wiele niezależnych torów w sterowniku ma osobną mapę. Nie wolno uruchamiać wszystkich wyjść po dopasowaniu jednego toru.
 
-**Lista jest zamknięta.** Nie ma i nie będzie punktu dostępu, z którego sterownik pobierałby
-zawartość dźwiękową: system przenosi polecenie, nie dźwięk. Pliki wzorcowe udostępnia się do
-pobrania na stronie, a wgrywa przy instalacji.
+Rozróżnia się rodzaj gminy, w tym gminę miejsko-wiejską oraz jej miasto i obszar wiejski. Nie porównuje się tylko sześciu pierwszych cyfr gminy. Kody ulic i miejscowości nie są geokodami tego samego rejestru. Błędnej konfiguracji nie naprawia się przez obcięcie lub dopełnienie.
 
-##### Limity rozmiaru danych
+##### Czas i anulowanie
 
-Wraz z opisem profilu ogłaszane są **maksymalne rozmiary**: pojedynczego polecenia i całego wykazu.
-Urządzenie, które otrzyma treść większą, **odrzuca ją jako błąd** — nie jako brak poleceń — i pozostaje
-sprawne.
+Ważne polecenie przyszłe może oczekiwać do ponownej kwalifikacji. Przed aktywacją musi nadal być potwierdzone właściwą świeżą treścią, pozostawać w swoim oknie i spełniać reguły. Nie należy go usuwać na stałe tylko dlatego, że odebrano je przed początkiem okna.
 
-Rdzeń wymagań powinien być możliwy do realizacji na mikrokontrolerze z ograniczoną pamięcią;
-wykaz bez ogłoszonej górnej granicy byłby dla takiego urządzenia jednocześnie przyczyną
-awarii i wektorem ataku. Wskazówka konstrukcyjna, a nie wymaganie: urządzenie o małej pamięci
-powinno weryfikować i przetwarzać wykaz **strumieniowo**, bez buforowania go w całości.
+W bieżącym profilu `CANCEL_PENDING` dotyczy wskazanej, znanej lokalnie operacji oczekującej. Nieznane ID nie tworzy zaległego START; operacja rozpoczęta albo zakończona nie jest przekształcana w odwołanie dźwiękowe. Zmiana tej semantyki wymaga nowej, uzgodnionej wersji kontraktu.
 
-Adres bazowy, tak jak identyfikator klucza, **musi być konfigurowalny**. Urządzenie, którego nie da
-się przestawić na inny punkt dostępu bez udziału producenta, nie spełnia wymagań swobody wyboru
-dostawcy.
+#### Harmonogram i pamięć pośrednia
 
----
+Normalny okres pobierania wynosi 30 s między początkami żądań. Fazy urządzeń są rozłożone, a zapytania do tego samego feedu nie nakładają się. Powiadomienie może przyspieszyć pobranie, lecz nie znosi cyklicznej pracy.
 
-#### 3. Struktura wykazu
+| Odpowiedź lub stan | Działanie |
+| --- | --- |
+| HTTP 200 | Zweryfikować pełną treść; dopiero potem przyjąć jej ETag i stan. |
+| HTTP 304 | Sprawdzić ważność już zweryfikowanej kopii; nie odnawiać `feedExpiresAt`. |
+| HTTP 429 | Honorować Retry-After; oznaczyć stan kanału i nie wykonywać przeterminowanych danych. |
+| Błąd lub brak sieci | Kontrolowane wycofanie i rozproszenie ponowień; bez pętli zapytań. |
+| Powrót łączności | Powrócić do harmonogramu, zweryfikować czas i treść; nie odtwarzać starej emisji. |
 
-Wykaz jest dokumentem tekstowym w formacie JSON. Poza polami opisującymi same polecenia niesie
-metadane pozwalające sprawdzić, **z czym urządzenie właściwie rozmawia**.
+Przy wygasłej kopii kolejne planowe pobranie może zostać wykonane bez warunku ETag, nadal z kontrolą sekwencji. Cache HIT i HTTP 304 nie dowodzą ważności podpisanego dokumentu. Prawidłowe respektowanie Retry-After może chwilowo przekroczyć 30 s; jest stanem wyjątkowym opisanym przez profil, nie nowym normalnym interwałem.
 
-Pola koperty: nazwa profilu i jego wersja, środowisko, wersja słowników, czas wygenerowania, numer
-kolejny wykazu, **termin ważności treści**, lista poleceń aktywnych, okno zdarzeń informacyjnych
-oraz podpis wraz z algorytmem i identyfikatorem klucza.
-
-Pola pojedynczego polecenia: własny identyfikator polecenia, rodzaj polecenia, klasa urządzenia
-docelowego, kod sygnału, powiązanie z ostrzeżeniem źródłowym, numer kolejny polecenia, wykaz poleceń
-zastępowanych, obszar wraz z geokodami, **czas, od którego i do którego wolno rozpocząć emisję**,
-oraz czas utworzenia.
-
-Osobno występuje **okno zdarzeń** — lista obowiązujących ostrzeżeń, przeznaczona do podglądu
-i diagnostyki. **Obecność ostrzeżenia w tym oknie nie jest poleceniem** i nie uruchamia niczego.
-Syrena rusza wyłącznie na podstawie pozycji z listy poleceń aktywnych.
-
----
-
-#### 4. Weryfikacja podpisu
-
-Weryfikacja podpisu stanowi warunek rozpoczęcia dalszego przetwarzania wykazu. Szyfrowanie
-połączenia nie zastępuje podpisu treści.
+#### Trwałość i przebieg
 
 ```mermaid
 flowchart TD
-    A[Odbiór pełnej treści wykazu] --> B{Czy algorytm podpisu<br/>jest obsługiwany?}
-    B -->|Nie| R[Odrzucenie całego wykazu<br/>i zapis wyniku]
-    B -->|Tak| C{Czy identyfikator klucza<br/>jest rozpoznany?}
-    C -->|Nie| R
-    C -->|Tak — klucz bieżący lub poprzedni<br/>w okresie wymiany| D[Utworzenie kopii bez pola podpisu]
-    D --> E[Kanonizacja JSON<br/>klucze alfabetycznie, bez spacji i nowych linii]
-    E --> F[Weryfikacja podpisu<br/>zakodowanego jako base64url]
-    F --> G{Wynik weryfikacji}
-    G -->|Niepoprawny| R
-    G -->|Poprawny| H[Zapis wyniku i przejście<br/>do dalszej walidacji wykazu]
+    A[Harmonogram albo powiadomienie] --> B[Pobranie zgodne z limitami]
+    B --> C{Odpowiedź}
+    C -->|Błąd lub 429| D[Zapis stanu i kontrolowane odroczenie]
+    C -->|304| E{Zachowana kopia ważna?}
+    C -->|200| F{Poprawny podpis i koperta?}
+    F -->|Tak| G[Kwalifikacja komend i arbitraż]
+    F -->|Nie| I
+    E -->|Tak| G
+    E -->|Nie| I
+    G --> H{Wynik}
+    H -->|Niespełniony warunek| I[Brak wykonania i zapis przyczyny]
+    H -->|Przyszła akcja| J[Oczekiwanie i ponowna kwalifikacja]
+    H -->|Właściwe anulowanie| K[Anulowanie znanej akcji oczekującej]
+    H -->|Gotowa akcja| L[Trwały zapis zamiaru]
+    L --> M[Kontrolowane wykonanie lokalne]
+    M --> N[Zapis rzeczywistego wyniku]
 ```
 
-Podpis obejmuje wykaz **bez pola podpisu**. Jeżeli weryfikacja nie przechodzi mimo poprawnego
-klucza, w zdecydowanej większości przypadków przyczyną jest **inna kolejność kluczy albo dodatkowe
-białe znaki** we własnej serializacji — a nie błąd po stronie serwera.
+W pamięci trwałej pozostają zaakceptowana sekwencja, zaufanie, historia ID, zamiary i wyniki. Retencja historii obejmuje najpóźniejszą ważność feedu, operacji i okna zdarzeń z zapasem doby; nie oznacza to resetowania najwyższej sekwencji po dobie. Restart po niepewnej aktywacji nie uprawnia do ponowienia.
 
-Nieznany identyfikator klucza powoduje odmowę wykonania. Urządzenie musi jednak obsłużyć okres,
-w którym jednocześnie obowiązują klucz bieżący i poprzedni, aby wymiana klucza nie powodowała
-przerwy w działaniu urządzeń. Punkt dostępu z kluczem publicznym udostępnia oba klucze w okresie
-nakładania.
+Odbiór obejmuje błędny podpis, obcy obszar, przyszłą i przeterminowaną komendę, duplikat po restarcie, nieznane ID anulowania, ważność przy 304 oraz zachowanie przy 429 i utracie sieci. Próby przeprowadza się w uzgodnionym środowisku. Odczyt produkcyjnego feedu nie jest zgodą na testy emisji lub obciążenia.
 
-Do sprawdzenia własnej implementacji służą **wektory wzorcowe**: deterministyczna para znanego
-wykazu i znanego podpisu. Implementacja, która nie przechodzi wektorów wzorcowych, nie przejdzie
-też odbioru.
+### Załącznik nr 7 — Rejestracja urządzenia i kanały rejestrowane
 
----
+#### Co podlega rejestracji
 
-#### 5. Reguła obszaru
+Rejestracja platformy w Orchestra KG PSP, przydzielenie dostępu do kanału powiadomień i odbiór konkretnej syreny są odrębnymi czynnościami. Wspólna ewidencja ma umożliwiać ich powiązanie. Samo konto, certyfikat lub poprawny odczyt feedu nie potwierdzają wszystkich etapów.
 
-Polecenie dotyczy urządzenia wtedy, gdy **kod obszaru w poleceniu jest równy kodowi terenu
-urządzenia albo wobec niego nadrzędny**. Zależność w drugą stronę nie wystarcza.
+Pełny proces przygotowania opisuje [platforma KG PSP](PLATFORMA_KG_PSP.md). Dotyczy również profilu 1.5. Wniosek nie ustanawia automatycznie uprawnienia; dostęp przydziela administrator właściwej instancji zgodnie z określonym zakresem.
+
+#### Przygotowanie modelu
+
+Wykonawca zgłasza płytę, rewizję, profil zdolności i wyposażenie. KG PSP udostępnia komponenty Yocto/OrchestraOS, warunki integracji oraz pakiet kontrolny. Wykonawca przygotowuje i dokumentuje obraz/BSP oraz adaptery. Próby modelu poprzedzają przygotowanie partii egzemplarzy.
+
+| Dane konfiguracji modelu | Zakres |
+| --- | --- |
+| Sprzęt | Model, rewizja płyty, architektura, zasoby i porty. |
+| Oprogramowanie | Wydanie komponentów KG PSP, OS/BSP, interfejsy i sposób uruchamiania aplikacji. |
+| Funkcja | I, 1.5, II lub III w odpowiednim połączeniu; profil wykonawczy i zakres D/P. |
+| Bezpieczeństwo | Rozruch, klucze, aktualizacje, serwis i nadzór toru. |
+| Dowody | Wyniki prób, manifest, SBOM i odtworzenie budowy. |
+
+#### Provisioning egzemplarza
+
+Egzemplarz otrzymuje dopuszczony obraz, indywidualną tożsamość i konfigurację startową. Materiały prywatne nie są przesyłane jako zwykły załącznik zgłoszenia. Konfiguracja startowa umożliwia bezpieczne pierwsze połączenie; nie może wymagać poświadczeń, które byłyby dostępne dopiero po tym samym połączeniu.
+
+Rekord obejmuje numer seryjny, model/rewizję, tożsamość, właściwą instancję Orchestra, grupę zgodnych urządzeń, lokalizację, ID syreny i przypisanie TERC do toru. Modem i SIM mają osobne atrybuty. Wymiana SIM nie tworzy nowej tożsamości; wymiana płyty wymaga kontroli starej i nowej tożsamości.
 
 ```mermaid
 flowchart TD
-    A[Porównaj kod polecenia a<br/>z kodem urządzenia u] --> B{Czy oba kody są rozpoznane?}
-    B -->|Nie| NO[NIE DOTYCZY]
-    B -->|Tak| C{Czy a jest ogłoszonym<br/>kodem obszaru krajowego?}
-    C -->|Tak| YES[DOTYCZY]
-    C -->|Nie| D{Czy u jest kodem<br/>obszaru krajowego?}
-    D -->|Tak| NO
-    D -->|Nie| E{Czy a = u?}
-    E -->|Tak| YES
-    E -->|Nie| F{Czy a ma 7 cyfr?}
-    F -->|Nie| G{Czy kod u rozpoczyna się<br/>od kodu a?}
-    G -->|Tak| YES
-    G -->|Nie| NO
-    F -->|Tak| H{Czy u ma 7 cyfr, pierwsze 6 cyfr jest równe,<br/>a rodzaj 3 w kodzie a obejmuje rodzaj 4 lub 5 w kodzie u?}
-    H -->|Tak| YES
-    H -->|Nie| NO
+    A[Przyjęta konfiguracja modelu] --> B[Chronione przygotowanie egzemplarza]
+    B --> C[Rejestracja tożsamości w Orchestra KG PSP]
+    C --> D[Połączenie zarządcze i odczyt wersji]
+    D --> E[Instalacja i konfiguracja aplikacji KG PSP]
+    E --> F[Przypisanie obiektu i uprawnień kanałów]
+    F --> G[Próby i odbiór instalacji]
+    G --> H[Eksploatacja z udokumentowanym stanem]
+    H --> I[Zmiana / zawieszenie / wycofanie]
 ```
 
-**Siódma cyfra kodu gminy jest znacząca.** Rejestr rozróżnia przez nią gminę miejską, wiejską
-i miejsko-wiejską, a w tej ostatniej — samo miasto i sam obszar wiejski. Kody miasta i obszaru
-wiejskiego mają wspólne sześć pierwszych cyfr, ale opisują **tereny rozłączne**: ostrzeżenie dla
-miasta nie obejmuje otaczających wsi. Porównywanie gmin „po sześciu cyfrach” zawyża obszar alarmu.
+ZTP jest wykonaniem wcześniej przygotowanego procesu, nie zastępstwem identyfikacji lub decyzji. Pierwsze uruchomienie służy diagnostyce przy bezpiecznym stanie wyjść; nie wyzwala samoczynnie testu akustycznego.
 
-Porównaniu podlegają wyłącznie kanoniczne oznaczenia kodów jednostek podziału terytorialnego.
-Kody miejscowości i ulic należy pomijać, ponieważ mają odrębną numerację. Kod sześciocyfrowy,
-pozbawiony cyfry rodzaju, podlega odrzuceniu jako niepełny. Niedopuszczalne jest korygowanie kodu
-przez jego obcięcie lub dopełnienie. Jeżeli polecenie obejmuje wiele geokodów, wystarczające jest
-dopasowanie co najmniej jednego z nich.
+#### Uprawnienia i cykl życia
 
-##### Zasady konfiguracji obszaru działania urządzenia
+Administrator określa rolę wykonawcy, zakres urządzeń, czas dostępu i sposób jego cofnięcia. Panel oraz powłoka nie są publicznie dostępne. Rejestracja i zarządzanie platformą muszą działać przed instalacją aplikacji KG PSP.
 
-Obszar działania urządzenia konfiguruje się siedmiocyfrowym kodem gminy, w której urządzenie jest
-zlokalizowane. Sterownik obejmujący więcej niż jedną gminę otrzymuje listę kodów gmin, a nie kod
-jednostki nadrzędnej.
+Jedna indywidualna tożsamość nie może identyfikować wielu egzemplarzy. Proces obejmuje wymianę certyfikatów przed wygaśnięciem, okres nakładania, potwierdzenie pracy na nowym materiale, odwołanie, wymianę płyty i wycofanie. Flota służy dystrybucji zgodnych wydań, nie zmianie obszaru alarmowania.
 
-Obszar ostrzeżenia może zostać wyznaczony geometrycznie na mapie. W takim przypadku polecenie
-zawiera kody objętych gmin, a nie kod całego powiatu. Urządzenie skonfigurowane wyłącznie kodem
-powiatu nie dopasuje kodów gminnych zawartych w takim poleceniu.
+Cofnięcie tożsamości zamkniętego kanału nie usuwa publicznego endpointu, ale nie może być interpretowane jako zgoda na dalszą eksploatację wycofanego urządzenia. Konfiguracja trybu i dopuszczenia określa, czy aplikacja może wykonywać nowe polecenia. Blokady bezpieczeństwa zachowują pierwszeństwo także wobec poziomu 0.
 
-Oprogramowanie musi wykrywać konfigurację dwu- lub czterocyfrową i odrzucać ją albo jednoznacznie
-zgłaszać jako błąd.
+#### Powiadomienie o zmianie feedu
 
----
+Kanał powiadomienia przenosi informację o zmianie, nie polecenie wykonawcze. Odbiornik pobiera i sprawdza podpisany feed. Utrata powiadomień nie znosi normalnego cyklicznego pobierania.
 
-#### 6. Warunki wykonania polecenia
+Polityka powiadomień ogranicza urządzenie do własnej tożsamości i właściwej subskrypcji. Telemetria i statusy wykonania mają odrębne uprawnienia i retencję. Nie utożsamia się braku publikowania na kanale powiadomień z zakazem telemetrii w Orchestra.
 
-Urządzenie uruchamia syrenę wyłącznie wtedy, gdy **wszystkie** poniższe są prawdziwe:
+Po otrzymaniu powiadomienia klient musi rozpoznać, czy pobrał właściwą lub równoważną świeżą wersję. Mechanizm wersjonowania, cache i kontrolowanego ponowienia opisuje kontrakt. Sam cache HIT lub krótki max-age nie stanowią tego dowodu.
 
-podpis jest poprawny, a identyfikator klucza znany; profil, środowisko i wersja słowników zgodne
-z obsługiwanymi; termin ważności treści jeszcze nie minął; klasa urządzenia docelowego odpowiada
-urządzeniu; kod sygnału jest znany i dozwolony; co najmniej jeden kod obszaru obejmuje teren
-urządzenia; czas bieżący mieści się w oknie rozpoczęcia; identyfikator polecenia nie został
-wcześniej wykonany; numer kolejny nie narusza ochrony przed powtórzeniem; stan techniczny pozwala
-na bezpieczną emisję; tryb pracy nie jest serwisowy, zablokowany ani awaryjny.
+#### Kryteria przyjęcia
 
-**Niespełnienie któregokolwiek warunku daje wynik odmowny.** Bez wyjątków i bez interpretacji
-rozszerzającej.
+Sprawdza się właściwą instancję, tożsamość, powiązanie obiektu, uprawniony dostęp i odmowę nieuprawnionego, zmianę wersji, aktualizację i rollback, cofnięcie dostępu oraz pracę po przerwie łączności. Brak rejestracji lub odbioru jest odrębnym stanem gotowości. Terminy obsługi zgłoszeń, dane instancji i osoby odpowiedzialne określa proces KG PSP poza niniejszą publikacją.
 
-Brak polecenia w wykazie nie stanowi dyspozycji odcięcia trwającej emisji. Zniknięcie polecenia z wykazu znaczy,
-że nie wolno go **rozpoczynać** — nie jest rozkazem odcięcia emisji już trwającej. Podobnie
-obecność ostrzeżenia w oknie zdarzeń nie jest podstawą do uruchomienia czegokolwiek.
+### Załącznik nr 8 — Sieć wydzielona SMS i przejście na TETRA
 
----
+#### Kanał i poziom podłączenia
 
-#### 7. Odpytywanie
+Sieć wydzielona ogranicza dostęp, ale nie zastępuje walidacji komendy. SMS jest kanałem wykonawczym z własnym kontraktem, a nie powiadomieniem o zmianie feedu. Wymagania aplikacyjne nie powstają przez samą wymianę karty SIM.
 
-**Odstęp bazowy wynosi 30 sekund.** Odpytywanie częstsze wymaga osobnego uzgodnienia i mieści się
-w limitach usługi; odpytywanie rzadsze nie spełnia wymagań.
+W fazie 2026–2028 zestawy korzystają z GSM/LTE, z SMS jako zapasem i możliwością dodatkowego IP przez Ethernet lub Wi-Fi. Po tej fazie TETRA ma być podstawowym kanałem poleceń, po jej zapewnieniu i odbiorze. GSM pozostaje czynny. Zmiana operatora lub APN oraz migracja TETRA są osobnymi procesami.
 
-Urządzenie stosuje zapytanie warunkowe ze znacznikiem wersji z poprzedniej odpowiedzi i obsługuje
-odpowiedź „bez zmian”. Odpowiedź o przekroczeniu limitu należy respektować wraz ze wskazanym
-czasem wstrzymania. Po błędach sieci stosuje się kontrolowane wycofanie zamiast ponawiania
-w pętli.
+#### Trzy odrębne profile SMS
 
-**Losowe rozproszenie momentu odpytania jest obowiązkowe.** Bez rozproszenia urządzenia mogłyby
-kierować żądania w tym samym czasie, powodując krótkotrwałe przeciążenie usługi.
+| Profil | Zakres i ograniczenia |
+| --- | --- |
+| Zastany moduł syreny | Składnia i funkcje według DTR. Może obsługiwać hasło oraz listę numerów, bez ID i ważności komendy. Nie przypisuje się mu zabezpieczeń nieobecnych w parserze. |
+| Nowa aplikacja KG PSP | Pełna walidacja uzgodnionego kontraktu, kryptograficzna autentyczność i integralność, adresat, ważność, ID i trwała ochrona przed odtworzeniem. |
+| Warstwa operatorska | Usługi nadawcze i odbiorcze, SIM, APN i ograniczenia sieciowe. Nie zastępuje dwóch powyższych profili. |
 
-!!! danger "Wymaga decyzji przed akceptacją — polling, jitter i Retry-After"
+Właściciel i administrator określają dopuszczony zakres użycia starszego modułu oraz sposób jego współpracy z nowym sterownikiem. Starszy SMS bez ID i czasu nie jest pełnym odpowiednikiem podpisanego feedu. Nie wysyła się automatycznie tego samego żądania równolegle wszystkimi kanałami bez wspólnej identyfikacji i arbitrażu.
 
-    Wymaganie 30 sekund, rozproszenie momentu odpytania, backoff po błędzie i okres wstrzymania wskazany przez usługę muszą mieć jedną zatwierdzoną hierarchię. Redakcja nie rozstrzyga, jak urządzenie ma postąpić, gdy wyjątkowy `Retry-After` przekracza odstęp bazowy. Implementacja i odbiór wymagają wspólnej interpretacji tego przypadku.
+#### Przygotowanie SIM i numerów
 
-Treść przeterminowana nie może stanowić podstawy wykonania polecenia. Brak możliwości pobrania
-aktualnego wykazu skutkuje brakiem nowej emisji.
+Karta musi obsługiwać dane, jeżeli służy do IP, oraz SMS przychodzące i wychodzące w wymaganych kierunkach. Umowa wyłącznie na dane nie potwierdza SMS. Sprawdza się aktywność, blokady, antenę, powrót po restarcie i zgodność z modemem.
 
----
+Oddzielnie zapisuje się numer urządzenia, numery uprawnione do sterowania, odbiorców statusów i administratorów konfiguracji. Numer widoczny w odebranej wiadomości musi odpowiadać przyjętemu profilowi. Nadpis tekstowy ani wpis w polu nadawcy usługi nie tworzą działającej skrzynki odbiorczej.
 
-#### 8. Dane przechowywane w pamięci trwałej
+Jeżeli niezależny modem syreny i modem sterownika mają pracować równocześnie, trzeba zapewnić usługi dla obu. Zamknięta grupa abonencka ogranicza ruch tylko w zakresie potwierdzonym przez operatora; sama lista w urządzeniu nie zmienia zasad sieci.
 
-W pamięci trwałej, odpornej na zanik zasilania: ostatni zaakceptowany numer kolejny wykazu,
-ograniczony zbiór wykonanych identyfikatorów poleceń wraz z czasem i wynikiem, identyfikatory
-poleceń odwołanych oraz wersję ostatniego poprawnego wykazu.
+#### Kontrakt wiadomości i odpowiedzi
 
-Identyfikator wykonanego polecenia trzeba przechowywać **co najmniej do momentu, w którym nie może
-już wrócić**: dłużej niż termin ważności wykazu, dłużej niż najpóźniejsze okno rozpoczęcia
-i najpóźniejsze zdarzenie w oknie, z zapasem doby.
+Nowy kontrakt określa funkcję, adresata, ID operacji, ważność, materiał uwierzytelniający, kodowanie, długość i zachowanie po błędzie. Składni nie ustala sam instalator. Hasło, czas i rosnący licznik przesłane bez ochrony integralności nie są kryptograficznym uwierzytelnieniem treści.
 
-Ponowne otrzymanie tego samego polecenia — przez odpytanie, powiadomienie, wiadomość tekstową albo
-radio — **nie może spowodować drugiej emisji**.
+Modem udostępnia aplikacji pełną treść, nadawcę i metadane. Profil może ograniczać polecenie do jednego SMS; jeśli dopuszcza multipart, musi określić identyfikację części, limit liczby, rozmiaru i czasu oraz walidację kompletnej wiadomości przed wykonaniem. Nie wolno wykonywać fragmentu ani uznawać braku części za pustą komendę.
 
----
+| Informacja zwrotna | Co potwierdza |
+| --- | --- |
+| Przyjęcie przez usługę nadawczą | Zarejestrowanie wysyłki. |
+| Raport doręczenia | Etap transportu określony przez operatora. |
+| ACK aplikacji | Rozpoznanie i kwalifikację operacji zgodnie z kontraktem. |
+| Start i koniec | Właściwy etap lokalnej funkcji, wraz z ID operacji. |
+| Błąd lub niepewność | Brak pełnego dowodu powodzenia; bez automatycznej drugiej emisji. |
+| Pomiar zewnętrzny | Efekt w zakresie rzeczywistego czujnika i pomiaru. |
 
-#### 9. Algorytm działania klienta
+Test łączności bez emisji nie wymaga fikcyjnego potwierdzenia dźwięku. Spóźnionego statusu bez ID operacji nie należy przypisywać nowemu zleceniu wyłącznie przez zgodny numer syreny. Treść rejestrowana w logach nie może ujawniać haseł lub sekretów.
 
-```mermaid
-flowchart TD
-    A[Upływ 30 sekund<br/>lub odebranie powiadomienia] --> B[Pobranie warunkowe wykazu]
-    B --> C{Rodzaj odpowiedzi}
-    C -->|Bez zmian| END[Zakończenie cyklu]
-    C -->|Błąd sieci lub serwera| D[Zapis błędu i kontrolowane wycofanie]
-    D --> END
-    C -->|Przekroczono limit| E[Wstrzymanie na wskazany czas]
-    E --> END
-    C -->|Nowy wykaz| F{Czy podpis jest poprawny?}
-    F -->|Nie| REJ[Odrzucenie całego wykazu<br/>i zapis przyczyny]
-    F -->|Tak| G{Czy profil, środowisko,<br/>wersje i termin są poprawne?}
-    G -->|Nie| REJ
-    G -->|Tak| H[Iteracja po poleceniach]
-    H --> I{Czy klasa, kod sygnału, obszar, okno,<br/>ochrona przed powtórzeniem, stan techniczny<br/>i tryb pracy są zgodne?}
-    I -->|Nie| J[Odrzucenie polecenia<br/>i zapis przyczyny]
-    J --> NEXT{Czy pozostały polecenia?}
-    I -->|Tak| K{Rodzaj polecenia}
-    K -->|Odwołanie akcji| L[Trwały zapis odwołania<br/>i blokada akcji oczekującej]
-    K -->|Uruchomienie| M[Trwały zapis zamiaru]
-    M --> N[Wykonanie polecenia]
-    N --> O[Trwały zapis wyniku]
-    L --> NEXT
-    O --> NEXT
-    NEXT -->|Tak| H
-    NEXT -->|Nie| END
-    REJ --> END
-```
+#### Przejście na TETRA
 
-Kolejność ma znaczenie: **zamiar zapisuje się przed uruchomieniem wyjścia**, nie po. Urządzenie,
-które straci zasilanie w trakcie emisji, musi po powrocie wiedzieć, że emisja się rozpoczęła.
+Przygotowanie obejmuje port obsługiwany przez OS, miejsce, zasilanie, antenę i adapter. Docelowo wymagane są konkretny terminal, właściwa usługa sieciowa, tożsamość i integracja centralna. Samo złącze USB ani katalogowa możliwość TETRA nie potwierdzają tej zdolności.
 
----
+Usługa IP TETRA i SDS są różnymi drogami. Wariant IP wymaga wykazanej osiągalności i pojemności dla ruchu aplikacji. SDS wymaga jawnego transportu polecenia, z zachowaniem znaczenia, autentyczności, ważności i historii. Nie zakłada się przesyłania całego feedu co 30 s przez każdy terminal bez oceny pojemności.
 
-#### 10. Minimalny zakres badań zgodności implementacji
+TETRA przenosząca tylko komunikat „pobierz feed” pozostaje zależna od innego IP. Docelowy tor podstawowy musi wykazać wykonanie wymaganej funkcji przy odłączonym GSM i internecie obiektu. Duże aktualizacje mogą nadal korzystać z LAN/Wi-Fi/LTE. Nie zmienia to pierwszeństwa TETRA dla poleceń po odbiorze migracji.
 
-Poprawne uruchomienie dla własnej gminy. Polecenie powiatowe i wojewódzkie obejmujące tę gminę.
-Polecenie dla obcej gminy — bez reakcji. Rozróżnienie miasta i obszaru wiejskiego w gminie
-miejsko-wiejskiej. Niepoprawny podpis, nieznany identyfikator klucza i zmodyfikowana treść —
-odrzucenie. Wykaz przeterminowany i okno rozpoczęcia zamknięte — brak emisji. Ten sam identyfikator
-polecenia po restarcie — brak drugiej emisji. Odwołanie przed rozpoczęciem — brak emisji. Odwołanie
-po zakończeniu — zapis, bez działania. Wyłączony kanał szybki, wykrycie zmiany samym odpytywaniem.
-Odpowiedź z pamięci pośredniej starsza niż oczekiwana — ponowienie. Obsługa odpowiedzi poprawnych,
-„bez zmian”, o przekroczeniu limitu i o niedostępności usługi.
+#### Próby migracji i eksploatacja
 
-Pełny wykaz scenariuszy odbiorowych zawiera załącznik nr 10.
+Przed przełączeniem sprawdza się nową drogę, stary zapas, wspólną historię, utratę i powrót zasięgu oraz brak odtworzenia przeterminowanych poleceń. Dotychczasową usługę wyłącza się dopiero zgodnie z planem ciągłości; GSM pozostaje aktywnym zapasem fazy docelowej.
 
----
-
-#### 11. Typowe błędy implementacyjne i działania korygujące
-
-| Objaw | Przyczyna | Działanie korygujące |
-|---|---|---|
-| Podpis nie przechodzi mimo poprawnego klucza | inna kolejność kluczy albo białe znaki we własnej serializacji | sortuj klucze alfabetycznie, buduj tekst bez spacji |
-| Podpis nie przechodzi po wymianie klucza | urządzenie zna tylko klucz poprzedni | pobierz klucz z punktu dostępu; obsłuż okno nakładania |
-| Odpowiedź o przekroczeniu limitu | zbyt częste odpytywanie albo brak rozproszenia | wróć do odstępu bazowego, honoruj czas wstrzymania |
-| Syrena milczy mimo ostrzeżenia | ostrzeżenie bez zaznaczenia syren albo poza oknem rozpoczęcia | to jest zachowanie poprawne — polecenie powstaje tylko dla ostrzeżeń z jawnym zaznaczeniem |
-| Syrena milczy przy alercie rysowanym po mapie | urządzenie skonfigurowane kodem powiatu | skonfiguruj listą kodów gmin |
-| Emisja powtarza się po restarcie | zapis zamiaru dopiero po uruchomieniu wyjścia albo brak trwałości | zapisuj zamiar przed uruchomieniem, w pamięci trwałej |
-| Urządzenie działa mimo braku łączności | działanie na treści przeterminowanej | sprawdzaj termin ważności przed każdym wykonaniem |
+Przepustowość SMS, radia i zwrotek musi odpowiadać zakładanemu obszarowi oraz oknu wykonania. Brak ACK nie dowodzi awarii syreny ani niewykonania. Wynik zbiorczy nie ukrywa błędów poszczególnych urządzeń. Dane dostępowe, numery i parametry sieci pozostają w chronionej karcie konfiguracji.
 
 
 ---
 
-
-### Załącznik nr 7 — Poziom 1: rejestracja i kanał powiadomienia
-
-
-#### Zakres funkcjonalny poziomu 1
-
-Poziom 1 skraca czas wykrycia zmiany wykazu. Urządzenie na poziomie 0 wykrywa zmianę podczas
-najbliższego odpytania, którego odstęp bazowy wynosi trzydzieści sekund. Urządzenie zarejestrowane
-otrzymuje dodatkowo niezwłoczne powiadomienie i pobiera wykaz po jego odebraniu.
-
-Poza tym urządzenie zyskuje **własną tożsamość kryptograficzną**, która pozwala odróżnić je od
-innych, zawiesić albo odwołać pojedynczo, i która jest warunkiem wejścia na poziom drugi.
-
-Poziom ten **nie zmienia** zakresu weryfikacji polecenia, reguły obszaru, ochrony przed
-powtórzeniem i obowiązku cyklicznego odpytywania. Odpytywanie co trzydzieści sekund pozostaje
-obowiązkowe także wtedy, gdy kanał powiadomienia działa. Niedostępność kanału powiadomienia
-wydłuża czas wykrycia zmiany, lecz nie pozbawia urządzenia zdolności pobrania polecenia z poziomu 0.
-
----
-
-#### 1. Zgłoszenie
-
-Zgłoszenie składa **podmiot publiczny** — jednostka samorządu terytorialnego, wojewoda albo
-jednostka organizacyjna Państwowej Straży Pożarnej — formularzem udostępnionym przez Komendę Główną
-PSP. Jednostce samorządu terytorialnego zakłada się **profil**, w którym rejestruje ona własne
-urządzenia; profil porządkuje wnioski i wiąże je z podmiotem odpowiedzialnym, ale **nie zastępuje
-decyzji** o dopuszczeniu pojedynczego urządzenia.
-
-Rejestracja i dopuszczenie do kanałów zamkniętych nie obejmują podmiotów spoza wskazanego kręgu.
-Podmioty te mogą nadal korzystać z poziomu 0 bez procedury rejestracyjnej.
-
-Zakres danych zgłoszenia:
-
-**Identyfikacja urządzenia** — nazwa techniczna bez danych osobowych, producent, model, numer
-seryjny, wersja sprzętu i oprogramowania, profil wykonawczy.
-
-**Obszar działania** — lista siedmiocyfrowych kodów gmin, na których syrena fizycznie oddziałuje.
-Nie kod powiatu, nie kod województwa.
-
-**Umiejscowienie** — opis lokalizacji na poziomie wystarczającym do identyfikacji obiektu.
-Współrzędne dokładne wymagają odrębnej polityki i nie są przedmiotem zgłoszenia.
-
-**Odpowiedzialność** — jednostka odpowiedzialna operacyjnie oraz kontakt serwisowy. Dane kontaktowe
-prowadzi się poza materiałem kryptograficznym.
-
-**Kanały** — którymi urządzenie dysponuje: przewodowy, bezprzewodowy, komórkowy, wiadomości
-tekstowe, radiowy dyspozytorski, radiowy dalekiego zasięgu.
-
-**Klasy zdolności** — które zamówiono: rdzeń, tor audio, profil głosowy.
-
-Formularz **nie przyjmuje i nie przechowuje klucza prywatnego**. Materiał prywatny nie opuszcza
-urządzenia.
-
----
-
-#### 2. Decyzja administratora
-
-**Złożenie zgłoszenia nie tworzy uprawnienia.** O dopuszczeniu **każdego urządzenia z osobna**
-rozstrzyga administrator SOiA i jest to decyzja, a nie czynność techniczna wykonywana automatycznie.
-Administrator potwierdza powiązanie identyfikatora z konkretnym urządzeniem, jego lokalizacją
-i obszarem działania. Weryfikacja ta dotyczy każdego urządzenia odrębnie.
-
-**Termin rozpatrzenia:** 14 dni roboczych dla zgłoszenia pojedynczego, 30 dni roboczych dla porcji
-zgłoszeń złożonej z profilu jednostki samorządu terytorialnego. Termin biegnie od zgłoszenia
-kompletnego.
-
-Stany rejestracji przedstawia poniższy diagram:
-
-```mermaid
-stateDiagram-v2
-    [*] --> ZGLOSZONE
-    ZGLOSZONE --> DOPUSZCZONE: decyzja administratora
-    DOPUSZCZONE --> PROWIZJONOWANE: nadanie tożsamości
-    PROWIZJONOWANE --> AKTYWNE: pozytywny test połączenia
-    AKTYWNE --> ZAWIESZONE: zawieszenie dopuszczenia
-    ZAWIESZONE --> AKTYWNE: odrębna autoryzacja przywrócenia
-    ZAWIESZONE --> ODWOLANE: odwołanie dopuszczenia
-    AKTYWNE --> ODWOLANE: odwołanie dopuszczenia
-    AKTYWNE --> WYCOFANE: wycofanie urządzenia
-    ODWOLANE --> [*]
-    WYCOFANE --> [*]
-
-    note right of ODWOLANE
-        Odwołanie lub wycofanie blokuje
-        tożsamość i kanały zamknięte,
-        lecz nie publiczny poziom 0.
-    end note
-```
-
-!!! note "Jak czytać proces rejestracji"
-
-    Diagram pokazuje status administracyjny urządzenia, a nie jego stan techniczny. JST składa i uzupełnia zgłoszenie, administrator podejmuje decyzję, system nadaje tożsamość, a urządzenie potwierdza połączenie. Zawieszenie lub odwołanie blokuje kanały zamknięte, lecz samo w sobie nie usuwa dostępu do publicznego poziomu 0.
-
-**Rejestracja nie jest warunkiem działania.** W okresie od zgłoszenia do rozstrzygnięcia — który
-może trwać dni — urządzenie normalnie wykonuje polecenia z publicznego wykazu. Nie powstaje luka
-w ochronie ludności i nie ma powodu, żeby wstrzymywać uruchomienie instalacji do czasu decyzji.
-
-**Zawieszenie i odwołanie nie odcinają od publicznego wykazu.** Blokują tożsamość i kanał szybki;
-urządzenie wraca wtedy do zachowania z poziomu otwartego, chyba że lokalna polityka wymaga jego
-wyłączenia. Zmiana stanu zachowuje ślad, wskazuje przyczynę i osobę, a przywrócenie wymaga odrębnej
-autoryzacji.
-
----
-
-#### 3. Nadanie tożsamości
-
-Dopuszczenie skutkuje utworzeniem tożsamości urządzenia i wydaniem indywidualnego certyfikatu.
-
-```mermaid
-sequenceDiagram
-    participant ADM as Administrator
-    participant REG as Rejestr SOiA
-    participant DEV as Urządzenie i bezpieczny moduł
-    participant PKI as Usługa certyfikatów
-    participant BR as Broker powiadomień
-
-    ADM->>REG: Decyzja o dopuszczeniu urządzenia
-    REG->>REG: Utworzenie wpisu i identyfikatora
-    REG->>BR: Utworzenie odpowiadającego obiektu
-    REG->>DEV: Rozpoczęcie kontrolowanego nadania tożsamości
-    alt Generowanie kluczy w urządzeniu
-        DEV->>DEV: Wygenerowanie pary kluczy w bezpiecznym module
-    else Kontrolowany rozruch na stanowisku produkcyjnym
-        REG->>DEV: Przeprowadzenie kontrolowanego rozruchu
-    end
-    DEV->>PKI: Przekazanie żądania certyfikatu bez klucza prywatnego
-    PKI-->>DEV: Dostarczenie indywidualnego certyfikatu
-    DEV-->>REG: Przekazanie identyfikatora certyfikatu i części publicznej
-    REG->>BR: Powiązanie certyfikatu, obiektu i polityki dostępu
-    DEV->>BR: Test połączenia i subskrypcji
-    BR-->>REG: Potwierdzenie wyniku testu
-    REG->>REG: Aktywacja urządzenia
-    REG->>DEV: Unieważnienie materiału rozruchowego i tymczasowego
-```
-
-!!! note "Granica odpowiedzialności przy nadawaniu tożsamości"
-
-    Diagram opisuje proces wykonywany po pozytywnej decyzji administratora. Instalator przygotowuje urządzenie do kontrolowanego nadania tożsamości, ale nie podejmuje decyzji o dopuszczeniu i nie przejmuje klucza prywatnego. Materiał prywatny pozostaje w bezpiecznym magazynie urządzenia, a system otrzymuje wyłącznie dane potrzebne do powiązania tożsamości i polityki dostępu.
-
-Obowiązuje zasada: **jeden fizyczny sterownik — jedna tożsamość.** Jeden aktywny
-certyfikat nie może identyfikować wielu urządzeń. **Klucz prywatny nie opuszcza bezpiecznego
-magazynu.** Kompromitacja jednego urządzenia nie może wymuszać wymiany całej floty. Identyfikator
-połączenia jest unikalny, a jego duplikat stanowi zdarzenie operacyjne wymagające reakcji.
-
-Rejestr SOiA prowadzi **własny, niezależny identyfikator urządzenia** i jego odwzorowanie
-w usłudze brokera. Nazwa zasobu u dostawcy chmurowego nie może być jedyną tożsamością biznesową
-urządzenia — inaczej zmiana dostawcy stałaby się zmianą rejestru.
-
----
-
-#### 4. Kanał powiadomienia
-
-Kanał powiadomienia przenosi wyłącznie informację o zmianie wykazu i konieczności jego ponownego
-pobrania. Nie przenosi polecenia uruchomienia, odwołania ani innej treści wykonawczej.
-
-```mermaid
-sequenceDiagram
-    participant AL as ALARM.soia
-    participant PUB as Publikacja podpisanego wykazu
-    participant CACHE as Warstwa pamięci pośredniej
-    participant NOT as Kanał powiadomienia
-    participant DEV as Urządzenie
-
-    AL->>PUB: Utrwalenie nowego podpisanego wykazu
-    PUB->>CACHE: Udostępnienie nowej wersji i unieważnienie starej
-    AL->>NOT: Informacja o zmianie wykazu
-    NOT-->>DEV: Wykaz zmieniony — pobierz ponownie
-    DEV->>CACHE: Warunkowe pobranie wykazu
-    CACHE-->>DEV: Podpisany wykaz lub informacja bez zmian
-    DEV->>DEV: Weryfikacja podpisu i warunków wykonania
-```
-
-Dla toru danych jedynym źródłem treści wykonawczej pozostaje podpisany wykaz. Powiadomienie wyłącznie skraca czas
-dotarcia informacji o jego zmianie i nie tworzy równoległego toru decyzyjnego. Niedostępność kanału
-powiadomienia nie zatrzymuje działania poziomu 0; urządzenie wykrywa zmianę podczas cyklicznego
-odpytywania. Sprawdzenie działania bez kanału powiadomienia stanowi element odbioru.
-
-Polityka dostępu urządzenia jest **minimalna**: połączenie wyłącznie własnym identyfikatorem,
-subskrypcja wyłącznie tematu powiadomień oraz brak uprawnienia do publikowania wiadomości.
-Przyszły kanał statusu urządzenia wymaga odrębnej polityki,
-odrębnej decyzji o retencji danych i odrębnego rozstrzygnięcia o potwierdzeniach.
-
----
-
-#### 5. Kolejność publikacji i zapewnienie świeżości danych
-
-Powiadomienie może dotrzeć do urządzenia szybciej, niż zdąży odświeżyć się pamięć pośrednia przed
-punktem dostępu. Urządzenie pobrałoby wtedy **starszą treść niż ta, o której je powiadomiono**.
-
-Publikacja musi więc spełniać warunek: **po odebraniu powiadomienia urządzenie ma móc pobrać nową
-albo równoważną, podpisaną treść.** Dopuszczalne sposoby to utrwalenie stanu i skuteczne
-unieważnienie pamięci pośredniej przed wysłaniem powiadomienia, generowanie treści z krótkim czasem
-ważności pamięci pośredniej, albo umieszczenie w powiadomieniu numeru kolejnego pozwalającego
-urządzeniu rozpoznać, że pobrało wersję starszą, i ponowić żądanie.
-
-!!! danger "Wymaga decyzji przed akceptacją — świeżość po powiadomieniu"
-
-    Sama obecność pamięci pośredniej ani krótki czas jej ważności nie dowodzą, że urządzenie pobrało wersję wskazaną przez powiadomienie. Przed odbiorem trzeba zatwierdzić mechanizm pozwalający rozpoznać wersję starszą albo wykazać równoważność pobranej treści. Redakcja nie wybiera jednego z dopuszczalnych mechanizmów.
-
-Modyfikowanie podpisanej treści w warstwie pośredniczącej jest niedopuszczalne. Zmiana bajtów
-objętych podpisem powoduje niepowodzenie jego weryfikacji.
-
----
-
-#### 6. Cykl życia materiału kryptograficznego
-
-Musi istnieć i być udokumentowany proces: wydania, aktywacji, **wymiany przed wygaśnięciem**,
-równoległego okna certyfikatu starego i nowego, potwierdzenia działania na nowym, dezaktywacji
-starego, awaryjnego odwołania, ponownego nadania tożsamości po wymianie płyty, wycofania urządzenia
-z eksploatacji oraz okresowego przeglądu wykrywającego certyfikaty bez urządzeń i urządzenia bez
-ważnej tożsamości.
-
-Wymiana **nie może wymagać wizyty przy każdym urządzeniu**, ale zdalny rozruch musi być chroniony
-i odnotowany.
-
----
-
-#### 7. Wymagania procesu rejestracji w skali docelowej
-
-Przy założonej docelowej skali rzędu **dwudziestu trzech tysięcy urządzeń** wyłącznie ręczne
-wystawianie certyfikatów i przetwarzanie zgłoszeń nie zapewni wymaganej przepustowości procesu.
-
-Decyzja administratora pozostaje decyzją — ale musi być wspierana procesem: **zgłoszeniem zbiorczym
-dla jednostki**, prowizjonowaniem flotowym tożsamości, automatycznym przydziałem karty abonenckiej
-i numeru oraz **wymianą klucza jako operacją planowaną**, z oknem nakładania i harmonogramem,
-a nie jednorazową podmianą.
-
-To samo założenie dotyczy odpytywania. Flota tej wielkości przy odstępie trzydziestu sekund
-generowałaby średnio ponad siedemset zapytań na sekundę. Zapytania warunkowe ograniczają koszt
-obsługi, natomiast losowe rozproszenie momentu odpytania zapobiega jednoczesnemu kierowaniu żądań
-przez znaczną część floty.
-
-!!! danger "Założenie projektowe"
-
-    Liczbę urządzeń oraz wynikającą z niej przepustowość należy potwierdzić przed przyjęciem wymagań
-    pojemnościowych i eksploatacyjnych.
-
----
-
-#### 8. Kryteria odbiorowe
-
-Dwa urządzenia nie mogą połączyć się tym samym identyfikatorem bez wykrycia konfliktu. Certyfikat
-jednego urządzenia nie daje dostępu jako inne. Po odwołaniu urządzenie nie łączy się ponownie.
-Wymiana materiału kryptograficznego odbywa się bez utraty zdolności do odpytywania. Po wymianie
-sprzętu stary certyfikat jest nieaktywny. **Eksport rejestru nie zawiera kluczy prywatnych.**
-Wyłączenie kanału powiadomienia nie zatrzymuje wykonywania poleceń.
-
-
----
-
-
-### Załącznik nr 8 — Poziom 2: sieć wydzielona i kanał wiadomości tekstowych
-
-
-#### Zakres funkcjonalny poziomu 2
-
-Poziom 2 dodaje dwie zdolności: pracę w wydzielonej sieci operatora, podlegającej kontroli dostępu,
-oraz kanał wiadomości tekstowych przeznaczony dla lokalizacji, w których transmisja danych jest
-niestabilna albo niedostępna.
-
-Kanał wiadomości tekstowych jest dwukierunkowy. Urządzenie może przekazywać odrębne potwierdzenia
-przyjęcia i wykonania polecenia; żadne z nich nie stanowi potwierdzenia słyszalności sygnału.
-
----
-
-#### 1. Dostęp do usług SOiA z sieci wydzielonej
-
-Punkt dostępu SOiA oraz usługa powiadomień są osiągalne **równolegle z sieci wydzielonej
-i z publicznego internetu**. Urządzenie pracujące w sieci wydzielonej używa **tego samego adresu**
-i tej samej ścieżki co urządzenie na poziomie otwartym — zmienia się droga, nie kontrakt.
-
-Obecność warstwy pośredniczącej nie narusza podpisu, jeżeli podpisane bajty pozostają niezmienione.
-Warstwa ta nie może jednak modyfikować podpisanego dokumentu, interpretować poleceń ani stosować
-własnej reguły obszaru. Treść objęta podpisem musi zostać przekazana bez zmian.
-
-Sieć wydzielona ogranicza, **dokąd** urządzenie może się połączyć. Nie zmienia zakresu weryfikacji
-polecenia: praca w sieci zaufanej nie jest podstawą do uruchomienia syreny.
-
----
-
-#### 2. Profil komunikacji za pośrednictwem wiadomości tekstowych
-
-Profil jest **wersjonowany i będzie się zmieniał** wraz z profilami kolejnych producentów. Poniżej
-opisano jego strukturę; obowiązujące dla danej instalacji wartości zapisuje się w karcie
-konfiguracji, o której mowa w załączniku nr 9.
-
-##### Identyfikator urządzenia
-
-Trzy człony: **numer kolejny nadany przez system**, **typ syreny** oraz **kod jednostki
-terytorialnej**. Katalog typów obejmuje cztery wartości: **syrena elektroniczna**, **syrena
-silnikowa**, **instalacja modernizowana (retrofit)** oraz **inne urządzenie sygnalizacyjne**.
-
-Człon terytorialny identyfikatora służy do **rozpoznania urządzenia** i nie jest jego obszarem
-działania. Obszar konfiguruje się osobno, listą siedmiocyfrowych kodów gmin. Te dwie wartości mogą
-się różnić i różnica jest poprawna, nie błędna.
-
-##### Polecenie
-
-Wiadomość składa się z **hasła sterującego**, **kodu polecenia** oraz — od wersji profilu
-wprowadzanej wraz z niniejszymi Wytycznymi — **znacznika czasu i licznika**. Katalog poleceń
-obejmuje test łączności niepowodujący emisji, sygnały akustyczne z katalogu oraz polecenie
-awaryjnego wygaszenia wyjścia. Powiązanie kodów poleceń z sygnałami zawiera załącznik nr 4.
-
-Materiał źródłowy określa polecenie awaryjnego wygaszenia jako odcięcie toru wykonawczego.
-
-!!! danger "Wymaga decyzji przed akceptacją — semantyka awaryjnego wygaszenia"
-
-    Słownik zastrzega „odcięcie lokalne” dla czynności wykonywanej na obiekcie i wyklucza zdalne
-    zatrzymanie rozpoczętej emisji. Przed podpisaniem należy określić semantykę awaryjnego wygaszenia
-    wyjścia oraz jego relację do zasady niepodzielności emisji. Redakcja V2 nie rozstrzyga tej
-    sprzeczności materiału źródłowego.
-
-##### Granice wiadomości
-
-Polecenie musi zmieścić się w **jednej wiadomości: do 160 znaków** podstawowego alfabetu.
-Urządzenie **odrzuca wiadomości wieloczęściowe** i nie podejmuje próby ich sklejania — wiadomość
-złożona z fragmentów potrafi dotrzeć niekompletna albo w innej kolejności, a polecenie sklejone
-z części przestaje być poleceniem, którego treść dało się zweryfikować.
-
-Z tego wynika ograniczenie składni: **wyłącznie znaki podstawowego alfabetu, bez polskich znaków
-diakrytycznych**. Ich użycie przełącza kodowanie i skraca wiadomość do 70 znaków, co przy dłuższym
-poleceniu wymusiłoby podział — a podziału nie dopuszczamy.
-
-##### Ochrona przed powtórzeniem polecenia
-
-W fazie przejściowej, gdy nie ma zamkniętej grupy abonenckiej, realnym zabezpieczeniem pozostaje
-hasło i lista numerów uprawnionych. Obie te warstwy są bezradne wobec **powtórzenia przechwyconej
-wiadomości**: ta sama treść, wysłana drugi raz, jest nie do odróżnienia od oryginału.
-
-Dlatego polecenie niesie znacznik czasu i licznik, a urządzenie odrzuca wiadomość, której znacznik
-odbiega od jego czasu bardziej niż o dopuszczalny margines albo której licznik nie jest wyższy
-od ostatnio przyjętego. Kosztuje to kilkanaście znaków i nie wymaga zmiany sprzętu — a usuwa
-najprostszy z możliwych ataków w fazie, w której brakuje trzech pozostałych warstw.
-
-##### Potwierdzenia
-
-Poprawne polecenie daje **dwa potwierdzenia**, i to rozróżnienie jest istotne:
-
-**Przyjęcie polecenia** — urządzenie odebrało wiadomość, zweryfikowało ją i uznało za swoją.
-**Wykonanie** — wyjście zostało uruchomione, sygnał ruszył.
-
-Pierwsze bez drugiego oznacza „przyjęto, uruchomienie niepotwierdzone” i jest stanem wymagającym
-reakcji, a nie sukcesem. Żadne z nich **nie jest dowodem słyszalności**.
-
-Potwierdzenia trafiają wyłącznie na numery uprawnione. Pełny katalog kodów potwierdzeń i błędów
-oraz sposób odczytania odpowiedzi urządzenia utrzymywany jest w wersjonowanym profilu protokołu,
-a nie w tym dokumencie.
-
----
-
-#### 3. Model zabezpieczeń kanału wiadomości tekstowych
-
-Kanał tekstowy **nie ma podpisu kryptograficznego**. Zamiast niego stosuje się obronę w głąb,
-w której każda warstwa odcina inną drogę wejścia:
-
-| Warstwa | Co kontroluje | Co odcina |
-|---|---|---|
-| Karta abonencka wydana centralnie | kto dysponuje nadajnikiem w systemie | podmioty spoza systemu |
-| Zamknięta grupa abonencka | ruch wyłącznie wewnątrz grupy | wiadomość z zewnątrz sieci |
-| Hasło sterujące na urządzeniu | treść każdego polecenia | wiadomość wysłaną omyłkowo wewnątrz grupy |
-| Wykaz numerów uprawnionych | kto może wydać polecenie temu urządzeniu | uczestnika grupy bez uprawnienia |
-
-Komplet czterech warstw tworzy model wielowarstwowej kontroli dostępu do kanału. Nie stanowi on
-podpisu kryptograficznego treści. Żadna z warstw stosowana samodzielnie nie jest wystarczająca:
-zamknięta grupa nie zastępuje hasła, a hasło nie zastępuje wykazu numerów.
-
-!!! info "Stan przejściowy i docelowy kanału SMS"
-
-    W okresie przejściowym urządzenie może korzystać z karty innego operatora, ale nadal stosuje pełną walidację profilu SMS: numery uprawnione, unikalne hasło, składnię, znacznik czasu, licznik i ochronę przed powtórzeniem. W stanie docelowym KG PSP zapewnia kartę SIM w zamkniętej grupie użytkowników (CUG) oraz zarządza warstwą operatorską i listami numerów uprawnionych. CUG ogranicza dostęp do sieci, lecz nie zastępuje kontroli wykonywanych przez urządzenie.
-
-##### Planowany okres przejściowy 2026–2027
-
-Projekt zakłada, że w okresie przejściowym jednostki samorządu terytorialnego korzystają z kart
-własnych operatorów. Zamknięta grupa abonencka nie jest wówczas dostępna, co usuwa warstwę
-ograniczającą ruch do uczestników grupy.
-
-W okresie docelowym ruch spoza grupy jest ograniczany na poziomie sieci. W okresie przejściowym
-ochrona opiera się na wykazie numerów uprawnionych, haśle sterującym, znaczniku czasu i liczniku.
-Ze względu na możliwość podszycia się pod numer nadawcy na niektórych trasach samo sprawdzenie
-numeru nie jest wystarczające.
-
-Stąd wymagania bezwzględne na czas tej fazy: **hasło unikalne dla urządzenia** — wspólne hasło floty
-zamienia kompromitację jednej karty konfiguracyjnej w zdarzenie krajowe zamiast lokalnego — oraz
-**rejestrowanie i sygnalizowanie odrzuconych poleceń**, bo polecenie odrzucone z nieznanego numeru
-jest sygnałem bezpieczeństwa, a nie szumem.
-
-Zalecenie operacyjne: **tam, gdzie dostępny jest tor danych, kanał tekstowy powinien pozostać
-uzupełniający, a nie jedyny.** Wpięcie przewodem do sieci obiektu jest w tej fazie wyraźnie
-bezpieczniejszą drogą.
-
-Przejście do fazy docelowej **nie zmienia składni poleceń ani kontraktu** — zmienia kartę abonencką
-i numery w wykazie uprawnionych. Urządzenie kupione dziś musi je przyjąć bez wymiany sprzętu.
-
-##### Ryzyka rezydualne i środki ograniczające
-
-Ryzyko powtórzenia przechwyconej wiadomości jest ograniczane przez znacznik czasu i licznik
-określone w W-D25 oraz przez mechanizm niewykonywania tego samego polecenia ponownie w określonym
-oknie (W-D14). Skuteczność wymaga trwałego przechowywania licznika, wiarygodnego czasu i ochrony
-stanu urządzenia.
-
-Pozostaje ryzyko **podszycia się pod numer nadawcy**, na które w fazie przejściowej nie ma
-odpowiedzi technicznej po stronie sieci. Realnym zabezpieczeniem jest wtedy **hasło unikalne
-dla urządzenia** — i dlatego jest ono w tej fazie zabezpieczeniem podstawowym, a nie uzupełniającym.
-
-Potwierdzenia wysyłane na numery uprawnione zwiększają wykrywalność nieprawidłowego uruchomienia,
-lecz nie gwarantują jego natychmiastowego wykrycia, ponieważ kanał potwierdzeń również może być
-niedostępny lub opóźniony.
-
----
-
-#### 4. Ograniczenia skalowalności kanału wiadomości tekstowych
-
-Kanał tekstowy nie jest przeznaczony do samodzielnej obsługi alarmu krajowego. Jego przepustowość
-należy potwierdzić przed wdrożeniem i okresowo weryfikować.
-
-Bramka wielokartowa nadaje rzędu jednej wiadomości na sekundę na kartę. Przy ośmiu kartach daje to
-około ośmiu wiadomości na sekundę — czyli **blisko godziny na powiadomienie floty rzędu dwudziestu
-trzech tysięcy urządzeń**. Przy czterech takich bramkach nadal kilkanaście minut. Tymczasem **okno
-rozpoczęcia emisji trwa trzy minuty**, a urządzenie, do którego polecenie dotrze po jego zamknięciu,
-zgodnie z zasadą fail-closed nie rozpocznie emisji.
-
-Kanał wiadomości tekstowych należy traktować jako kanał obszarowy i zapasowy, przeznaczony dla
-pojedynczych gmin, lokalizacji bez transmisji danych oraz sytuacji awaryjnych. Podstawowym kanałem
-o większej skali pozostaje tor danych z niezwłocznym powiadomieniem.
-
-Podane wartości są szacunkiem rzędu wielkości i wymagają potwierdzenia pomiarem u operatora przed
-wszczęciem postępowania. Jeżeli zmierzona przepustowość nie zapewni obsługi zakładanego obszaru
-w wymaganym czasie, należy zwiększyć liczbę bramek, zmienić założenia dotyczące okna dla tego
-kanału albo ograniczyć jego planowany zasięg.
-
----
-
-#### 5. Obsługa stanów awaryjnych
-
-Rozróżnienie, które musi być widoczne dla operatora: **brak potwierdzenia nie jest awarią syreny**.
-Może oznaczać awarię bramki, brak zasięgu modemu, problem karty abonenckiej, przeciążenie kolejki
-albo opóźnienie w sieci operatora — i każda z tych sytuacji wymaga innej reakcji niż wyjazd
-do syreny.
-
-Zasady postępowania. Bramka bez odpowiedzi — wstrzymanie pobierania z kolejki z zachowaniem zleceń,
-nie ich porzucenie. Brak zasięgu — wstrzymanie realizacji, nie lawinowe ponawianie. Odrzucenie
-polecenia przez bramkę — ponowienie transportowe z kontrolowanym wycofaniem. Brak potwierdzenia
-wykonania mimo potwierdzenia przyjęcia — **brak automatycznego uznania sukcesu** i eskalacja.
-Odpowiedź spóźniona — zapis i uzgodnienie stanu bez kasowania historii. Odpowiedź niejednoznaczna
-albo od nieznanego nadawcy — kwarantanna i zdarzenie bezpieczeństwa. Przeciążenie kolejki —
-pierwszeństwo dla poleceń krytycznych i widoczne dla operatora spowolnienie.
-
-Wynik zbiorczy dla obszaru **nie może ukrywać niepowodzeń częściowych**. Operator ma widzieć liczby:
-ile urządzeń potwierdziło przyjęcie, ile wykonanie, ile nie odpowiedziało — a nie jeden komunikat
-„wysłano”.
-
----
-
-#### 6. Ochrona i przechowywanie wartości operacyjnych
-
-Numery abonenckie, hasła sterujące, wykazy numerów uprawnionych, nazwy sektorów i parametry sieci
-**nie są częścią tego dokumentu**. Zapisuje się je w karcie konfiguracji urządzenia, przekazywanej
-instalatorowi poza obiegiem publikowanym — wzór karty zawiera załącznik nr 9.
-
-Podręcznik określa struktury danych, natomiast wartości właściwe dla konkretnej instalacji są
-przechowywane w karcie konfiguracji.
-
-
----
-
-
-
-[Powrót do spisu treści](#spis-tresci){ .section-return }
-## Część V. Konfiguracja, instalacja i odbiór
-
-Ta część zawiera formularz konfiguracji urządzenia oraz zakres sprawdzeń wykonywanych podczas
-odbioru. Zakres sprawdzeń odpowiada klasom zdolności i elementom objętym zamówieniem.
-
+## Część V — Konfiguracja i odbiór
 
 ### Załącznik nr 9 — Karta konfiguracji urządzenia
 
+Jedna karta opisuje jeden egzemplarz sterownika i jego powiązanie z obiektem. Wiele niezależnych torów ma osobną mapę. Wypełniona karta, identyfikatory operacyjne, numery i sekrety są przekazywane w chronionym obiegu, poza repozytorium publicznym. Nie wpisuje się do karty kluczy prywatnych.
 
-#### Przeznaczenie i zasady stosowania karty
+Wartości operacyjne zatwierdza właściwy administrator. Wykonawca zapisuje konfigurację i wyniki pomiarów, a właściciel przejmuje dokumentację po odbiorze. Zmiana płyty, SIM, obrazu, profilu lub połączeń wymaga aktualizacji właściwych części karty i odpowiednich prób.
 
-Jedna karta opisuje **jedno urządzenie**. Zawiera wszystkie wartości potrzebne instalatorowi
-do uruchomienia instalacji i wszystkie wartości, których **nie ma w żadnym dokumencie
-publikowanym**: numery, hasło sterujące, wykaz numerów uprawnionych, identyfikator urządzenia
-i mapę poleceń.
-
-Podział jest celowy. Wytyczne i pozostałe załączniki opisują **struktury** i można je swobodnie
-rozsyłać. Karta zawiera **wartości** i krąży poza obiegiem publikowanym — w wydruku albo
-w przekazie chronionym, nigdy w repozytorium ani w załączniku do wiadomości rozsyłanej szeroko.
-
-!!! warning "Dokument zawierający dane wrażliwe operacyjnie"
-
-    Wypełniona karta zawiera dane uwierzytelniające i numery uprawnione. Jej przekazywanie,
-    przechowywanie, aktualizowanie, archiwizowanie i wycofywanie powinno odbywać się zgodnie
-    z zatwierdzoną polityką bezpieczeństwa, retencji i odpowiedzialności dowodowej.
-
-Legenda: oznaczenie **[W]** wskazuje pole wypełniane przez instalatora na obiekcie. Pozostałe
-wartości nadaje Komenda Główna PSP albo zamawiający, a instalator wprowadza je bez zmian.
-
-!!! note "Odpowiedzialność za kartę konfiguracji"
-
-    Karta nie służy wykonawcy do samodzielnego ustalania wartości operacyjnych. KG PSP albo zamawiający przekazuje wartości zatwierdzone dla instalacji, instalator wprowadza je bez zmiany i uzupełnia pola oznaczone `[W]`, a właściciel przejmuje kartę po odbiorze. Każda późniejsza zmiana wartości wymaga aktualizacji karty przez podmiot do tego uprawniony.
-
----
-
-#### A. Identyfikacja urządzenia
+#### A. Model i egzemplarz
 
 | Pole | Wartość |
-|---|---|
-| Numer karty / urządzenia | |
-| Jednostka odpowiedzialna | |
-| Lokalizacja — miejscowość, adres, obiekt | [W] |
-| Identyfikator urządzenia | `………………-……-………` — numer kolejny, typ, kod jednostki |
-| Typ syreny | ☐ elektroniczna ☐ silnikowa ☐ instalacja modernizowana (retrofit) ☐ inne urządzenie sygnalizacyjne |
-| Zamówione klasy zdolności | ☐ I ☐ II ☐ III |
-| Zakres zamówienia | ☐ dostawa i montaż (D) ☐ wymagania wobec producenta syreny (P) |
-| Producent i model syreny | |
-| Numer seryjny syreny | [W] |
-| Producent i model sterownika | |
-| Numer seryjny sterownika | [W] |
-| Wersja oprogramowania sterownika | [W] |
+| --- | --- |
+| Numer karty i rewizja | |
+| Właściciel, obiekt i lokalizacja | |
+| Model i rewizja płyty sterownika | |
+| Numer seryjny i ID urządzenia w ewidencji KG PSP | |
+| ID Orchestra i właściwa instancja | |
+| ID syreny, model i rewizja elektroniki | |
+| Klasy zdolności | I + ☐ 1.5 ☐ II; opcjonalnie ☐ III |
+| Zakres dostawy | ☐ moduł ☐ zestaw D ☐ wymagania P ☐ sprzęt powierzony |
+| Profil wykonawczy | ☐ elektroniczny ☐ silnikowy ☐ inny: … |
+| Tryb integracji | ☐ AUDIO/PTT ☐ API ☐ izolowany tor silnikowy |
+| Rodzaj inwestycji | ☐ nowa ☐ adaptacja |
+| Dowód przyjęcia konfiguracji modelu | |
 
----
-
-#### B. Obszar działania
-
-Wpisać **wyłącznie siedmiocyfrowe kody gmin**, na których syrena fizycznie oddziałuje. Kod powiatu
-lub województwa jest niedopuszczalny — urządzenie tak skonfigurowane pominie ostrzeżenia zadane
-przez narysowanie obszaru na mapie.
-
-| Lp. | Kod gminy (7 cyfr) | Nazwa jednostki |
-|---|---|---|
-| 1 | | |
-| 2 | | |
-| 3 | | |
-
-Potwierdzenie zgodności kodów z rejestrem podziału terytorialnego: [W] ……………………… (data, podpis)
-
----
-
-#### C. Łączność
+#### B. Obraz i przygotowanie platformy
 
 | Pole | Wartość |
-|---|---|
-| Sposób podłączenia podstawowy | ☐ przewodowy ☐ bezprzewodowy ☐ komórkowy |
-| Sposób podłączenia zapasowy | ☐ przewodowy ☐ bezprzewodowy ☐ komórkowy ☐ brak |
-| Adres punktu dostępu SOiA | |
-| Numer abonencki urządzenia | |
-| Operator / rodzaj sieci | ☐ sieć wydzielona ☐ operator własny jednostki *(faza 2026–2027)* |
-| Kod PIN karty abonenckiej | [W] ………… ☐ PIN wyłączony |
-| Punkt dostępu do sieci danych | [W] |
-| Data i sposób przekazania karty abonenckiej | [W] |
+| --- | --- |
+| Wydanie komponentów Yocto/OrchestraOS od KG PSP | |
+| OS, BSP, manifest i skrót obrazu | |
+| Wersja adapterów i kontraktu sprzętowego | |
+| Pakiet aplikacji KG PSP i metoda instalacji | |
+| Zasoby i bilans A/B, danych, audio oraz rezerwy | |
+| Profil zaufania aktualizacji i rozruchu | Identyfikatory, bez kluczy prywatnych |
+| Provisioning egzemplarza i dowód rejestracji | |
+| Flota aktualizacyjna i zakres uprawnień | |
+| Sposób odtworzenia i wycofania urządzenia | |
 
----
+#### C. Mapa torów i obszaru
 
-#### D. Zabezpieczenia
+Każdy niezależny tor ma dokładnie jeden siedmiocyfrowy TERC. Nie wpisuje się listy sąsiednich gmin tylko dlatego, że dochodzi do nich dźwięk. Kod powiatu, województwa, miejscowości lub ulicy nie jest prawidłową konfiguracją tego pola.
 
-| Pole | Wartość |
-|---|---|
-| Hasło sterujące | [W] ………………… — **zmienić z domyślnego**, nadać **unikalne dla tego urządzenia** |
-| Data ustalenia hasła | [W] |
-| Numery uprawnione do wydawania poleceń | 1) …………………  2) ………………… |
-| Numery otrzymujące potwierdzenia | 1) …………………  2) ………………… |
-| Identyfikator klucza weryfikującego wykaz | |
-| Sposób przechowywania materiału kryptograficznego | ☐ moduł sprzętowy ☐ bezpieczna enklawa procesora |
+| Tor | TERC gminy | Syrena lub odbiornik | Funkcje i interfejs |
+| --- | --- | --- | --- |
+| 1 | | | |
+| 2, jeżeli występuje | | | |
 
-!!! warning "Unikalność hasła sterującego"
+| Interfejs | Liczba dostępna | Przydział i parametry | Rezerwa |
+| --- | --- | --- | --- |
+| Ethernet | | | |
+| RS-232 | | | |
+| USB | | | |
+| Styki NO/NC/COM | | PTT lub RUN/CYKL uwzględnione w liczbie | |
+| GPI | | | |
+| GPO | | | |
+| Audio OUT / wymagane IN | | | |
 
-    Hasło wspólne dla wielu urządzeń jest niedopuszczalne. W okresie bez sieci wydzielonej hasło jest
-    podstawowym, a nie wyłącznie uzupełniającym zabezpieczeniem kanału tekstowego.
-
----
-
-#### E. Mapa poleceń i wysterowanie syreny
-
-| Polecenie | Sygnał | Kod polecenia |
-|---|---|---|
-| Test łączności — bez emisji | — | |
-| Ogłoszenie alarmu — ludność cywilna | modulowany, 180 s | |
-| Odwołanie alarmu — ludność cywilna | ciągły, 180 s | |
-| Alarm dla jednostki ochrony ppoż. | 3 bloki z przerwami 30 s, 180 s | |
-| Alarm ćwiczebny lub treningowy | ciągły, 60 s | |
-| Awaryjne wygaszenie wyjścia | — | |
+#### D. Łączność i uprawnienia
 
 | Pole | Wartość |
-|---|---|
-| Tryb sprzężenia z syreną | ☐ cyfrowy przez interfejs syreny ☐ audio — syrena jako nagłośnienie ☐ stykowy |
-| Wyjście audio — kanał i poziom | [W] |
-| Wyjście sterowania nadawaniem | [W] nr przekaźnika: ………… |
-| Wyjścia przekaźnikowe — przeznaczenie | [W] |
-| Wersja pakietu plików referencyjnych | `v.………………` |
-| Napięcie zasilania części zewnętrznej pod obciążeniem | [W] ………… V |
-| Zmierzona jakość toru radiowego części wewnętrznej | [W] |
-| Potwierdzenie sum kontrolnych plików | ☐ zgodne — [W] data: ………… |
+| --- | --- |
+| Etap | ☐ GSM/LTE 2026–2028 ☐ odebrana migracja TETRA |
+| Kanał podstawowy i zapasowy | |
+| Ethernet/Wi-Fi obiektu i polityka przełączania | |
+| Modemy i przypisanie usług SIM | |
+| Operator, APN i wymagane dane/SMS MO/MT | |
+| Numer urządzenia | |
+| Nadawcy uprawnieni do sterowania | |
+| Odbiorcy statusów i rodzaj zwrotek | |
+| Administratorzy konfiguracji | |
+| Profil SMS i mechanizm uwierzytelnienia | Referencja do sekretu w chronionym obiegu |
+| Profil IoT, słownik, endpoint i zaufane klucze | |
+| Źródła czasu i warunki utraty wiarygodności | |
+| LoRaWAN node, bramka i profil LNS/CUPS | |
+| TETRA: terminal/usługa lub obecna rezerwa | |
 
----
+#### E. Funkcja i zasoby lokalne
 
-#### E.1. Elementy zapewniane przez instalatora
+| Funkcja | Kod i wersja kontraktu | Zasób lub program lokalny | Wynik i sposób potwierdzenia |
+| --- | --- | --- | --- |
+| Test bez emisji | | | |
+| ALARM dla ludności | | | |
+| ODWOLANIE dla ludności | | | |
+| Inne sygnały objęte profilem | | | |
+| TTS, jeżeli zamówiony | | | |
+| Anulowanie akcji oczekującej | | | |
+| Techniczne STOP, jeżeli przewidziane | | | |
 
-Zestaw nie obejmuje elementów zależnych od obiektu — długości tras, rodzaju podłoża i warunków
-zewnętrznych. Ich brak w dostawie **nie jest niekompletnością**. Firma monterska przygotowuje je
-przed przyjazdem, po ustaleniu warunków na miejscu.
+| Parametr | Wartość i dowód |
+| --- | --- |
+| Pakiet/manifest audio, skróty i akceptacja | |
+| Program silnikowy i parametry obiektu | |
+| Adapter poziomu/izolacji lub protokołu | |
+| PTT, Tpre/Tpost i niezależny nadzór | |
+| Lokalny TTS: głos, wersja, prawa i próba offline | |
+| Tabela arbitrażu: odrzucenie/odroczenie/STOP | |
+| Historia, retencja i zachowanie po restarcie | |
 
-!!! note "Przykład: elementy zależne od obiektu"
+#### F. Zasilanie i montaż
 
-    Kotwy dobiera się do konkretnej ściany i nie można ich ustalić wyłącznie na podstawie modelu sterownika. Brak właściwych kotew nie jest wadą fabrycznej dostawy, ale uniemożliwia bezpieczny montaż. Warunki obiektu należy więc rozpoznać przed rozpoczęciem prac, a potrzebne elementy przygotować przed przyjazdem na montaż.
+| Pole | Wartość i dowód |
+| --- | --- |
+| Elementy dostarczone, powierzone i obiektowe | |
+| Mapa przewodów i zacisków powykonawczych | |
+| Ochrona elektryczna, izolacja i przepięcia | |
+| Zasilane elementy i profil obciążenia | |
+| Podtrzymanie sterowania/łączności | |
+| Osobny bilans wzmacniacza lub silnika | |
+| Rezerwa zasilania i miejsca dla TETRA | |
+| Deklarowane warunki pracy i warunki obiektu | |
+| Temperatura przy odbiorze i ocena zakresu | |
+| Przejście na rezerwę i powrót zasilania | |
 
-| Element | Przygotowano |
-|---|---|
-| Przewód sieciowy między częścią wewnętrzną a zewnętrzną, odpowiedniej kategorii i długości | ☐ |
-| Przedłużenie przewodu zasilającego część zewnętrzną | ☐ |
-| Przewód i złącza wielkiej częstotliwości dla anteny nawigacji satelitarnej | ☐ |
-| Puszki połączeniowe o szczelności właściwej dla montażu zewnętrznego | ☐ |
-| Dławnice, przepusty, uszczelnienia i materiały odporne na promieniowanie słoneczne | ☐ |
-| Kotwy, kołki i śruby dobrane do rodzaju i nośności ściany | ☐ |
-| Konstrukcja wsporcza części zewnętrznej, jeżeli montaż na ścianie nie jest możliwy | ☐ |
-| Przewody zasilania sieciowego i ochronny | ☐ |
-| Środki ochrony przepięciowej wynikające z projektu obiektu | ☐ |
+#### G. Odbiór i przekazanie
 
----
+Wyniki każdego właściwego scenariusza Z10: **pozytywny**, **negatywny**, **nie wykonano** albo **nie dotyczy z uzasadnieniem zakresu**. Brak wymaganej funkcji nie jest „nie dotyczy”.
 
-#### F. Odbiór instalacji
+| Grupa | Dowody i wynik |
+| --- | --- |
+| Platforma, obraz i konfiguracja modelu | |
+| Profil 1.5 lub rozszerzony, wyposażenie i opcje | |
+| Provisioning, Orchestra i uprawnienia | |
+| Aplikacja, kanały, adresat i odmowy | |
+| Tor lokalny, sygnały i opcjonalny TTS | |
+| Arbitraż, błędy, restart i podtrzymanie | |
+| TETRA: przygotowanie lub odbiór migracji | |
+| Dokumentacja, odtworzenie i utrzymanie | |
 
-| Czynność | Wynik |
-|---|---|
-| Kompletność dostawy sprawdzona wobec listy zawartości zestawu | ☐ |
-| Kontrola mechaniczna i elektryczna przed załączeniem wykonana | ☐ |
-| Okablowanie zgodne z mapą listwy przyłączeniowej | ☐ |
-| Temperatura pomieszczenia — **zmierzona i odnotowana** [W] ………… °C | ☐ |
-| Karta abonencka włożona, zasięg potwierdzony | ☐ |
-| Bezprzerwowe przejście na zasilanie rezerwowe sprawdzone | ☐ |
-| Łącze między częścią wewnętrzną a zewnętrzną aktywne | ☐ |
-| Hasło sterujące zmienione z domyślnego i unikalne | ☐ |
-| Numery uprawnione wprowadzone | ☐ |
-| Obszar skonfigurowany kodami gmin, bez kodu powiatu | ☐ |
-| Pliki referencyjne wgrane, sumy kontrolne zgodne **z Wytycznymi z 28 maja 2025 r.** | ☐ |
-| Wyjścia zmapowane zgodnie z częścią E | ☐ |
-| Test łączności — potwierdzenie przyjęcia, **bez emisji** | ☐ |
-| Test ogłoszenia alarmu — przyjęcie i wykonanie | ☐ |
-| Test odwołania alarmu — **emisja sygnału ciągłego, nie cisza** | ☐ |
-| Test zachowania przy poleceniu dla obcej gminy, **poprawnym pod każdym innym względem** — brak reakcji | ☐ |
-| Test powtórzenia tego samego polecenia — brak drugiej emisji | ☐ |
-| Odcięcie awaryjne — sprawdzone | ☐ |
-| Podtrzymanie zasilania — sprawdzone | ☐ |
-| Zmierzony czas od wydania polecenia **do rozpoczęcia emisji** *(bez progu zaliczenia)* | [W] ………… s |
+**Rozstrzygnięcie i zakres dopuszczonych funkcji:** …
 
-Uwagi: [W]
+**Niezgodności, zakres ograniczenia gotowości i termin działań:** …
 
-_______________________________________________________________________
+**Wykonawca / przedstawiciel właściciela / data / podpisy:** …
 
-_______________________________________________________________________
-
-| Instalator | Przedstawiciel właściciela |
-|---|---|
-| imię, nazwisko | imię, nazwisko |
-| data | data |
-| podpis | podpis |
-
----
-
-#### Zasady obiegu i aktualizacji wypełnionej karty
-
-Egzemplarz przekazuje się właścicielowi urządzenia w sposób potwierdzony. Zasady przechowywania
-kopii przez wykonawcę, okres retencji oraz sposób wycofywania wersji nieaktualnych określa
-zatwierdzona polityka bezpieczeństwa i dokumentacji. Kartę aktualizuje się przy każdej zmianie
-hasła, numerów uprawnionych, obszaru albo wersji pakietu plików referencyjnych.
-
-Karty **nie umieszcza się** w repozytoriach dokumentacji, w załącznikach do korespondencji
-rozsyłanej ani w materiałach przekazywanych do publikacji.
-
-
----
-
+Stan „online” ani pozytywny test samej łączności nie zastępują odbioru. Kartę przejmuje właściciel; kopie, retencja i wycofanie wersji są zarządzane zgodnie z właściwą polityką.
 
 ### Załącznik nr 10 — Scenariusze sprawdzeń i protokół odbioru
 
+#### Zakres i metodyka
 
-#### Rola sprawdzeń w procesie dopuszczenia instalacji
+Próby dotyczą wskazanego modelu, rewizji, obrazu, aplikacji i profilu. Oddzielnie odbiera się platformę, egzemplarz, kanały oraz tor obiektu. Wszystkie właściwe wymagania MUSI mają wynik i dowód; „nie wykonano” nie oznacza zgodności.
 
-Poziom 0 nie wymaga rejestracji i nie zawiera centralnej bramki dopuszczającej implementację.
-Poprawność mechanizmu weryfikacji musi zatem zostać potwierdzona w badaniach zgodności modelu oraz
-podczas odbioru konkretnej instalacji.
+Klasa I jest wspólna; próby **1.5 / II** obejmują lokalne audio obu profili; III dotyczy zamówionego TTS. D i P oznaczają właściwy zakres dostawy. Funkcji audio nie bada się na silniku, ale bada się właściwy program silnikowy. Zakresy warunkowe muszą być rozstrzygnięte przed próbą.
 
-Sprawdzenia powinny obejmować przede wszystkim przypadki negatywne, w których urządzenie ma odmówić
-wykonania polecenia. Pozytywny test emisji nie potwierdza samodzielnie poprawności reguły obszaru,
-ważności treści ani podpisu. Z tego względu wymagane są również próby z poleceniem dla obcej gminy,
-treścią przeterminowaną i niepoprawnym podpisem.
+Przypadek negatywny różni się od poprawnego wyłącznie badanym warunkiem. Obcy TERC z jednocześnie błędnym podpisem nie testuje reguły terytorialnej. Przy każdej próbie zapisuje się konfigurację, dane kontrolne, czas, wynik oraz poziom dowodu: odbiór, stan wyjścia, odtwarzanie albo pomiar zewnętrzny.
 
-#### Zakres sprawdzeń zgodny z przedmiotem zamówienia
+Próby prowadzi się w uzgodnionym środowisku i zgodnie z właściwą procedurą. Nie należy wystawiać produkcyjnych poleceń tylko po to, aby sprawdzić parser. Dla funkcji jeszcze niewdrożonej w centrali wynik pozostaje niewykonany w tym kanale; test lokalny nie poświadcza pełnej integracji z centralą.
 
-Każdy scenariusz ma przypisaną **klasę zdolności** — tę samą, która w załączniku nr 3 rozstrzyga,
-kiedy wymaganie obowiązuje. Instalacja, w której sterownik steruje syreną cyfrową przez jej własny
-interfejs, nie podlega sprawdzeniom klasy II, bo nie odtwarza dźwięku. Instalacja bez profilu
-głosowego nie podlega sprawdzeniom klasy III.
-
-| Znak | Zakres |
-|---|---|
-| **I** | rdzeń — zawsze |
-| **II** | tor audio — gdy sterownik sam odtwarza dźwięk |
-| **III** | profil głosowy — gdy zamówiono |
-| **D** | dostawa i montaż — gdy przedmiotem zamówienia jest kompletny zestaw |
-| **P** | wobec producenta syreny — sprawdzenie dokumentowe |
-
-#### Metodyka sprawdzeń negatywnych
-
-Sprawdzenie negatywne — „urządzenie ma **nie** zareagować” — jest wiarygodne tylko wtedy, gdy
-polecenie próbne różni się od poprawnego **wyłącznie tym jednym elementem**, który badamy.
-
-Najgroźniejszy przypadek to test reguły obszaru. Polecenie wystawione w środowisku testowym
-zostanie odrzucone już na kontroli środowiska (`W-A05`), zanim dojdzie do porównania kodów gmin.
-Wynik będzie pozytywny — i **nie odróżni urządzenia z działającą regułą obszaru od urządzenia,
-które tej reguły nie ma w ogóle**.
-
-Dlatego polecenie próbne do sprawdzeń negatywnych musi być **poprawne pod każdym innym względem**:
-to samo środowisko, ten sam profil, ten sam klucz, ważny termin i otwarte okno rozpoczęcia.
-Wystawianie takich poleceń jest funkcją systemu, a nie czynnością instalatora — opisano ją
-w wymaganiach produktowych po stronie SOiA.
-
-Sprawdzenia dzielą się na trzy grupy: **zgodności modelu**, wykonywane raz dla modelu i wersji
-oprogramowania; **odbiorowe**, wykonywane dla każdej instalacji; oraz **okresowe**, powtarzane
-w eksploatacji.
-
-!!! note "Ciągłość identyfikatorów scenariuszy"
-
-    Identyfikatory S-102 i S-103 dodano w późniejszym etapie redakcji. Zachowano ich numery, aby nie
-    unieważniać istniejących odwołań; kolejność prezentacji odpowiada zakresowi tematycznemu, a nie
-    kolejności numerów.
-
----
-
-#### 1. Sprawdzenia zgodności modelu
-
-Wykonywane jednorazowo dla danego modelu i wersji oprogramowania, przez producenta albo wykonawcę,
-przed pierwszym wdrożeniem. Wynik dotyczy modelu, nie egzemplarza.
+#### Scenariusze istniejące z zachowaniem identyfikatorów
 
 ##### 1.1. Weryfikacja treści
 
-| Nr | Klasa zdolności | Scenariusz | Oczekiwany wynik |
-|---|---|---|---|
+| Nr | Klasa lub zakres | Scenariusz | Oczekiwany wynik |
+| --- | --- | --- | --- |
 | S-01 | **I** | Poprawny wykaz, polecenie dla własnej gminy | emisja |
 | S-02 | **I** | Podpis niepoprawny | odrzucenie **całego** wykazu, brak emisji |
 | S-03 | **I** | Treść zmodyfikowana po podpisaniu | odrzucenie całości |
@@ -3073,134 +1086,120 @@ przed pierwszym wdrożeniem. Wynik dotyczy modelu, nie egzemplarza.
 | S-05 | **I** | Klucz z okna wymiany — poprzedni, wciąż ważny | poprawna weryfikacja, emisja |
 | S-06 | **I** | Niezgodna wersja profilu albo środowiska | odrzucenie |
 | S-07 | **I** | Wektory wzorcowe podpisu | zgodność co do bajtu |
-| S-08 | **I** | Wykaz i polecenie przekraczające ogłoszony limit rozmiaru | odrzucenie jako **błąd**, nie jako brak poleceń; urządzenie pozostaje sprawne |
+| S-08 | **I** | Feed lub polecenie przekracza limit przyjętego kontraktu | Odrzucenie jako błąd; urządzenie pozostaje sprawne; brak deklaracji limitu API, którego API nie publikuje. |
 
 ##### 1.2. Reguła obszaru
 
-Wszystkie sprawdzenia negatywne w tej grupie wykonuje się poleceniem poprawnym pod każdym innym
-względem — zgodnie z uwagą metodyczną powyżej.
-
-| Nr | Klasa zdolności | Scenariusz | Oczekiwany wynik |
-|---|---|---|---|
+| Nr | Klasa lub zakres | Scenariusz | Oczekiwany wynik |
+| --- | --- | --- | --- |
 | S-09 | **I** | Polecenie dla własnej gminy | emisja |
 | S-10 | **I** | Polecenie dla powiatu obejmującego tę gminę | emisja |
 | S-11 | **I** | Polecenie dla województwa obejmującego tę gminę | emisja |
-| S-12 | **I** | Polecenie dla obszaru obejmującego wiele województw | emisja |
+| S-12 | **I** | Polecenie wielowojewódzkie obejmujące TERC badanego toru | Wykonanie właściwego toru; przy braku dopasowania brak wykonania. |
 | S-13 | **I** | Polecenie dla obcej gminy | **brak emisji** |
 | S-14 | **I** | Gmina miejsko-wiejska: polecenie dla całej gminy, urządzenie w mieście | emisja |
 | S-15 | **I** | Gmina miejsko-wiejska: polecenie dla obszaru wiejskiego, urządzenie w mieście | **brak emisji** |
 | S-16 | **I** | Kod sześciocyfrowy, bez cyfry rodzaju | odrzucenie kodu, brak emisji |
 | S-17 | **I** | Kod miejscowości albo ulicy | pominięcie, brak emisji |
-| S-18 | **I** | Konfiguracja urządzenia kodem powiatu | **odrzucenie konfiguracji albo ostrzeżenie** |
+| S-18 | **I** | Konfiguracja toru kodem powiatu lub województwa | Odrzucenie lub błąd blokujący dopuszczenie toru; ostrzeżenie nie może pozwalać na wykonanie z błędnym TERC. |
 
 ##### 1.3. Czas, źródła czasu i powtórzenia
 
-| Nr | Klasa zdolności | Scenariusz | Oczekiwany wynik |
-|---|---|---|---|
+| Nr | Klasa lub zakres | Scenariusz | Oczekiwany wynik |
+| --- | --- | --- | --- |
 | S-19 | **I** | Wykaz po terminie ważności | brak emisji |
 | S-20 | **I** | Okno rozpoczęcia już zamknięte | brak emisji |
 | S-21 | **I** | Ten sam identyfikator polecenia po restarcie urządzenia | **brak drugiej emisji** |
 | S-22 | **I** | Ten sam identyfikator po zaniku i powrocie zasilania | brak drugiej emisji |
 | S-23 | **I** | To samo polecenie dwoma różnymi kanałami | dokładnie jedna emisja |
-| S-24 | **I** | Odwołanie akcji przed jej rozpoczęciem | brak emisji |
-| S-25 | **I** | Odwołanie akcji po jej zakończeniu | zapis zdarzenia, brak działania |
-| S-26 | **I** | Odwołanie akcji, której urządzenie nigdy nie widziało | trwały znacznik, brak emisji przy późniejszym odtworzeniu |
+| S-24 | **I** | CANCEL_PENDING dla wskazanej znanej akcji oczekującej | Anulowanie tylko tej akcji, brak dźwięku odwołania. |
+| S-25 | **I** | CANCEL_PENDING dla akcji rozpoczętej lub zakończonej | Zapis/no-op zgodnie z kontraktem; brak przerwania emisji i brak odwołania dźwiękowego. |
+| S-26 | **I** | CANCEL_PENDING dla nieznanego lokalnie ID w profilu 0.1 | Brak działania; nie tworzy START ani nowej akcji z powiązań. |
 | S-27 | **I** | Dryf zegara przekraczający 30 s | brak emisji, zapis przyczyny |
-| S-28 | **I** | Utrata źródła podstawowego czasu | przejście na źródło kolejne z hierarchii, praca bez przerwy |
-| S-29 | **I** | Brak synchronizacji dłuższy niż doba | sygnalizacja stanu, praca na zegarze podtrzymywanym |
+| S-28 | **I** | Utrata źródła podstawowego czasu | Użycie źródła kolejnego; wykonanie tylko przy zachowanej wiarygodności czasu. |
+| S-29 | **I** | Brak synchronizacji dłuższy niż doba | Sygnalizacja wieku i ocena zegara; brak nowego wykonania po utracie wiarygodności. |
 
 ##### 1.4. Katalog sygnałów
 
-| Nr | Klasa zdolności | Scenariusz | Oczekiwany wynik |
-|---|---|---|---|
-| S-30 | **I** | Każdy sygnał z katalogu — czas trwania | zgodność w tolerancji ±5 % |
+| Nr | Klasa lub zakres | Scenariusz | Oczekiwany wynik |
+| --- | --- | --- | --- |
+| S-30 | **I** | Każdy sygnał wymagany przez profil — pomiar czasu | Nominalny przebieg Z4 oraz metoda, tolerancja i niepewność z zatwierdzonego pakietu odbiorowego. |
 | S-31 | **I** | Każdy sygnał z katalogu — struktura | modulacja oraz liczba i długość przerw zgodne z wzorcem |
-| S-32 | **II** | Poziom w zadeklarowanym punkcie pomiarowym | w granicach ±3 dB względem wzorca, bez przesterowania |
-| S-33 | **II** | Regulacja poziomu | zmiana skuteczna, realizowana programowo |
+| S-32 | **1.5 / II** | Poziom w zadeklarowanym punkcie pomiarowym | w granicach ±3 dB względem wzorca, bez przesterowania |
+| S-33 | **1.5 / II** | Regulacja poziomu | zmiana skuteczna, realizowana programowo |
 | S-34 | **I** | Nieznany kod sygnału w wykazie | odrzucenie **tego** polecenia, obsługa pozostałych bez zakłóceń |
-| S-35 | **II** | Plik o niezgodnej sumie kontrolnej | odmowa instalacji |
-| S-36 | **II** | Pojemność pamięci na pakiet dźwiękowy | mieści komplet plików w dwóch wersjach |
+| S-35 | **1.5 / II** | Plik o skrócie niezgodnym z zatwierdzonym manifestem | Odmowa instalacji/użycia; brak zastąpienia zasobu innym plikiem o podobnej nazwie. |
+| S-36 | **1.5 / II** | Pamięć i trwałość lokalnego pakietu audio | Minimum 32 MB oraz miejsce na dwie wersje rzeczywistego pakietu; zasoby dostępne po restarcie. |
 
 ##### 1.5. Komunikat głosowy
 
-Wykonywane wyłącznie wtedy, gdy zamówiono profil głosowy.
-
-| Nr | Klasa zdolności | Scenariusz | Oczekiwany wynik |
-|---|---|---|---|
+| Nr | Klasa lub zakres | Scenariusz | Oczekiwany wynik |
+| --- | --- | --- | --- |
 | S-37 | **III** | Synteza przy całkowitym braku łączności | komunikat wypowiedziany, zrozumiały |
 | S-38 | **III** | Komunikat głosowy zbiegający się z sygnałem akustycznym | sygnał akustyczny **nieopóźniony i niezastąpiony** |
 | S-39 | **III** | Ten sam tekst przy tej samej wersji modelu | ten sam dźwięk |
 
 ##### 1.6. Kanały i odporność
 
-| Nr | Klasa zdolności | Scenariusz | Oczekiwany wynik |
-|---|---|---|---|
+| Nr | Klasa lub zakres | Scenariusz | Oczekiwany wynik |
+| --- | --- | --- | --- |
 | S-40 | **I** | Kanał niezwłocznego powiadomienia wyłączony | wykrycie zmiany samym odpytywaniem |
 | S-41 | **I** | Odpowiedź z pamięci pośredniej starsza niż oczekiwana | ponowienie żądania |
 | S-42 | **I** | Przekroczenie limitu zapytań | wstrzymanie na wskazany czas |
-| S-43 | **I** | Usługa niedostępna | brak emisji, kontrolowane wycofanie |
+| S-43 | **I** | Niedostępność publicznej usługi | Kontrolowane wycofanie; brak wykonania na przeterminowanych danych. Inne odebrane poprawne kanały ocenia się według ich profilu. |
 | S-44 | **I** | Utrata kanału podstawowego | praca kanałem zapasowym, **pełny zakres weryfikacji** |
 | S-45 | **I** | Polecenie tekstowe z nieuprawnionego numeru | odrzucenie i zapis zdarzenia |
-| S-46 | **I** | Polecenie tekstowe z błędnym hasłem | odrzucenie i zapis zdarzenia |
+| S-46 | **I** | SMS z błędnym uwierzytelnieniem właściwego profilu | Odrzucenie i zapis bez ujawniania sekretu. |
 | S-47 | **I** | Powtórzone polecenie tekstowe w oknie blokady | odrzucenie i zapis |
-| S-48 | **I** | Polecenie tekstowe podzielone na wiele wiadomości | **odrzucenie**, bez próby sklejania |
-| S-102 | **I** | Powtórzenie przechwyconego polecenia tekstowego z tym samym znacznikiem i licznikiem | **odrzucenie** i zapis zdarzenia |
-| S-49 | **I** | Polecenie przyjęte kanałem umożliwiającym odpowiedź | potwierdzenie **przyjęcia** odrębne od potwierdzenia wykonania |
+| S-48 | **I** | Multipart wobec profilu dopuszczającego jedną wiadomość oraz wobec profilu dopuszczającego kompletowanie | W pierwszym odrzucenie; w drugim wykonanie wyłącznie kompletnej uwierzytelnionej wiadomości w limitach. Brak wykonania fragmentu. |
+| S-102 | **I** | Powtórzenie uwierzytelnionego SMS oraz zmiana jego czasu/licznika bez ponownego uwierzytelnienia | Duplikat lub naruszenie integralności odrzucone; historia trwała, brak nowej emisji. |
+| S-49 | **I** | Polecenie i test bez emisji na kanale ze zwrotkami | Oddzielne ID oraz statusy przyjęcia/startu/końca/błędu według kontraktu. Test bez emisji nie raportuje dźwięku. |
 
 ##### 1.7. Współistnienie z systemem istniejącym
 
-| Nr | Klasa zdolności | Scenariusz | Oczekiwany wynik |
-|---|---|---|---|
+| Nr | Klasa lub zakres | Scenariusz | Oczekiwany wynik |
+| --- | --- | --- | --- |
 | S-50 | **I** | Uruchomienie dotychczasowym sposobem po dołączeniu kanału SOiA | **działa bez zmian** |
 | S-51 | **I** | Uruchomienie lokalne przy całkowitym braku łączności z SOiA | działa |
-| S-52 | **I** | Polecenie z drugiego toru w trakcie trwającej emisji | odrzucenie i zapis, **bez kolejkowania i bez drugiej emisji** |
-| S-53 | **I** | Polecenie odroczone z S-52, którego okno rozpoczęcia nadal trwa | **ponowienie po zakończeniu bieżącej emisji**, zapis odroczenia i ponowienia |
+| S-52 | **I** | Drugie polecenie podczas zajęcia toru | Brak równoległego przejęcia. Wynik: odrzucenie albo jawne odroczenie według przyjętej przed próbą tabeli Z5. |
+| S-53 | **I** | Jawnie odroczona operacja po zwolnieniu toru | Pełna ponowna kwalifikacja. Wykonanie tylko przy ważności i braku wcześniejszej realizacji; końcowo odrzucona operacja nie wraca. |
 | S-54 | **I** | Odcięcie lokalne przy emisji uruchomionej z toru SOiA | odcięcie skuteczne |
 | S-55 | **I** | Tryb serwisowy wobec polecenia z każdego toru | blokada zdalnego uruchomienia |
-| S-56 | **I** | Próba zatrzymania trwającej emisji poleceniem zdalnym | **odrzucenie**, emisja dokończona |
+| S-56 | **I** | Nieuprawniona albo nieprzewidziana przez profil próba zdalnego STOP | Odrzucenie; nie mapuje się CANCEL_PENDING lub odwołania alarmu na STOP. |
 
 ##### 1.8. Platforma, zasilanie i diagnostyka
 
-| Nr | Klasa zdolności | Scenariusz | Oczekiwany wynik |
-|---|---|---|---|
-| S-57 | **I** | Zawieszenie oprogramowania | samoczynny restart przez układ nadzoru |
+| Nr | Klasa lub zakres | Scenariusz | Oczekiwany wynik |
+| --- | --- | --- | --- |
+| S-57 | **I** | Zawieszenie oprogramowania podczas pracy toru | Niezależny nadzór ogranicza tor i restartuje aplikację/platformę; brak samoczynnego wznowienia emisji. |
 | S-58 | **I** | Restart urządzenia z niewysłanymi zapisami rejestru | zapisy **zachowane**, nic nie ginie |
 | S-59 | **I** | Odczyt rejestru bez oprogramowania producenta | format otwarty, czytelny |
-| S-60 | **I** | Czas od załączenia zasilania do gotowości operacyjnej | nie dłuższy niż 60 s |
-| S-61 | **I** | Zwarcie na wyjściu obiektowym | urządzenie pracuje dalej, tor wykonawczy sprawny |
+| S-60 | **I** | Rozruch na docelowym obrazie i uzyskanie gotowości aplikacji | Osobne czasy i warunki, porównane z limitem karty przyjętym przed próbą. Online w Managerze nie zastępuje wyniku. |
+| S-61 | **I** | Zwarcie lub przeciążenie jednego wyjścia obiektowego | Uszkodzony tor izolowany i zgłoszony; sterownik i pozostałe sprawne tory zachowują pracę. Brak fikcyjnego sukcesu uszkodzonego toru. |
 | S-62 | **I** | Impuls 200 ms na wejściu uruchomienia lokalnego | wykryty |
 | S-63 | **I** | Odczyt stanu przy zamkniętej obudowie | praca z rezerwy, niski stan energii, gotowość i brak łączności **rozróżnialne z zewnątrz** |
-| S-64 | **I** | Nieudana aktualizacja | powrót do poprzedniej wersji, materiał kryptograficzny zachowany |
+| S-64 | **I** | Nieudana aktualizacja, utrata zasilania przy zapisie i nieudany rozruch nowego obrazu | Kontrolowany rollback; tożsamość, dane aplikacji i historia zachowane; brak ponownej emisji. |
 | S-65 | **I** | Przełączenie na alternatywny punkt dostępu i punkt zaufania | skuteczne, bez udziału producenta |
 
 ##### 1.9. Sprawdzenia dokumentowe
 
-Wykonywane przez przegląd dokumentacji, nie na stanowisku.
-
-| Nr | Klasa zdolności | Scenariusz | Oczekiwany wynik |
-|---|---|---|---|
+| Nr | Klasa lub zakres | Scenariusz | Oczekiwany wynik |
+| --- | --- | --- | --- |
 | S-66 | **D** | Deklaracja zgodności, wykaz norm zharmonizowanych, sprawozdania z badań | przedłożone i kompletne |
 | S-103 | **I** | Dokumentacja interfejsów elektrycznych, audio i integracyjnych **wraz ze schematem elektrycznym** | przedłożona, w zakresie umożliwiającym samodzielny serwis |
 | S-67 | **D** | Model degradacji magazynu energii i świadectwo dla profilu obciążenia obejmującego emisję | przedłożone |
-| S-68 | **P** | Specyfikacja interfejsu sterowania syreną | opublikowana, kompletna, z warunkami licencyjnymi dopuszczającymi integrację przez podmiot trzeci |
-| S-69 | **P** | Wejście liniowe audio i zwarciowe wejście nadawania syreny | udokumentowane wraz z parametrami elektrycznymi |
-| S-70 | **P** | Integracja wykonana przez podmiot trzeci, bez udziału producenta syreny | wykazana |
-
----
-
-#### 2. Sprawdzenia odbiorowe instalacji
-
-Wykonywane dla **każdej** instalacji, przy uruchomieniu, i dokumentowane w karcie konfiguracji.
-Zakres zależy od zamówionych klas zdolności.
+| S-68 | **P** | Dokumentacja interfejsu właściwego rodzaju syreny | Zakres pozwala wykonać niezależną integrację API, audio albo toru silnikowego zgodnie z zamówieniem. |
+| S-69 | **P** | Tor AUDIO/PTT zamawianej syreny elektronicznej | Interfejs i parametry udokumentowane albo przyjęty jawny wariant równoważny; nie dotyczy napędu silnikowego. |
+| S-70 | **P** | Integracja przez niezależnego wykonawcę | Wykazana na dokumentacji i prawach objętych dostawą, dla właściwego toru. |
 
 ##### 2.1. Dostawa i montaż
 
-| Nr | Klasa zdolności | Scenariusz | Oczekiwany wynik |
-|---|---|---|---|
+| Nr | Klasa lub zakres | Scenariusz | Oczekiwany wynik |
+| --- | --- | --- | --- |
 | S-71 | **D** | Kompletność dostawy wobec listy zawartości zestawu | wszystkie pozycje obecne, brak uszkodzeń transportowych |
 | S-72 | **D** | Data produkcji i ostatniego ładowania magazynu energii, pomiar napięcia przed uruchomieniem | odnotowane, napięcie w zakresie |
 | S-73 | **D** | Kontrola mechaniczna: zamocowanie, otwarcie obudowy, stabilność magazynu energii i anten | zgodne z listą kontrolną producenta |
-| S-74 | **D** | Kontrola elektryczna przed załączeniem: obwód wyłączony, ciągłość ochronna, polaryzacja, izolacja żył niewykorzystanych | zgodne z listą kontrolną producenta |
+| S-74 | **D** | Kontrola elektryczna przed załączeniem, zasilanie wyłączone | Polaryzacja, izolacja i wymagane połączenia ochronne zgodne z klasą ochronności oraz projektem. |
 | S-75 | **D** | Pierwsze załączenie | bez wyzwolenia zabezpieczenia obwodu obiektowego |
 | S-76 | **D** | **Bezprzerwowe przejście na zasilanie rezerwowe** przy odłączeniu zasilania sieciowego | brak przerwy w pracy, sygnalizacja zmienia stan |
 | S-77 | **D** | Powrót do zasilania sieciowego | praca sieciowa przywrócona, sygnalizacja zgodna |
@@ -3213,18 +1212,18 @@ Zakres zależy od zamówionych klas zdolności.
 
 ##### 2.2. Konfiguracja
 
-| Nr | Klasa zdolności | Scenariusz | Oczekiwany wynik |
-|---|---|---|---|
-| S-84 | **I** | Obszar wpisany kodami gmin | bez kodu powiatu i województwa, zgodny z rejestrem podziału terytorialnego |
-| S-85 | **I** | Hasło sterujące | zmienione z domyślnego i **unikalne dla urządzenia** |
+| Nr | Klasa lub zakres | Scenariusz | Oczekiwany wynik |
+| --- | --- | --- | --- |
+| S-84 | **I** | Mapa TERC niezależnych torów | Jeden prawidłowy TERC na tor; dopasowanie jednego nie uruchamia wszystkich wyjść. |
+| S-85 | **I** | Indywidualne uwierzytelnienie urządzenia i SMS | Sekrety właściwego profilu unikalne; brak kont i haseł domyślnych. |
 | S-86 | **I** | Numery uprawnione | wprowadzone, zgodne z kartą konfiguracji |
-| S-87 | **I** | Adres punktu dostępu i identyfikator klucza | zgodne z aktualnymi wartościami publikowanymi |
-| S-88 | **II** | Pliki referencyjne | wgrane, sumy kontrolne potwierdzone wobec Wytycznych z 28 maja 2025 r., wersja pakietu odnotowana |
+| S-87 | **I** | Endpoint i zaufane klucze konfiguracji | Zgodne z zatwierdzonym profilem; nieznany klucz z samej odebranej treści nie zostaje automatycznie zaakceptowany. |
+| S-88 | **1.5 / II** | Lokalne pliki i manifest pakietu | Zasoby wgrane, integralność i akceptacja potwierdzone, wersja zapisana. |
 
 ##### 2.3. Uruchomienie
 
-| Nr | Klasa zdolności | Scenariusz | Oczekiwany wynik |
-|---|---|---|---|
+| Nr | Klasa lub zakres | Scenariusz | Oczekiwany wynik |
+| --- | --- | --- | --- |
 | S-89 | **I** | Łączność | zasięg albo połączenie przewodowe potwierdzone |
 | S-90 | **I** | Test łączności | przyjęcie potwierdzone, **bez emisji zewnętrznej** |
 | S-91 | **I** | Ogłoszenie alarmu | przyjęcie i wykonanie potwierdzone |
@@ -3233,652 +1232,212 @@ Zakres zależy od zamówionych klas zdolności.
 | S-94 | **I** | Powtórzenie tego samego polecenia | brak drugiej emisji |
 | S-95 | **I** | Odcięcie lokalne | skuteczne |
 | S-96 | **I** | Zachowanie po restarcie | brak samoczynnego uruchomienia |
-| S-97 | **D** | Podtrzymanie zasilania | zgodne z deklaracją |
+| S-97 | **D** | Podtrzymanie rzeczywistej kompletacji | Czasy W-H01 wykazane dla podanego obciążenia; osobna zdolność zasilania wzmacniacza lub silnika, jeśli wymagana. |
 | S-98 | **I** | Zmierzony **czas od wydania polecenia do rozpoczęcia emisji** | odnotowany; **bez progu zaliczenia** |
-| S-99 | **D** | Temperatura pomieszczenia w chwili odbioru | odnotowana; **zapis stanu, nie warunek dopuszczenia** |
+| S-99 | **D** | Warunki obiektu wobec deklarowanych warunków pracy | Pomiar i ocena zakresu. Warunki poza deklaracją nie potwierdzają zgodności; pojedynczy pomiar nie dowodzi warunków całorocznych. |
 | S-100 | **I** | Dotychczasowy sposób uruchomienia **po** dołączeniu kanału SOiA | działa bez zmian |
 | S-101 | **I** | Uruchomienie lokalne przy odłączonej łączności | działa |
 
-!!! warning "Sprawdzenia powodujące emisję zewnętrzną"
+#### Próby platformy i profilu kompaktowego
 
-    Sprawdzenia powodujące **emisję zewnętrzną** wymagają uprzedzenia mieszkańców i uzgodnienia
-    z właściwym organem. Tam, gdzie to możliwe, wykonuje się je na sygnale ćwiczebnym albo w trybie
-    lokalnym bez emisji. Sprawdzenia S-91 i S-92 są jedynymi, których nie da się wykonać inaczej —
-    i dlatego uzgodnienie terminu jest częścią przygotowania odbioru, a nie jego utrudnieniem.
+| Nr | Klasa lub zakres | Scenariusz | Oczekiwany wynik |
+| --- | --- | --- | --- |
+| S-104 | **I** | Odtworzenie budowy Yocto/OrchestraOS dla płyty z przekazanego manifestu | Wynik uruchamia się na wskazanym modelu; źródła, BSP i zależności są identyfikowalne. |
+| S-105 | **I** | Provisioning i pierwsza rejestracja egzemplarza | Właściwa instancja Orchestra i indywidualna tożsamość; brak samoczynnej emisji. |
+| S-106 | **I** | Uprawniony dostęp, próba obcego dostępu i cofnięcie uprawnień | Uprawniona operacja działa, pozostałe odrzucone i odnotowane; zarządzanie przed instalacją aplikacji. |
+| S-107 | **I** | Zły podpis RAUC i nieautoryzowany obraz/nośnik rozruchowy | Odmowa aktualizacji lub rozruchu; osobno wykazana ochrona obu mechanizmów. |
+| S-108 | **1.5** | Rzeczywiste porty, opcje i bilans profilu kompaktowego | Macierz Z3 i W-F19 spełnione; PTT policzone jako funkcja istniejącego styku, bez podwójnego liczenia. |
+| S-109 | **I** | Aplikacja KG PSP na dostarczonej platformie i interfejsach | Pakiet działa bez zmiany logiki i obejścia zabezpieczeń; autostart, trwały zapis i lokalny kontrakt działają. |
+| S-110 | **I** | Awaria po trwałym zapisie zamiaru lub podczas aktywacji wyjścia | Wynik przerwany lub niepewny zostaje zachowany; brak automatycznego ponowienia po restarcie. |
+| S-111 | **1.5 / II** | ALARM i ODWOLANIE bez internetu oraz awaria odtwarzacza | Właściwe lokalne pliki, pełny nominalny przebieg i osobny nadzór PTT; brak zależności od pobrania audio. |
+| S-112 | **I** | Syrena silnikowa, program, odcięcie i wybieg — gdy zastosowano | Właściwe sterowanie izolowaną aparaturą i niezależny limit; odcięcie napędu nie jest deklarowane jako natychmiastowe zatrzymanie wirnika. |
+| S-113 | **I** | HTTP 304 przy wygasłej kopii oraz przyszłe polecenie | 304 nie odnawia ważności; przyszła akcja wymaga ponownej kwalifikacji na ważnej treści. |
+| S-114 | **I** | Zmiana floty aktualizacyjnej i wymiana SIM | Tożsamość egzemplarza i TERC nie zmieniają się samoczynnie; właściwe atrybuty ewidencji zaktualizowane. |
+| S-115 | **I** | Rezerwa TETRA, a w etapie migracji terminal i integracja | Teraz: port/moc/miejsce/obsługa. Docelowo: polecenie działa bez GSM i internetu obiektu, a zapas GSM zachowuje właściwe reguły. |
+| S-116 | **I** | Techniczne STOP objęte przyjętym profilem | Wyłącznie uprawniona funkcja i właściwy zakres; wynik przerwania zapisany, bez mylenia z odwołaniem dźwiękowym. |
+| S-117 | **I** | Ochrona sekretów, toru procesor–radio i dostępu serwisowego według modelu zagrożeń | Próby odczytu klucza, zapisu/wstrzyknięcia/powtórzenia na szynie i nieuprawnionego debugowania nie omijają ochrony. Brak sekretów w logach; domeny zaufania rozdzielone. |
+| S-118 | **I** | SBOM, wsparcie, prawa, komponenty i procedura odtworzenia | Komplet dla wydania; możliwość utrzymania i przejęcia serwisu; zależności i warunki podpisywania jawne. |
+| S-119 | **III** | TTS na konfiguracji kompaktowej lub rozszerzonej | Zasoby III i pełny lokalny polski TTS z prawami użycia; liczba I/O odpowiada zamówionemu profilowi, nie samej nazwie III. |
+| S-120 | **I** | Przyłączenie LoRaWAN i ewentualnej bramki w zakresie zamówienia | Node działa z właściwym LNS; onboarding/CUPS bramki potwierdzone, jeśli bramka jest objęta dostawą. |
 
-**Interpretacja wyniku S-98.** Projekt nie ustanawia liczbowego progu zaliczenia; stosuje wymóg
-niezwłoczności. Pomiar służy zgromadzeniu porównywalnych danych z instalacji. Wynik istotnie
-odstający od pozostałych stanowi przesłankę do dodatkowej diagnostyki, a nie samodzielną podstawę
-odmowy podpisania protokołu.
+#### Powiązanie z wymaganiami
 
-**Interpretacja wyniku S-99.** Projekt nie nakłada wymagań na warunki obiektowe. Pomiar dokumentuje
-warunki w chwili odbioru, lecz nie potwierdza ich zgodności z deklarowanym zakresem pracy przez cały
-rok. Ocena warunków całorocznych należy do właściciela obiektu i projektanta instalacji.
+| Obszar Z3 | Główne scenariusze |
+| --- | --- |
+| A — podpis, ważność i historia | S-01–S-08, S-19–S-29, S-110, S-113, S-117 |
+| B — obszar | S-09–S-18, S-84, S-93, S-114 |
+| C — sygnały i mowa | S-30–S-39, S-88, S-91–S-92, S-111, S-119 |
+| D — kanały | S-40–S-49, S-85–S-87, S-89–S-90, S-102, S-113–S-115, S-120 |
+| E — tor wykonawczy | S-32–S-33, S-54–S-57, S-61–S-62, S-68–S-70, S-95, S-108, S-110–S-112, S-116 |
+| F — platforma | S-57–S-65, S-103–S-110, S-114, S-117–S-119 |
+| G — stan i dziennik | S-49, S-55, S-58–S-59, S-63, S-96, S-106, S-110, S-117 |
+| H — zasilanie i środowisko | S-60, S-67, S-72, S-76–S-77, S-96–S-99 |
+| I — interoperacyjność i prawa | S-65–S-70, S-103–S-109, S-117–S-118 |
+| J — współistnienie | S-50–S-56, S-100–S-101, S-110, S-116 |
+| K — dostawa i instalacja | S-66–S-67, S-71–S-83, S-97, S-99, S-108, S-115 |
 
----
+Macierz porządkuje grupy. W karcie odbioru każde właściwe wymaganie musi zostać powiązane z konkretnym dowodem; samo zaliczenie jednej próby w grupie nie poświadcza wszystkich wymagań tej grupy.
 
-#### 3. Sprawdzenia okresowe
+#### Protokół i wynik
 
-**Test odsłuchowy — nie rzadziej niż raz na dwanaście miesięcy** oraz po każdej modernizacji
-sterownika, w trybie i na wzorze protokołu określonym w Wytycznych z 28 maja 2025 r. Obejmuje
-odtworzenie każdego pliku w trybie lokalnym, pomiar czasu trwania i potwierdzenie struktury.
+**Obiekt / ID sterownika / ID syreny / rewizja karty:** …
 
-Do tego sprawdzenia dochodzą trzy uzupełniające, wynikające z niniejszych Wytycznych:
-**potwierdzenie poprawnej weryfikacji polecenia** — próbą z celowo niepoprawnym podpisem;
-**potwierdzenie reguły obszaru** — próbą z kodem obcej gminy, poprawną pod każdym innym względem;
-oraz **sprawdzenie stanu zasilania rezerwowego**.
+**Model / OS/BSP / aplikacja / profil zdolności i wykonania:** …
 
-Rozbieżność czasu trwania przekraczająca 5 % albo zmiana struktury sygnału powoduje **wyłączenie
-syreny z eksploatacji** do czasu ponownego wgrania pliku wzorcowego. Protokoły przechowuje jednostka
-eksploatująca przez okres wskazany w Wytycznych z 28 maja 2025 r.
+**Wykonawca / przedstawiciel właściciela / data:** …
 
-Dopóki system nie zapewnia potwierdzania obecności urządzeń, test okresowy pozostaje podstawowym
-udokumentowanym źródłem informacji o sprawności instalacji. Ewentualne wprowadzenie częstszych
-testów indywidualnych wymaga odrębnego określenia procedury, częstotliwości i kryteriów oceny.
+| Grupa odbioru | Scenariusze właściwe | Dowód | Wynik |
+| --- | --- | --- | --- |
+| Konfiguracja modelu i platforma | | | |
+| Wyposażenie 1.5 lub rozszerzone | | | |
+| Provisioning i Orchestra | | | |
+| Aplikacja i kanały | | | |
+| Syrena i fizyczny efekt | | | |
+| Odmowy, arbitraż i restart | | | |
+| Zasilanie i warunki obiektu | | | |
+| Dokumentacja i utrzymanie | | | |
 
----
+Wynik: pozytywny, negatywny, nie wykonano albo nie dotyczy z uzasadnieniem. Protokół podaje niezgodności, zakres gotowości, działania i rozstrzygnięcie. Niezgodności wykluczającej wymaganą bezpieczną funkcję nie usuwa zapis „z uwagami”.
 
-#### 4. Protokół odbioru instalacji
+Czas od publikacji do emisji mierzy się osobno od czasu rozruchu i od czasu dźwięku. Ocenia się go według przyjętych warunków i wymogu niezwłoczności; 30 s pollingu nie jest gwarancją końcowej latencji. Warunki środowiskowe porównuje się z deklaracją, bez uznawania jednego pomiaru za dowód warunków całorocznych.
 
-!!! note "Jak czytać protokół odbioru"
+#### Sprawdzenia okresowe i po zmianie
 
-    Protokół grupuje wyniki, ale nie zastępuje dowodów szczegółowych z testów i karty konfiguracji. Wykonawca przedstawia wyniki sprawdzeń, przedstawiciel właściciela ocenia ich kompletność i podpisuje rozstrzygnięcie. Wynik „z uwagami” nie usuwa obowiązku usunięcia niezgodności, która według kryteriów dopuszczenia wyklucza eksploatację.
+Plan utrzymania określa częstotliwość, zakres, metodę i uprawnienia, uwzględniając DTR, właściwe wytyczne i stan obiektu. Zmiana SIM, firmware, pakietu, interfejsu lub profilu wymaga ponowienia odpowiednich prób. Próby zewnętrznej emisji organizuje się zgodnie z właściwą procedurą; ta publikacja nie zleca ich uruchomienia.
 
-**Instalacja:** …………………………………………………  **Identyfikator urządzenia:** ……………………………
-
-**Data:** ………………  **Wykonujący:** ………………………………  **Przedstawiciel właściciela:** ………………………
-
-**Zamówione klasy zdolności:** ☐ I ☐ II ☐ III ☐ D
-
-| Grupa | Scenariusze | Wynik |
-|---|---|---|
-| Dostawa i montaż | S-71 … S-83 | ☐ zgodne ☐ uwagi ☐ nie dotyczy |
-| Konfiguracja | S-84 … S-88 | ☐ zgodne ☐ uwagi |
-| Uruchomienie i emisja | S-89 … S-92 | ☐ zgodne ☐ uwagi |
-| Odmowa | S-93, S-94 | ☐ zgodne ☐ uwagi |
-| Bezpieczeństwo i zasilanie | S-95 … S-97 | ☐ zgodne ☐ uwagi |
-| Współistnienie | S-100, S-101 | ☐ zgodne ☐ uwagi ☐ nie dotyczy |
-
-**Zmierzony czas od wydania polecenia do rozpoczęcia emisji (S-98):** ………… s *(bez progu zaliczenia)*
-
-**Zmierzona temperatura pomieszczenia (S-99):** ………… °C *(zapis stanu)*
-
-**Stwierdzone niezgodności i termin usunięcia:**
-
-_______________________________________________________________________
-
-_______________________________________________________________________
-
-**Rozstrzygnięcie:** ☐ instalacja dopuszczona do eksploatacji ☐ dopuszczona z uwagami
-☐ niedopuszczona
-
-Podpisy: ………………………………………  ………………………………………
-
----
-
-#### 5. Proponowane kryteria dopuszczenia instalacji
-
-Instalacja, która uruchamia syrenę mimo niespełnienia warunków — poza własnym obszarem, poza oknem
-rozpoczęcia albo przy niepoprawnym podpisie — nie spełnia kryteriów dopuszczenia określonych
-w projekcie i wymaga usunięcia przyczyny przed eksploatacją.
-
-Brak emisji po niespełnieniu warunków weryfikacji jest zachowaniem zgodnym z zasadą fail-closed.
-Porównanie skutków fałszywego uruchomienia i pominięcia alarmu wymaga odrębnej analizy ryzyka i nie
-jest rozstrzygane w niniejszej części.
-
-Wynik pomiaru w scenariuszach S-98 i S-99, dla których projekt nie ustanawia progu, nie stanowi
-samodzielnej podstawy odmowy dopuszczenia. Służy dokumentowaniu stanu i tworzeniu zbioru danych
-do późniejszego określenia wartości referencyjnych.
+Dokument opisuje 120 scenariuszy: zachowane S-01–S-103 oraz nowe S-104–S-120. Nie jest raportem ich wykonania na urządzeniach.
 
 
 ---
 
-
-
-[Powrót do spisu treści](#spis-tresci){ .section-return }
-## Część VI. Przygotowanie i realizacja zamówienia
-
-Ta część jest przeznaczona dla jednostek samorządu terytorialnego przygotowujących zakup.
-W konkretnym postępowaniu podstawowym mechanizmem egzekwowania wymagań wobec wykonawcy jest ich
-prawidłowe ujęcie w dokumentach zamówienia i w umowie. Niniejszy projekt nie zastępuje analizy
-prawnej ani opisu przedmiotu zamówienia dostosowanego do danego postępowania.
-
+## Część VI — Przygotowanie zamówienia
 
 ### Załącznik nr 11 — Wytyczne do opisu przedmiotu zamówienia
 
+#### Zakres i zasady
 
-#### Zakres i sposób stosowania załącznika
+Załącznik pomaga przygotować opis dostawy, ale nie jest gotowym OPZ. Zamawiający określa funkcję, obiekt, klasy zdolności, zakres dostawy i kryteria odbioru. Zgodność z instancją KG PSP nie może sprowadzać się do nazwy produktu lub ogólnej deklaracji „kompatybilne”.
 
-!!! warning "Zakres zastosowania"
+Wymagania mają być związane z potrzebą i proporcjonalne. Przy wskazaniu istniejącego środowiska OrchestraOS/Orchestra należy przekazać potrzebne interfejsy, warunki dostępu do komponentów i kryteria oceny. Stosowanie nazw własnych i równoważności w konkretnym OPZ wymaga oceny według art. 99 i 101 Prawa zamówień publicznych. Sam zwrot „lub równoważny” nie zastępuje mierzalnych kryteriów.
 
-    Załącznik nie stanowi kompletnego opisu przedmiotu zamówienia. Zawiera propozycję minimalnego
-    zakresu funkcjonalnego, który zamawiający powinien zweryfikować, uszczegółowić i dostosować do
-    potrzeb, przedmiotu oraz podstawy prawnej konkretnego postępowania.
+#### Najpierw przedmiot dostawy
 
-!!! note "Trzy ścieżki przygotowania zamówienia"
+| Przedmiot | Co trzeba rozdzielić |
+| --- | --- |
+| Nowy punkt alarmowania | Syrena, sterownik, moduły, zasilanie, konstrukcja, integracja, konfiguracja i odbiór. |
+| Adaptacja istniejącego punktu | Elementy zachowane po sprawdzeniu, brakujące wyposażenie i prace integracyjne. |
+| Montaż sprzętu powierzonego | Zakres już dostarczony oraz tylko brakujące materiały, połączenia i próby. |
+| Sam sterownik | Zgodna platforma i jej interfejsy; bez automatycznego traktowania jako całego zestawu D. |
+| Sama syrena | Właściwy tor wykonawczy i dokumentacja producenta P. |
 
-    Zamawiający wybiera najpierw jeden punkt wyjścia: nową instalację, integrację instalacji istniejącej albo zakup samej syreny. Następnie dobiera klasy zdolności oraz rozdziela wymagania wobec sterownika, syreny, montażu i odbioru. Załącznik nie jest gotowym OPZ — wymaga rozpoznania obiektu, dostosowania do postępowania oraz sprawdzenia aktualnego stanu prawnego opisanego w części VII.
+Aplikację alarmową dostarcza KG PSP. Wykonawca zapewnia środowisko, instalację wskazanego pakietu i integrację sprzętową; nie zamawia się u niego opracowania odrębnej logiki alarmowania. Nie wycenia się drugi raz sprzętu posiadanego ani świadczeń zapewnianych centralnie.
 
-W konkretnym postępowaniu podstawowym mechanizmem egzekwowania wymagań wobec wykonawcy jest ich
-ujęcie w dokumentach zamówienia i umowie. Sam projekt Wytycznych nie ustanawia obowiązków po
-stronie producenta sterownika ani producenta syreny.
+#### Dobór zdolności
 
-Każdy zapis odsyła do identyfikatora wymagania z załącznika nr 3, co umożliwia jego jednoznaczne
-wyjaśnienie i sprawdzenie przy odbiorze. Zmiana wymagań oznaczonych jako bezwzględne wymaga oceny
-wpływu na zgodność urządzenia z SOiA i nie powinna wynikać wyłącznie ze skrócenia dokumentacji.
+Klasa I obejmuje wspólny rdzeń. I + 1.5 jest profilem kompaktowym z lokalnym audio; I + II profilem rozszerzonym. III dodaje lokalny TTS, także do 1.5, przy zachowaniu właściwej liczby I/O. Zasoby głosu nie zwiększają automatycznie liczby styków. Wiążąca jest [macierz Z3](zalaczniki/Z3-WYMAGANIA-MINIMALNE.md#macierz-wyposazenia).
 
-##### Określenie wymaganych klas zdolności
+W opisie należy wskazać modelową konfigurację funkcjonalną, nie nazwę handlową sprzętu. Opcje niezbędne do spełnienia wymagań mają wejść do oferty. PTT jest funkcją jednego ze styków, jeśli tak przewiduje karta; nie stanowi automatycznie dodatkowego przekaźnika.
 
-Przed wyborem poszczególnych zapisów zamawiający określa wymagany zakres funkcjonalny:
+#### Proponowany zapis platformy
 
-| Klasa lub symbol | Warunek stosowania |
-|---|---|
-| **I — rdzeń** | zawsze, bez wyjątku; to jest cała zgodność z systemem |
-| **II — tor audio** | gdy sterownik ma sam odtwarzać dźwięk — przy modernizacji instalacji istniejących i wszędzie, gdzie syrena pracuje jako nagłośnienie |
-| **III — profil głosowy** | tylko gdy urządzenie ma wypowiadać treść słowną; podnosi wymagania sprzętowe i cenę |
-| **D — dostawa i montaż** | symbol zakresu, stosowany, gdy przedmiotem zamówienia jest kompletny zestaw, a nie sam sterownik |
+> Dostawca zapewni sterownik zgodny z systemem KG PSP i wskazanym profilem Z3, z systemem Linux opartym na Yocto Project i OrchestraOS wydania KG PSP. KG PSP udostępni na wniosek wersjonowane komponenty i warunki integracji. Wykonawca dostosuje BSP, rozruch, sterowniki i konfigurację do swojej płyty, zbuduje oraz udokumentuje obraz i zapewni jego utrzymanie.
 
-Sterowanie syreną cyfrową przez jej udokumentowany interfejs wymaga klasy I. Modernizacja, w której
-sterownik odtwarza dźwięk, wymaga klas I i II. Klasa III dotyczy zdolności opcjonalnej; system
-centralny nie przenosi obecnie treści głosowej.
+> Urządzenie będzie współpracować z właściwą instancją Orchestra KG PSP: indywidualna tożsamość, rejestracja, konfiguracja, telemetria, wersje, dostęp i podpisane aktualizacje RAUC w układzie A/B. Dane aplikacji i historia pozostaną zachowane przy aktualizacji i odtworzeniu. Przekazanie źródeł nie obejmuje automatycznie prywatnych kluczy produkcyjnych.
 
-**Wymagania kierowane do producenta syreny** — otwarty interfejs sterowania, standardowa warstwa
-fizyczna, warunki licencyjne dopuszczające integrację przez podmiot trzeci oraz wejście liniowe
-i wejście nadawania — należą do **zamówienia na syrenę**, nie na sterownik. Zamawiający, który
-kupuje jedno i drugie w jednym postępowaniu, powinien je rozdzielić w opisie.
+> Wykonawca zapewni udokumentowany lokalny kontrakt sprzętowy i uruchomienie pakietu aplikacji KG PSP bez zmiany jego logiki oraz bez obchodzenia zabezpieczeń. Przekaże manifest, SBOM, instrukcję odtworzenia budowy, wyniki prób i dokumentację utrzymania.
 
-Rozdziały 1–3 zawierają propozycje zależne od przedmiotu zamówienia. Rozdział 4 obejmuje wymagania
-horyzontalne dotyczące swobody wyboru dostawcy. Rozdział 5 wskazuje postanowienia, które mogą
-powodować nieuzasadnione ograniczenie interoperacyjności lub konkurencji.
+Podstawa: W-F01–W-F19 w właściwym zakresie, W-I08/09 i [platforma KG PSP](PLATFORMA_KG_PSP.md). Warunki udostępnienia pakietu muszą być znane wykonawcom przed zobowiązaniem do integracji.
 
----
+#### Łączność i rozbudowa
 
-#### 1. Nowa instalacja
+> Zestaw zapewni własny LTE/IP oraz SMS MO/MT, wymagane Ethernet, Wi-Fi, GNSS i radio zgodnie z profilem. Wymagane anteny i opcje będą dostarczone oraz uruchomione. Zakres SIM, danych, SMS i ich kosztów zostanie rozdzielony od samego modemu.
 
-##### 1.1. Zgodność z systemem
+> W fazie 2026–2028 zestaw zachowa gotowość GSM/LTE. Przygotowanie TETRA obejmie obsługiwane porty, miejsce, moc, antenę i adapter. Przełączenie TETRA na drogę podstawową nastąpi po odrębnym odbiorze; GSM pozostanie aktywnym zapasem. Odbiór docelowy wykaże sterowanie przy odłączonym GSM i internecie obiektu.
 
-> Dostarczone urządzenie musi odbierać i wykonywać polecenia wykonawcze systemu ostrzegania
-> i alarmowania (SOiA) na poziomie otwartym, to jest przez pobieranie podpisanego wykazu poleceń
-> z publicznego punktu dostępu, bez konieczności rejestracji urządzenia.
-> *(W-D01, W-D05)*
+Podstawa: W-D01–W-D26. Nie zakłada się, że modem syreny jest automatycznie dostępny aplikacji sterownika. Odrębny zapas SMS w syrenie wymaga osobnego ujęcia, usług i arbitrażu. Bramka LoRaWAN nie jest wymagana po jednej sztuce na każdą syrenę bez projektu sieci.
 
-> Przed uruchomieniem sygnału urządzenie musi łącznie potwierdzić: poprawność podpisu odebranej
-> treści i zgodność identyfikatora klucza, zgodność profilu i wersji słowników, aktualność treści,
-> zgodność klasy urządzenia, objęcie obszaru urządzenia obszarem polecenia zgodnie z regułą
-> zawierania, mieszczenie się w oknie rozpoczęcia oraz brak wcześniejszego wykonania tego samego
-> polecenia. Niespełnienie któregokolwiek warunku oznacza niewykonanie polecenia.
-> *(W-A01…W-A12)*
+#### Tor wykonawczy
 
-> Ochrona przed powtórnym wykonaniem polecenia musi przetrwać zanik zasilania i restart urządzenia.
-> *(W-A10, W-A11)*
+> Wykonawca określi i odbierze właściwy tor: lokalne audio i osobne PTT, udokumentowane API albo izolowaną aparaturę silnikową. Funkcje ALARM i ODWOLANIE będą rozróżnione; anulowanie oczekującej akcji lub techniczne STOP nie zastąpią sygnału odwołania.
 
-##### 1.2. Obszar
+> Dla toru elektronicznego wymagane zasoby będą znajdować się lokalnie przed alarmem, z zatwierdzonym manifestem i kontrolą integralności. Wariant API zmieniający miejsce plików lub używający generatora wymaga jawnego profilu i odbioru. Dla silnika zapewni się właściwy program, izolację, odcięcie i niezależny nadzór czasu.
 
-> Obszar działania urządzenia konfiguruje się wyłącznie siedmiocyfrowymi kodami gmin. Urządzenie
-> musi odrzucić albo zgłosić jako błąd konfigurację kodem dwucyfrowym lub czterocyfrowym oraz
-> odrzucić kod sześciocyfrowy jako niepełny. Cyfra rodzaju gminy jest znacząca.
-> *(W-B01…W-B07)*
+Podstawa: W-C01–W-C17 i W-E01–W-E14. Moc i zasięg akustyczny, konstrukcję i parametry instalacji określa projekt obiektu. Nazwy zacisków jednego modelu nie są standardem dla innych urządzeń.
 
-##### 1.3. Sygnały
+#### Zasilanie i zachowanie instalacji
 
-> Urządzenie musi być zdolne wyemitować wszystkie cztery sygnały akustyczne określone
-> w rozporządzeniu Ministra Spraw Wewnętrznych i Administracji z dnia 14 maja 2025 r. w sprawie
-> alarmów i komunikatów ostrzegawczych, z wykorzystaniem plików referencyjnych zatwierdzonych przez
-> Komendę Główną Państwowej Straży Pożarnej, z zachowaniem czasu trwania w tolerancji ±5 %
-> oraz struktury czasowej sygnału. Wymóg utrzymania poziomu w granicach ±3 dB względem wzorca,
-> w zadeklarowanym punkcie pomiarowym, dotyczy urządzeń klasy II.
-> *(W-C01…W-C07)*
+> Bilans obejmie rzeczywiste elementy zestawu oraz rezerwę rozbudowy. Podtrzymanie sterownika i łączności nie będzie utożsamiane z zasilaniem wzmacniacza albo silnika. Profil obciążenia, czasy i kryteria zostaną wskazane przed odbiorem.
 
-> Urządzenie musi potwierdzić zgodność sumy kontrolnej pliku przed jego instalacją oraz odrzucić kod
-> sygnału, którego nie zna, bez przerywania obsługi pozostałych poleceń.
-> *(W-C03, W-A08)*
+> Integracja zachowa wymagane lokalne i dotychczasowe tory. Wspólny arbitraż będzie rozróżniał odrzucenie, odroczenie i duplikat. Po błędzie lub restarcie nie nastąpi samoczynne wznowienie starej emisji. Blokady bezpieczeństwa mają pierwszeństwo.
 
-##### 1.4. Kanały i łączność
+Podstawa: części H, J i K Z3. Obudowy, zabezpieczenia i warunki pracy dobiera się do zakresu oraz obiektu. Nie kopiuje się wszystkich parametrów zestawu rozbudowanego do małego modułu bez uzasadnienia.
 
-> Urządzenie musi umożliwiać podłączenie do sieci lokalnej obiektu przewodowo, bez modemu i bez
-> karty abonenckiej, oraz obsługiwać co najmniej cztery niezależne, zarządzalne tory sieciowe
-> przewodowe.
-> *(W-D06, W-D07)*
+#### Dokumenty i kryteria odbioru
 
-> Urządzenie musi posiadać odrębny interfejs stacji radiowej — port sieciowy albo szeregowy — przeznaczony
-> do podłączenia stacji dyspozytorskiej jako źródła polecenia, niezależny od toru audio
-> i od sterowania nadawaniem.
-> *(W-D09)*
+Umowa określa wersje wytycznych i profili, wymagany pakiet zgodności, interfejsy, prawa i okres wsparcia. Odbiór konfiguracji modelu, egzemplarza, aplikacji, kanałów i obiektu jest rozdzielony. Scenariusze Z10 obejmują negatywne próby autoryzacji, czasu i adresata oraz błędy zasilania i aktualizacji.
 
-> Urządzenie musi posiadać moduł komunikacji komórkowej bez blokady operatorskiej karty
-> abonenckiej, z gniazdem karty dostępnym serwisowo bez demontażu urządzenia z uchwytu.
-> *(W-D11, W-D21)*
+Nie dopuszcza się wymaganej funkcji, której nie wykonano albo dla której nie ma dowodu. Brak wsparcia w kontrakcie centrali jest zależnością do zamknięcia przed odbiorem tej funkcji, nie pozwoleniem na zmianę znaczenia innej komendy. Wypełniona karta Z9 i sekrety nie trafiają do publicznego repozytorium.
 
-> Urządzenie musi stosować hasło sterujące unikalne dla egzemplarza; hasło wspólne dla wielu
-> urządzeń jest niedopuszczalne. Odrzucenie polecenia tekstowego — z nieznanego numeru, z błędnym
-> hasłem albo spoza mapy poleceń — musi być rejestrowane i sygnalizowane.
-> *(W-D18, W-D19)*
+#### Postanowienia do unikania
 
-*Zalecane dodatkowo:* obsługa karty klasy przemysłowej — o rozszerzonym zakresie temperatur pracy
-i podwyższonej wytrzymałości zapisu — oraz karty zdalnie prowizjonowanej, umożliwiającej zmianę
-operatora bez wymiany karty *(W-D22, W-D23)*. Przy większych wdrożeniach warto
-policzyć koszt pominięcia: jest to koszt jednego wyjazdu serwisowego pomnożony przez liczbę
-zainstalowanych urządzeń.
+Ogólna „zgodność z SOiA” bez profilu i prób; utożsamienie „TTS ready” z działającym głosem; automatyczne wymaganie sześciu styków od profilu 1.5; policzenie PTT podwójnie; zamówienie samej możliwości doposażenia zamiast wymaganych opcji; uznanie SIM za provisioning; przekazanie całej logiki alarmowej producentowi urządzenia; uznanie online lub ACK za dowód emisji.
 
-##### 1.5. Wysterowanie syreny
-
-> Urządzenie musi zapewniać co najmniej dwa niezależne sposoby wysterowania syreny: wyjście audio
-> liniowe oraz co najmniej sześć niezależnych, bezpotencjałowych wyjść przekaźnikowych w układzie
-> NO/NC/COM, w tym co najmniej jedno do obwodu 230 V z izolacją galwaniczną nie mniejszą niż 4 kV
-> oraz co najmniej jedno realizujące niezależne sterowanie nadawaniem.
-> *(W-E01…W-E05)*
-
-> Urządzenie musi posiadać lokalne, sprzętowe odcięcie toru wykonawczego, niezależne od łączności
-> i od oprogramowania, mające pierwszeństwo przed poleceniem zdalnym, oraz nie może samoczynnie
-> wznawiać przerwanej emisji po niekontrolowanym restarcie.
-> *(W-E08, W-E09)*
-
-##### 1.6. Zasilanie i warunki pracy
-
-> Zestaw jako całość musi zachować ciągłość pracy przez co najmniej 10 godzin od zaniku zasilania
-> sieciowego, z określonym modelem degradacji magazynu energii i wynikającym z niego czasem
-> podtrzymania na koniec okresu gwarancji.
-> *(W-H01, W-H02)*
-
-> Po powrocie zasilania urządzenie musi odtworzyć stan trwały i nie wykonywać polecenia, którego
-> okno rozpoczęcia już minęło.
-> *(W-H05)*
-
-##### 1.7. Zestaw, przyłącza i montaż
-
-> Przedmiotem dostawy jest kompletny zestaw gotowy do zamocowania, obejmujący część wewnętrzną,
-> część zewnętrzną, magazyn energii, komplet anten i akcesoria montażowe, wraz z listą zawartości
-> umożliwiającą kontrolę kompletności przed montażem oraz jawnym wskazaniem elementów zapewnianych
-> przez instalatora.
-> *(W-K01, W-K02, W-K03)*
-
-> Część zewnętrzna zestawu musi posiadać stopień ochrony nie gorszy niż IP67 i zakres temperatur
-> pracy co najmniej od −40 °C do +70 °C.
-> *(W-K04)*
-
-> Urządzenie musi udostępniać oznaczoną, ponumerowaną listwę przyłączeniową dla wszystkich sygnałów
-> obiektowych, wraz z dołączoną do dokumentacji mapą wiążącą numer zacisku z sygnałem i oznaczeniem
-> barwnym złączki, wraz z wymogiem oznaczenia obu końców przewodu. Podłączenie nie może wymagać
-> narzędzi specjalistycznych producenta.
-> *(W-K06, W-K07, W-K08)*
-
-> Urządzenie musi być urządzeniem I klasy ochronności z obowiązkowym przewodem ochronnym, zawierać
-> zabezpieczenie nadprądowe wewnątrz obudowy oraz fizyczną izolację obwodów sieciowych chroniącą
-> przed dotykiem podczas prac serwisowych.
-> *(W-K11, W-K12, W-K13)*
-
-> Wykonawca dostarczy instrukcję instalacji obejmującą kolejność prac, dobór mocowania do rodzaju
-> podłoża, montaż magazynu energii i anten, listę kontrolną przed pierwszym załączeniem oraz
-> wymagane kwalifikacje personelu — osobno dla prac przy napięciu sieciowym, kotwienia obudowy
-> o znacznej masie i prac na wysokości.
-> *(W-K15, W-K16, W-K17)*
-
-> Uruchomienie obejmuje sprawdzenie bezprzerwowego przejścia na zasilanie rezerwowe i powrotu
-> do zasilania sieciowego.
-> *(W-K18)*
-
-**Warunek obiektowy do sprawdzenia przed zamówieniem.** Część wewnętrzna zestawu pracuje
-w pomieszczeniu o stabilnej temperaturze. Zamawiający powinien **sprawdzić, czy pomieszczenie
-przewidziane pod montaż utrzymuje zakres deklarowany przez producenta** — nieogrzewana remiza
-zimą schodzi poniżej progu. Jeżeli nie utrzymuje, do wyboru są dwie drogi: zapewnienie ogrzewania
-albo postawienie wymagania rozszerzonego zakresu temperatur.
-
-*Do rozważenia przy lokalizacjach nieogrzewanych i nieklimatyzowanych:* rozszerzony zakres
-temperatur pracy, co najmniej od −20 °C do +55 °C. Standardowo dostarczane zestawy deklarują zakres
-węższy, właściwy dla pomieszczeń o stabilnej temperaturze — jeżeli remiza albo obiekt takiej
-temperatury nie zapewnia, wymaganie trzeba postawić wprost *(W-H06, W-H07)*.
 
 ---
 
-#### 2. Integracja kanału SOiA z instalacją istniejącą
+## Część VII — Podstawa prawna i źródła
 
-Wariant zachowujący dotychczasowy system sterowania i dodający kanał SOiA jako tor równoległy.
+### Załącznik nr 12 — Podstawa prawna i źródła
 
-> Przedmiotem zamówienia jest dołączenie kanału systemu ostrzegania i alarmowania (SOiA)
-> do istniejącej instalacji syreny, z zachowaniem dotychczasowego sposobu sterowania.
+#### Status opracowania
 
-> Dołączenie może zostać zrealizowane przez wykorzystanie udokumentowanego interfejsu sterowania
-> istniejącej syreny albo przez podanie sygnału liniowego na jej wejście audio z jednoczesnym
-> sterowaniem nadawaniem. Wykonawca wskazuje zastosowany tryb w projekcie wykonawczym.
-> *(W-E10, załącznik nr 5)*
+To dokumentacja projektu wytycznych, nie nowy akt prawny ani dowód podpisania wytycznych KG PSP. Wersja 0.5 porządkuje wymagania techniczne i wdrożeniowe. Ich zastosowanie w konkretnym postępowaniu i instalacji wymaga określenia właściwego zakresu i podstawy prawnej.
 
-> Dołączenie kanału nie zmniejsza zakresu sprawdzeń wykonywanych przed uruchomieniem sygnału.
-> Weryfikacja podpisu, reguła obszaru, okno rozpoczęcia, ochrona przed powtórzeniem oraz lokalne
-> odcięcie awaryjne obowiązują w pełnym zakresie.
-> *(załącznik nr 3, części A, B, E)*
+10.09.2026 sprawdzono metadane ELI aktów wymienionych poniżej oraz treść przepisów istotnych dla sygnałów, czasu, zamówień i wskazanych zmian ustawy o ochronie ludności. Daty wejścia w życie sprawdza się niezależnie od ogólnej etykiety statusu w rejestrze.
 
-> Dołączenie kanału SOiA nie może wyłączyć ani ograniczyć dotychczasowych sposobów uruchomienia
-> syreny — istniejącego systemu dyspozytorskiego, pulpitu lokalnego, przycisku ręcznego ani kanału
-> radiowego. Wykonawca nie może warunkować realizacji przedmiotu zamówienia wyłączeniem,
-> przeprogramowaniem ani ograniczeniem istniejącego systemu, ani uzależniać od tego gwarancji
-> i serwisu. Oba tory pracują równolegle.
-> *(W-J01, W-J03)*
+#### Ochrona ludności i sygnały
 
-> Instalacja musi zachować możliwość uruchomienia lokalnego, działającego przy całkowitym braku
-> łączności z systemem.
-> *(W-J02)*
+[Ustawa z 5 grudnia 2024 r. o ochronie ludności i obronie cywilnej, Dz.U. 2024 poz. 1907](https://api.sejm.gov.pl/eli/acts/DU/2024/1907) określa w art. 70–74 systemy wykrywania zagrożeń, powiadamiania, ostrzegania i alarmowania oraz bezpiecznej łączności. Art. 71 reguluje przekazywanie sygnałów i decyzje organów, a art. 72 stanowi delegację do rozporządzenia o alarmach. Obowiązki komunikacyjne z art. 73 nie są specyfikacją interfejsów sterownika.
 
-> Przy zbiegu poleceń z dwóch torów wykonaniu podlega wyłącznie polecenie, które pierwsze rozpoczęło
-> sekwencję. Polecenie odebrane w trakcie emisji podlega odrzuceniu i odnotowaniu, bez kolejkowania
-> i bez powodowania kolejnej emisji. Odrzucenie ma charakter odroczenia, a nie usunięcia polecenia:
-> urządzenie ponawia je po zakończeniu bieżącej emisji, jeżeli jego okno rozpoczęcia pozostaje
-> otwarte.
-> *(W-J04, W-J08)*
+[Rozporządzenie MSWiA z 14 maja 2025 r., Dz.U. 2025 poz. 645](https://api.sejm.gov.pl/eli/acts/DU/2025/645/text.pdf) obowiązuje od 31.05.2025. Określa rodzaje alarmów, sposoby ogłaszania i odwoływania oraz tryb przekazywania. Katalog akustyczny przedstawia Z4. Parametry portów, system operacyjny i profil 1.5 nie wynikają wprost z tego rozporządzenia — są wymaganiami technicznymi projektu.
 
-> Odbiór obejmuje potwierdzenie, że po dołączeniu kanału SOiA dotychczasowy sposób uruchomienia
-> syreny nadal działa.
-> *(W-J06)*
+| Nowelizacja ustawy | Stan istotny dla przeglądu |
+| --- | --- |
+| [Dz.U. 2025 poz. 1705](https://api.sejm.gov.pl/eli/acts/DU/2025/1705/text.pdf) | Zmienia art. 30; wejście w życie 1.01.2027, więc nie traktuje się jej zmian jako obowiązujących 10.09.2026. |
+| [Dz.U. 2026 poz. 646](https://api.sejm.gov.pl/eli/acts/DU/2026/646/text.pdf) | Obowiązuje od 29.05.2026; sprawdzony zakres nie zmienia art. 70–74. |
+| [Dz.U. 2026 poz. 815](https://api.sejm.gov.pl/eli/acts/DU/2026/815/text.pdf) | Obowiązuje od 4.07.2026; zmienia w tej ustawie art. 5, 15, 38, 40 i 44, nie art. 70–74. |
 
-!!! note "Ocena wariantu audio"
+Odczyt metadanych źródłowej ustawy wskazał te trzy akty zmieniające. Pliku ogłoszonego nie nazwano automatycznie tekstem ujednoliconym; wpływ zmian sprawdzono osobno. Przed przyszłym użyciem aktu należy ponownie sprawdzić rejestr.
 
-    Jeżeli producent zainstalowanej syreny nie udostępnia dokumentacji interfejsu sterowania, należy
-    przeanalizować wariant audio. Jego zastosowanie wymaga potwierdzenia zgodności z dokumentacją,
-    bezpieczeństwem technicznym, warunkami gwarancji, licencjami i postanowieniami umowy.
+#### Materiały referencyjne KG PSP
 
----
+W materiałach źródłowych znajdują się dokumenty opisane datami 27 i 28 maja 2025 r., dotyczące cyfrowych sygnałów syren. Potwierdzono ich treść, w tym różnice opisu sygnału dla jednostki ochrony przeciwpożarowej, ale niniejszy przegląd nie potwierdza autentyczności podpisu i formalnego statusu każdego egzemplarza.
 
-#### 3. Zakup syreny
+Wdrożenie wymaga pakietu i manifestu zatwierdzonego przez KG PSP, z określonym pochodzeniem, wersją i metodą odbioru. Wartości SHA-256, tolerancje i procedury nie są uznawane za aktualnie wiążące tylko dlatego, że występują w kopii podręcznika. Nie oznacza to stwierdzenia, że źródłowy dokument nie istnieje lub nie został wydany.
 
-Zapisy kierowane do producenta syreny, nie sterownika.
+#### Zamówienia i interoperacyjność
 
-> Dostarczona syrena musi posiadać otwarty, udokumentowany interfejs sterowania, obejmujący wykaz
-> poleceń wraz ze składnią, mapę slotów dźwiękowych, format i sposób wgrania plików, kody odpowiedzi
-> i błędów, sposób odczytu stanu oraz parametry elektryczne złącza. Dokumentacja musi być
-> wystarczająca do samodzielnego wykonania integracji przez podmiot trzeci, bez udziału producenta.
-> *(W-I11)*
+[Prawo zamówień publicznych, ustawa z 11 września 2019 r.](https://api.sejm.gov.pl/eli/acts/DU/2019/2019), w szczególności art. 99 i 101, jest podstawą oceny opisu przedmiotu i równoważności. Wskazanie istniejącego środowiska KG PSP wymaga uzasadnienia, opisu interfejsów i kryteriów. Nie stanowi automatycznie podstawy ograniczenia wykonawców do jednego producenta.
 
-> Interfejs musi być zrealizowany na standardowej warstwie fizycznej: port sieciowy, szeregowy albo złącze uniwersalne.
-> *(W-I12)*
+OrchestraOS, Yocto, RAUC i provisioning opisują wymagany model integracji. Dokumentacja przekazana wykonawcom ma pozwalać przygotować zgodną platformę na ich sprzęcie. Szczegółowa ocena konkretnego OPZ pozostaje odrębna od redakcji wytycznych.
 
-> Warunki licencyjne muszą dopuszczać integrację przez podmiot trzeci, bez opłat za samo podłączenie
-> i bez utraty gwarancji.
-> *(W-I13)*
+#### Czas i pozostałe akty kontekstowe
 
-> Syrena musi udostępniać wejście liniowe audio oraz zwarciowe wejście nadawania, umożliwiające jej
-> wysterowanie niezależnie od interfejsu programowego producenta.
-> *(W-I14)*
+| Źródło urzędowe | Znaczenie |
+| --- | --- |
+| [Ustawa o czasie urzędowym, Dz.U. 2004 poz. 144](https://api.sejm.gov.pl/eli/acts/DU/2004/144) | Utrzymywanie i rozpowszechnianie czasu urzędowego. |
+| [Rozporządzenie o rozpowszechnianiu czasu, Dz.U. 2004 poz. 548](https://api.sejm.gov.pl/eli/acts/DU/2004/548/text.pdf) | Wskazuje m.in. serwery NTP GUM; nie ustanawia samo hierarchii wszystkich źródeł czasu sterownika. |
+| [Krajowe Ramy Interoperacyjności, Dz.U. 2024 poz. 773](https://api.sejm.gov.pl/eli/acts/DU/2024/773) | Kontekst interoperacyjności i utrzymania systemów; nie jest źródłem liczby portów 1.5. |
+| [Centralna Ewidencja Zasobów, Dz.U. 2025 poz. 493](https://api.sejm.gov.pl/eli/acts/DU/2025/493) | Ewidencja zasobów ochrony ludności; odrębna od technicznego rejestru Orchestra. |
+| [Centralna Ewidencja Obiektów Zbiorowej Ochrony, Dz.U. 2025 poz. 922](https://api.sejm.gov.pl/eli/acts/DU/2025/922) | Kontekst ustawowy, nie profil sterowania syreną. |
+| [Ustawa o zarządzaniu kryzysowym](https://api.sejm.gov.pl/eli/acts/DU/2007/590) | Planowanie i organizacja w aktualnym brzmieniu, wraz z właściwymi zmianami. |
 
-Wymaganie dotyczące wejścia liniowego i wejścia nadawania stanowi niezależny wariant integracyjny
-i powinno być rozważane również wtedy, gdy producent deklaruje dostępność interfejsu programowego.
+Próg kontroli czasu i zasady pomiaru są wymaganiami technicznymi określonymi w profilu, a nie automatycznym wnioskiem z przepisów o czasie urzędowym. Zakres bezpiecznej pracy urządzenia i instalacji wynika także z właściwej dokumentacji technicznej i projektu obiektu.
 
----
+#### Źródła techniczne aktualizacji
 
-#### 4. Wymagania zapewniające swobodę wyboru dostawcy
+Podstawą kierunku były dokumenty KG PSP: wizja SOIA.KGPSP v0.3, wymagania wspólne platformy v0.2, profile sterowników v0.2 oraz instrukcje kanałów i integracji. Ich szczegółowe instrukcje instalacyjne i PDF-y nie są wgrywane w tym wydaniu repozytorium.
 
-> Urządzenie musi działać w pełnym zakresie funkcji alarmowania bez połączenia z platformą
-> producenta. Podstawowe alarmowanie nie może wymagać abonamentu ani usługi świadczonej przez
-> producenta.
-> *(W-I01, W-I05)*
+Dokumentacja mechanizmów: [Yocto Project](https://docs.yoctoproject.org/brief-yoctoprojectqs/index.html), [BSP](https://docs.yoctoproject.org/bsp-guide/index.html), [OrchestraOS](https://cthings.co/orchestra-os) i [RAUC](https://rauc.readthedocs.io/en/latest/basic.html). Opis produktu nie jest dowodem wdrożenia funkcji w instancji KG PSP. Wersję oraz prawa do komponentów określa pakiet integracyjny.
 
-> Zamawiający musi mieć możliwość zmiany adresu punktu dostępu, kanału powiadomienia i punktu
-> zaufania, wyłączenia i włączenia poszczególnych kanałów oraz wymiany karty abonenckiej — bez
-> udziału producenta, bez utraty gwarancji i bez ponownej licencji.
-> *(W-I02, W-I03, W-I04)*
-
-> Materiał kryptograficzny nie może być współdzielony między urządzeniami. Wykonawca dostarczy
-> procedurę wymiany i odwołania materiału kryptograficznego.
-> *(W-I06, W-I07)*
-
-> Wykonawca dostarczy dokumentację interfejsów elektrycznych, audio i integracyjnych w zakresie
-> umożliwiającym samodzielny serwis, a także umożliwi eksport pełnej konfiguracji i dziennika
-> zdarzeń w formacie otwartym, możliwym do odczytu bez oprogramowania producenta.
-> *(W-I08, W-G06, W-G09)*
-
-> W ramach odbioru wykonawca wykaże możliwość przełączenia urządzenia na alternatywny punkt dostępu.
-> *(W-I10)*
-
----
-
-#### 5. Postanowienia niezalecane w opisie przedmiotu zamówienia
-
-Poniższe zestawienie wskazuje rodzaje postanowień, które mogą prowadzić do nieuzasadnionej
-zależności od dostawcy albo utrudniać odbiór. Ich zastosowanie należy każdorazowo ocenić w świetle
-przedmiotu zamówienia i przepisów o zamówieniach publicznych.
-
-| Ryzykowne postanowienie lub brak | Zalecany sposób ujęcia |
-|---|---|
-| wymaganie konkretnego systemu dyspozytorskiego albo „kompatybilności z systemem X” | opisać wymagane funkcje, interfejsy i zgodność z SOiA oraz dopuścić rozwiązania równoważne zgodnie z właściwymi przepisami |
-| zakup odrębnego „pakietu dźwięków alarmowych” | wymagać instalacji właściwych plików referencyjnych i potwierdzenia ich sum kontrolnych |
-| ujęcie łączności bez sprawdzenia świadczeń zapewnianych centralnie | zweryfikować stan organizacyjny na dzień wszczęcia postępowania i wymagać możliwości późniejszej zmiany karty oraz konfiguracji bez wymiany sprzętu |
-| uzależnienie podstawowego alarmowania od platformy producenta | wymagać pełnego działania podstawowych funkcji bez połączenia z usługą producenta |
-| ogólna deklaracja „interfejs dostępny dla partnerów” | wymagać opublikowanej specyfikacji protokołu, warunków licencyjnych i sprawdzalnego testu zgodności |
-| brak zasobów dla funkcji objętych zamówieniem i przewidywanego okresu eksploatacji | określić zasoby odpowiednio do zamówionych klas zdolności, planowanych rozszerzeń i okresu wsparcia |
-| wyłączenie dotychczasowego systemu jako warunek dołączenia SOiA | wymagać równoległej pracy torów oraz sprawdzenia zachowania istniejących sposobów uruchomienia |
-| brak kryteriów odbioru odpowiadających wymaganiom | przypisać wymaganiom konkretne scenariusze sprawdzeń i wynik oczekiwany zgodnie z załącznikiem nr 10 |
-
----
-
-#### 6. Proponowane postanowienia umowne dotyczące odbioru
-
-> Odbiór instalacji następuje po wykonaniu i udokumentowaniu sprawdzeń określonych w załączniku
-> nr 10 do Wytycznych Komendanta Głównego Państwowej Straży Pożarnej w sprawie podłączania syren
-> alarmowych do SOiA, potwierdzonych protokołem odbioru oraz wypełnioną kartą konfiguracji
-> urządzenia.
-
-> Instalacja, która uruchamia sygnał mimo niespełnienia warunków weryfikacji — w szczególności poza
-> własnym obszarem, poza oknem rozpoczęcia albo przy niepoprawnym podpisie — nie podlega odbiorowi
-> do czasu usunięcia przyczyny.
-
-Drugie postanowienie wymaga od wykonawcy wykazania poprawności implementacji w zakresie warunków
-bezpiecznego wykonania polecenia.
-
-
----
-
-
-
-[Powrót do spisu treści](#spis-tresci){ .section-return }
-## Część VII. Ramy prawne i źródła normatywne
-
-Ta część przedstawia akty wskazane w materiale źródłowym jako podstawa lub kontekst projektu oraz
-opisuje przyjęty sposób weryfikacji ich statusu.
-
-
-### Załącznik nr 12 — Podstawa prawna
-
-
-#### Zakres i aktualność podstaw prawnych
-
-Załącznik zestawia akty, na których opiera się projekt, wraz ze stanem obowiązywania zadeklarowanym
-w materiale źródłowym na **23 sierpnia 2026 r.** Materiał źródłowy wskazuje, że status każdego aktu
-sprawdzono w rejestrze aktów prawnych, a zakres nowelizacji ustalono na podstawie treści ustaw
-zmieniających.
-
-Stan prawny może ulec zmianie. Przed powołaniem aktu w piśmie lub postępowaniu należy ponownie
-sprawdzić jego status, datę ostatniej zmiany, tekst obowiązujący oraz wpływ nowelizacji na przepisy
-przywołane w projekcie.
-
-!!! danger "Granica redakcji V2"
-
-    Formalne brzmienie załącznika nie potwierdza urzędowego wydania niniejszych Wytycznych ani
-    aktualności przywołanych aktów. Przed podpisaniem należy dołączyć trwałe odnośniki do źródeł
-    urzędowych i udokumentować ponowną weryfikację każdej pozycji.
-
----
-
-#### 1. Ustawa o ochronie ludności i obronie cywilnej
-
-**Ustawa z dnia 5 grudnia 2024 r. o ochronie ludności i obronie cywilnej** — Dz. U. poz. 1907,
-z późniejszymi zmianami.
-
-Status wskazany w materiale źródłowym: obowiązująca. Ustawa jest datowana na 5 grudnia 2024 r.,
-została ogłoszona 23 grudnia 2024 r. i weszła w życie **1 stycznia 2025 r.**
-
-Przepisy istotne dla Wytycznych:
-
-**Art. 71** — system powiadamiania, ostrzegania i alarmowania o zagrożeniach. To on jest podstawą
-istnienia SOiA jako systemu, którym organy ochrony ludności przekazują alarmy i komunikaty.
-
-**Art. 72** — delegacja do wydania rozporządzenia określającego rodzaje alarmów i komunikatów
-ostrzegawczych oraz sposób ich ogłaszania i odwoływania. Na tej podstawie wydano rozporządzenie
-opisane w rozdziale 2.
-
-**Art. 73** — żądania kierowane do nadawców programów radiowych i telewizyjnych, operatorów sieci
-telekomunikacyjnych oraz redaktorów dzienników i wydawców stron internetowych.
-
-**Art. 9 ust. 1 pkt 1** — terytorialne organy ochrony ludności, czyli podmioty ogłaszające alarm.
-
-##### Zakres zweryfikowanych zmian ustawowych
-
-**Ustawa z dnia 7 listopada 2025 r.** o zmianie ustawy o systemie informacji w ochronie zdrowia oraz
-ustawy o ochronie ludności i obronie cywilnej — Dz. U. 2025 poz. 1705. Wejście w życie
-**1 stycznia 2027 r.**
-
-**Ustawa z dnia 17 kwietnia 2026 r.** o zmianie ustawy o ochronie ludności i obronie cywilnej oraz
-niektórych innych ustaw — Dz. U. 2026 poz. 646. Obowiązuje od **29 maja 2026 r.** Zmienia
-w szczególności art. 16, 17, 19, 30, 50, 52 i 62 oraz dalsze. **Nie zmienia art. 70–74.**
-
-**Ustawa z dnia 29 maja 2026 r.** o zmianie ustawy o zarządzaniu kryzysowym oraz niektórych innych
-ustaw — Dz. U. 2026 poz. 815. Obowiązuje od **4 lipca 2026 r.** W ustawie o ochronie ludności
-i obronie cywilnej zmienia wyłącznie art. 5, 15, 38, 40 i 44. **Nie zmienia art. 70–74.**
-
-!!! note "Wniosek wynikający z materiału źródłowego"
-
-    Według stanu zadeklarowanego na 23 sierpnia 2026 r. wskazane nowelizacje nie zmieniły art. 70–74.
-    Wniosek ten wymaga ponownego potwierdzenia w tekście obowiązującym przed podpisaniem projektu.
-
----
-
-#### 2. Rozporządzenie o alarmach i komunikatach ostrzegawczych
-
-**Rozporządzenie Ministra Spraw Wewnętrznych i Administracji z dnia 14 maja 2025 r. w sprawie
-alarmów i komunikatów ostrzegawczych** — Dz. U. poz. 645.
-
-Podstawa wydania: art. 72 ustawy o ochronie ludności i obronie cywilnej. Weszło w życie po upływie
-14 dni od ogłoszenia; ogłoszone 16 maja 2025 r. Status: obowiązujące.
-
-Rozporządzenie określa rodzaje alarmów oraz sposób ich ogłaszania i odwoływania, rodzaje komunikatów
-ostrzegawczych oraz tryb ich przekazywania.
-
-**Rodzaje alarmów (§ 2).** Akustyczny — modulowany dźwięk syreny alarmowej albo zapowiedź słowna
-przekazywana przez urządzenie nagłaśniające. Wizualny — żółty znak w kształcie trójkąta
-równobocznego skierowanego podstawą do dołu, umieszczany niezwłocznie po ogłoszeniu alarmu
-akustycznego.
-
-**Katalog sygnałów akustycznych (załącznik).** Cztery pozycje, będące przedmiotem załącznika nr 4
-do niniejszych Wytycznych: ogłoszenie alarmu dla ludności cywilnej — modulowany dźwięk trwający trzy
-minuty; **odwołanie alarmu — ciągły dźwięk trwający trzy minuty**; alarm dla jednostki ochrony
-przeciwpożarowej — trzykrotnie wzrastający i opadający dźwięk z przerwami trzydziestosekundowymi,
-łącznie trzy minuty; alarm ćwiczebny lub treningowy — ciągły dźwięk trwający jedną minutę.
-
-**Kaskada przekazywania (§ 5–9) i rola PSP.** Terytorialny organ ochrony ludności ogłasza alarm,
-wskazuje obszar zagrożenia, wydaje zalecenia dla ludności i określa przewidywany czas trwania
-zagrożenia. Wójt, burmistrz albo prezydent miasta przekazuje alarm podmiotom ochrony ludności.
-Starosta czyni to **uwzględniając ustalenia z komendantem powiatowym lub miejskim Państwowej Straży
-Pożarnej**; wojewoda — **uwzględniając ustalenia z komendantem wojewódzkim PSP**.
-
-Projekt przyjmuje udział Państwowej Straży Pożarnej w tych ustaleniach jako przesłankę proponowanych
-zadań komendantów powiatowych i wojewódzkich. Zakres tych zadań wymaga potwierdzenia w toku
-uzgodnień prawnych i kompetencyjnych.
-
----
-
-#### 3. Wytyczne KG PSP w sprawie cyfrowych sygnałów alarmowych
-
-**Wytyczne Komendanta Głównego Państwowej Straży Pożarnej z dnia 28 maja 2025 r. w sprawie
-przygotowania, dystrybucji oraz eksploatacji cyfrowych sygnałów alarmowych syren.** Materiał
-źródłowy wskazuje datę rozpoczęcia ich stosowania na **31 maja 2025 r.**
-
-Ustanawiają cztery pliki wzorcowe wraz z sumami kontrolnymi, wymagania formatu — WAV PCM 16 bit mono
-przy próbkowaniu nie mniejszym niż 8 kHz — tolerancje czasu trwania ±5 % i poziomu ±3 dB, tryb
-dystrybucji kaskadą przez komendantów wojewódzkich, obowiązek weryfikacji sum kontrolnych przed
-instalacją, roczny test odsłuchowy wraz ze wzorem protokołu oraz zasadę wyłączenia syreny
-z eksploatacji przy rozbieżności przekraczającej 5 %.
-
-Projekt zakłada, że po podpisaniu niniejsze Wytyczne będą uzupełniać Wytyczne z 28 maja 2025 r.,
-bez ich uchylania ani zmiany. W przypadku kwestii uregulowanych w obu dokumentach projekt odsyła
-do brzmienia Wytycznych z 2025 r., w szczególności w zakresie formatu plików, tolerancji i trybu
-sprawdzeń okresowych.
-
-Załącznik nr 4 odnotowuje dwie rozbieżności wewnętrzne w materiale z 2025 r., dotyczące opisu pliku
-alarmu dla jednostki ochrony przeciwpożarowej. Ich formalne rozstrzygnięcie pozostaje poza zakresem
-niniejszego projektu.
-
----
-
-#### 4. Akty stanowiące kontekst prawny
-
-Nie stanowią bezpośredniej podstawy projektu, lecz tworzą kontekst prawny działania systemu.
-
-**Rozporządzenie Ministra Spraw Wewnętrznych i Administracji z dnia 14 kwietnia 2025 r. w sprawie
-Centralnej Ewidencji Zasobów Ochrony Ludności i Obrony Cywilnej** — Dz. U. poz. 493, obowiązuje
-od 1 maja 2025 r.
-
-**Rozporządzenie Ministra Spraw Wewnętrznych i Administracji z dnia 7 lipca 2025 r. w sprawie
-Centralnej Ewidencji Obiektów Zbiorowej Ochrony** — Dz. U. poz. 922, obowiązuje od 25 lipca 2025 r.
-
-**Ustawa z dnia 26 kwietnia 2007 r. o zarządzaniu kryzysowym**, w brzmieniu nadanym nowelizacją
-z 29 maja 2026 r. — w zakresie planów zarządzania kryzysowego, do których odsyła ustawa o ochronie
-ludności.
-
-**Ustawa z dnia 11 września 2019 r. — Prawo zamówień publicznych** — w zakresie opisu przedmiotu
-zamówienia dopuszczającego rozwiązania równoważne, istotnego dla załącznika nr 11.
-
----
-
-#### 5. Czas urzędowy i synchronizacja systemów
-
-Projekt wiąże wymagania dotyczące źródeł czasu z przepisami o czasie urzędowym i sposobach jego
-rozpowszechniania. Zakres, w jakim przepisy te uzasadniają konkretną kolejność źródeł technicznych,
-wymaga potwierdzenia w toku uzgodnień prawnych i technicznych.
-
-**Ustawa z dnia 10 grudnia 2003 r. o czasie urzędowym na obszarze Rzeczypospolitej Polskiej**
-(Dz. U. z 2004 r. Nr 16, poz. 144). Art. 2 ust. 4 określa uniwersalny czas koordynowany UTC(PL)
-jako polską realizację czasu koordynowanego, wyznaczaną przez państwowy wzorzec jednostek miar
-czasu i częstotliwości. Art. 4 ust. 1 czyni Prezesa Głównego Urzędu Miar organem uprawnionym
-do utrzymywania i rozpowszechniania sygnałów tego czasu.
-
-**Rozporządzenie Ministra Gospodarki, Pracy i Polityki Społecznej z dnia 19 marca 2004 r.
-w sprawie sposobów rozpowszechniania sygnałów czasu urzędowego i uniwersalnego czasu
-koordynowanego UTC(PL)** (Dz. U. Nr 56, poz. 548). § 1 wskazuje **z nazwy** dwa serwery czasu
-udostępniane całodobowo w sieci Internet oraz pozostałe drogi rozpowszechniania sygnału. Projekt
-wykorzystuje te serwery jako źródło podstawowe; samo rozporządzenie należy zweryfikować pod kątem
-tego, czy ustanawia ono taką kolejność dla urządzeń objętych projektem.
-
-**Rozporządzenie Rady Ministrów z dnia 21 maja 2024 r. w sprawie Krajowych Ram Interoperacyjności**
-(Dz. U. poz. 773), zastępujące wersję z 2012 r. Materiał źródłowy wskazuje, że akt nie zawiera
-bezpośredniego wymogu synchronizacji czasu, a jego znaczenie dla projektu ma charakter pośredni,
-związany z rozliczalnością i wiarygodnym dokumentowaniem zdarzeń. Wniosek ten nie stanowi
-samodzielnej podstawy wyboru konkretnej architektury synchronizacji.
-
----
-
-#### 6. Terminologia nieaktualna
-
-W obiegu pozostają materiały posługujące się nazewnictwem z **rozporządzenia Rady Ministrów z 2013 r.
-w sprawie systemów wykrywania skażeń i powiadamiania o ich wystąpieniu** — w szczególności
-określeniami „alarm główny” i „alarm OSP”.
-
-**Nazewnictwa tego nie należy stosować.** Obowiązujące nazwy sygnałów wynikają z rozporządzenia
-z 14 maja 2025 r. i brzmią: „alarm dla ludności cywilnej”, „odwołanie alarmu”, „alarm dla jednostki
-ochrony przeciwpożarowej” oraz „alarm ćwiczebny lub treningowy”.
-
----
-
-#### 7. Metodyka i data weryfikacji źródeł
-
-Status aktów oraz daty wejścia w życie ustalono na podstawie rejestru aktów prawnych prowadzonego
-przez Kancelarię Sejmu. Zakres nowelizacji ustawy o ochronie ludności i obronie cywilnej ustalono
-przez sprawdzenie treści ustaw zmieniających — to jest przez odczytanie, które artykuły są
-przedmiotem zmiany — a nie na podstawie streszczeń ani opracowań wtórnych.
-
-Cytaty z rozporządzenia i z Wytycznych z 2025 roku pochodzą z tekstów źródłowych.
-
-**Data weryfikacji: 23 sierpnia 2026 r.** Przy każdym kolejnym wydaniu Wytycznych datę tę należy
-odświeżyć wraz z ponownym sprawdzeniem statusu wymienionych aktów.
-
-
----
-
-
-
-[Powrót do spisu treści](#spis-tresci){ .section-return }
-## Tryb zgłaszania uwag
-
-Projekt wskazuje Biuro Informatyki i Łączności Komendy Głównej Państwowej Straży Pożarnej jako
-adresata uwag. Przed rozpowszechnieniem dokumentu należy potwierdzić właściwego adresata i kanał
-przekazywania uwag. Zgłoszenie dotyczące wymagania albo scenariusza sprawdzenia powinno zawierać
-jego identyfikator, na przykład `W-B02` albo `S-93`.
-
-*Wersja redakcyjna V2 opracowana na podstawie pliku `PODRECZNIK.md` z 23 sierpnia 2026 r.
-Wersja merytoryczna materiału źródłowego: 0.4.*
+Weryfikacja dokumentacji i publicznych metadanych nie zastępuje odbioru urządzeń, aplikacji i sieci. Nie wykonywano prób emisji, wysyłki SMS ani zmian systemów operacyjnych w ramach przygotowania tego wydania.
