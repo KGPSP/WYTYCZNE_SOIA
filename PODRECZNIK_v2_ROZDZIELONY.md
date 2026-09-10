@@ -46,7 +46,7 @@ W fazie 2026–2028 zestawy mają GSM/LTE, z SMS jako zapasem i możliwością d
 
 Odczyt 10.09.2026 potwierdził publiczny profil IoT `0.1` i słownik `2026.1`. Funkcje planowane, w tym dodatkowe kody, TTS i integracja TETRA, wymagają osobnego kontraktu oraz odbioru. Publikacja wytycznych nie jest wdrożeniem aplikacji.
 
-Dokument pozostaje ogólny: nie zawiera pinoutów konkretnych syren, numerów abonenckich, sekretów ani konfiguracji produkcyjnych. Nazwy OrchestraOS/Orchestra, Yocto i RAUC identyfikują środowisko integracji KG PSP; modele urządzeń i wykonawcy nie są narzucone. Pliki PDF materiałów źródłowych nie są dołączane do tego wydania.
+Dokument pozostaje ogólny: nie zawiera pinoutów konkretnych syren, numerów abonenckich, sekretów ani konfiguracji produkcyjnych. Nazwy OrchestraOS/Orchestra, Yocto i RAUC identyfikują środowisko integracji KG PSP; modele urządzeń i wykonawcy nie są narzucone. Materiały źródłowe i instrukcje szczegółowe są dostępne w [spisie dokumentów PDF](DOKUMENTY_PDF.md), z zachowaniem ich własnych wersji i statusów.
 
 Opis i diagram nie zastępują wymagania, ale wymaganie zakupowe również nie dowodzi istniejącej funkcji API. Sprzeczność pomiędzy zakresem zamówienia a dostępnym kontraktem trzeba rozstrzygnąć przed odbiorem; nie wolno zmieniać znaczenia komendy dla obejścia braku.
 

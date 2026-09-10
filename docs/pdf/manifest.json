@@ -1,0 +1,98 @@
+{
+  "published_on": "2026-09-10",
+  "count": 15,
+  "total_bytes": 28144087,
+  "total_pages": 235,
+  "files": [
+    {
+      "filename": "00_SPIS_DOKUMENTOW_WYTYCZNE_KRAJ_v0.1.pdf",
+      "pages": 8,
+      "bytes": 1526309,
+      "sha256": "5d35ce44e2590f15abcee5ce8c7279d64ab9febed143397611053368df1c05c6"
+    },
+    {
+      "filename": "ADAPTACJA_I_ZAKUP_SYREN_SOIA_KGPSP_v0.1.pdf",
+      "pages": 22,
+      "bytes": 4030198,
+      "sha256": "af27cfbca1aa9e253ccaac95c018b1cea30877855d4f67c7d84a8b08b31ecf03"
+    },
+    {
+      "filename": "INSTRUKCJA_KONFIGURACJI_ODBIORNIKA_IOT_FEED_KRAJ_v0.1.pdf",
+      "pages": 15,
+      "bytes": 1940686,
+      "sha256": "2d546926c1a99c57756fccfeffe869e0a04eb57541c02b00048421f4e6940118"
+    },
+    {
+      "filename": "INSTRUKCJA_KONFIGURACJI_URZADZENIA_SMS_SYRENY_KRAJ_v0.1.pdf",
+      "pages": 14,
+      "bytes": 1944934,
+      "sha256": "e446e4ac3a28c39626c4e044e29decb95e8b3698475a93c431965bdffb1f192c"
+    },
+    {
+      "filename": "Instrukcja_instalacyjna_SS100_PC550A_Z18_AUDIO_PTT_v0.2.pdf",
+      "pages": 12,
+      "bytes": 993955,
+      "sha256": "471883d9c6d00bb5e0ba6ce1e6886da251205734e052355a73a7e74cb8fd3b33"
+    },
+    {
+      "filename": "Instrukcja_instalatora_SS100_KPO_v0.3.pdf",
+      "pages": 20,
+      "bytes": 2447187,
+      "sha256": "fbb3e3357a611f9e4e19102e9d9ec078a6be448602c445adaa7f19cfc08b10c3"
+    },
+    {
+      "filename": "MINIMALNE_WYMAGANIA_STEROWNIKA_SMS_IOT_ORCHESTRA_LNS_v0.2.pdf",
+      "pages": 21,
+      "bytes": 1029860,
+      "sha256": "419ca03b7998c837032d050639b0cf64f133c37db498e1852d61836f1e4adf7e"
+    },
+    {
+      "filename": "MINIMALNE_WYMAGANIA_STEROWNIKOW_KG_PSP_v0.2.pdf",
+      "pages": 15,
+      "bytes": 1287480,
+      "sha256": "da6339c73494375a4b3287ddeda2d7bf481a491e09af29b278ceeb141acbbe4e"
+    },
+    {
+      "filename": "PLAKAT_DOBORU_SYREN_SOIA_KGPSP_v0.3_A2.pdf",
+      "pages": 1,
+      "bytes": 932972,
+      "sha256": "9ac8e24da82c7d895de1277056897036313016d3f40b73040cf23e8fabe8db82"
+    },
+    {
+      "filename": "REKOMENDACJE_KW_PSP_MONTAZ_SS100_KPO_LORA_v0.4.pdf",
+      "pages": 16,
+      "bytes": 1942830,
+      "sha256": "cf6049cc9ec39651cf8ae9b507fca0442def341146260617e72635f62a5389f8"
+    },
+    {
+      "filename": "SS100_LINE_OUT_PC550A_Z18_AUDIO_PTT_v0.1.pdf",
+      "pages": 10,
+      "bytes": 2006040,
+      "sha256": "c6fce2a822660f7baca63d1a442d7c5fdd909cec95fb25a10d1556e438502698"
+    },
+    {
+      "filename": "SYRENA_SILNIKOWA_SAD_DEFINICJA_BUDOWA_PODLACZENIE_v0.2.pdf",
+      "pages": 21,
+      "bytes": 2268475,
+      "sha256": "e93e90ba627d41df3fcd1927784d64e6c48ddea1f8256aa82631cb8004b76096"
+    },
+    {
+      "filename": "WIZJA_SYSTEMU_SOIA_KGPSP_v0.3.pdf",
+      "pages": 20,
+      "bytes": 2645354,
+      "sha256": "e9649562f0d73796469c02bc04a548bedee251d08a6b70d3b891d61dd0757078"
+    },
+    {
+      "filename": "WSTEPNY_SZACUNEK_MONTAZU_SS100_KPO_Z_INTEGRACJA_v0.1.pdf",
+      "pages": 7,
+      "bytes": 1993143,
+      "sha256": "d13fb278adf32f5387512029fce7d715a9238ac7244a61307480a776c398441e"
+    },
+    {
+      "filename": "WYMAGANIA_SS100_SMS_IOT_FEED_v0.2.pdf",
+      "pages": 33,
+      "bytes": 1154664,
+      "sha256": "40278a5150722cceebf0710dd925fc4c381144d95dbaa87c29cc16a66661edd1"
+    }
+  ]
+}

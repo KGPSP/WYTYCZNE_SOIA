@@ -44,4 +44,4 @@ Oznaczenia i przykłady w dokumentach należy stosować w granicach wskazanego m
 
 Przy wymianie pliku należy zaktualizować jego wersję, nazwę i opis w tym wykazie. Bieżący pakiet obejmuje wyłącznie wymienione PDF-y; kopie archiwalne, pliki robocze programu i lokalne materiały źródłowe nie są częścią tego katalogu.
 
-Pakiet jest publikowany w repozytorium GitHub. Witryna GitHub Pages korzysta z osobnego zestawu źródeł.
+Pakiet jest publikowany w repozytorium GitHub oraz w [GitHub Pages — dokumenty PDF do pobrania](https://kgpsp.github.io/WYTYCZNE_SOIA/DOKUMENTY_PDF/). Kopie na stronie są synchronizowane z plikami w tym katalogu; kontrola CI sprawdza ich zgodność bajt po bajcie. Przy aktualizacji zestawu odśwież także spis `DOKUMENTY_PDF.md` i wykaz `docs/pdf/manifest.json` w katalogu głównym repozytorium, a następnie uruchom `python scripts/sync_pages.py`.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Synchronize Pages from canonical repository Markdown without copying PDFs."""
+"""Synchronize Pages Markdown and PDF copies from canonical repository sources."""
 from pathlib import Path
 import argparse
 import re
@@ -14,6 +14,7 @@ SOURCES = {
     "PLATFORMA_KG_PSP.md": "PLATFORMA_KG_PSP.md",
     "PROFIL_1_5.md": "PROFIL_1_5.md",
     "ZMIANY_v0.5.md": "ZMIANY_v0.5.md",
+    "DOKUMENTY_PDF.md": "DOKUMENTY_PDF.md",
 }
 
 
@@ -26,6 +27,8 @@ def page_text(source: str) -> str:
         if url.scheme or value.startswith("//"):
             return match.group(0)
         path = re.sub(r"(^|/)(?:README|PODRECZNIK_v2)\.md$", r"\1index.md", url.path)
+        if path.startswith("docs/pdf/"):
+            path = path.removeprefix("docs/")
         # GitHub keeps Polish letters in heading IDs; MkDocs uses ASCII slugs.
         fragment = unicodedata.normalize("NFKD", unquote(url.fragment)).encode("ascii", "ignore").decode()
         return "](" + urlunsplit((url.scheme, url.netloc, path, url.query, fragment)) + ")"
@@ -73,10 +76,25 @@ def main():
             if not args.check:
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_text(expected, encoding="utf-8")
+    pdf_sources = sorted((ROOT / "instrukcje-i-materialy-robocze/pdf").glob("*.pdf"))
+    if not pdf_sources:
+        raise SystemExit("Missing canonical PDF package")
+    pdf_target = ROOT / "docs/pdf"
+    stale = {path.name for path in pdf_target.glob("*.pdf")} - {path.name for path in pdf_sources}
+    if stale:
+        raise SystemExit("Remove obsolete Pages PDF copies: " + ", ".join(sorted(stale)))
+    for source in pdf_sources:
+        target = pdf_target / source.name
+        expected = source.read_bytes()
+        if not target.exists() or target.read_bytes() != expected:
+            differences.append(str(target.relative_to(ROOT)))
+            if not args.check:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(expected)
     if args.check and differences:
         print("Pages sources are out of sync:\n" + "\n".join(differences), file=sys.stderr)
         raise SystemExit(1)
-    print(f"Pages {'verified' if args.check else 'synchronized'}: {len(sources)} documents; {len(differences)} differences")
+    print(f"Pages {'verified' if args.check else 'synchronized'}: {len(sources)} Markdown documents; {len(pdf_sources)} PDFs; {len(differences)} differences")
 
 
 if __name__ == "__main__":

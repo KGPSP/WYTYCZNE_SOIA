@@ -17,8 +17,10 @@ Podręcznik i powiązane wytyczne Markdown pozostają projektem. Nie poświadcza
 
 [Otwórz Wytyczne SOiA w GitHub Pages](https://kgpsp.github.io/WYTYCZNE_SOIA/)
 
-GitHub Pages publikuje to samo wydanie 0.5: podręcznik, dwanaście załączników, profil 1.5 i platformę KG PSP.
+GitHub Pages publikuje to samo wydanie 0.5: podręcznik, dwanaście załączników, profil 1.5 i platformę KG PSP, a także [komplet 15 dokumentów PDF do pobrania](https://kgpsp.github.io/WYTYCZNE_SOIA/DOKUMENTY_PDF/).
 
 ## Aktualizacja dokumentacji
 
-Źródłem treści witryny są pliki Markdown w katalogu głównym i `zalaczniki/`. Po ich zmianie uruchom `python scripts/sync_pages.py`, aby odświeżyć wersję strony. Kontrola CI sprawdza zgodność kopii oraz buduje witrynę przez `mkdocs build --strict`. Pakiet PDF jest udostępniany w repozytorium i nie jest kopiowany do strony.
+Źródłem treści witryny są pliki Markdown w katalogu głównym i `zalaczniki/`. Po ich zmianie uruchom `python scripts/sync_pages.py`, aby odświeżyć wersję strony. Kontrola CI sprawdza zgodność kopii oraz buduje witrynę przez `mkdocs build --strict`. Pakiet PDF jest udostępniany w repozytorium i na stronie. Skrypt synchronizacji kopiuje PDF-y z `instrukcje-i-materialy-robocze/pdf/` do `docs/pdf/` bez zmiany zawartości, a kontrola CI sprawdza zgodność kopii.
+
+Przy aktualizacji zestawu odśwież oba spisy: `instrukcje-i-materialy-robocze/README.md` oraz [listę do pobrania](DOKUMENTY_PDF.md), a także wykaz rozmiarów i sum SHA-256 w `docs/pdf/manifest.json`. Następnie uruchom synchronizację strony.

@@ -30,8 +30,12 @@ Zachowano identyfikatory 166 wymagań W-* i 103 scenariuszy S-* z wydania 0.4. D
 
 Pełna i rozdzielona postać korzystają z tej samej treści załączników. Podstawa poprzednia pozostaje dostępna w [historii wydania 0.4](https://github.com/KGPSP/WYTYCZNE_SOIA/tree/49126d36904fa0d7166ea1d0456c6f3a81babf1c).
 
-Nie dodano PDF, danych operacyjnych ani plików z konfiguracją urządzeń. Aktualizacja dokumentacji nie jest wdrożeniem TTS, nowego słownika API lub TETRA. Przed odbiorem właściwe funkcje wymagają zgodnego kontraktu, konfiguracji i dowodu.
+Pierwszy etap aktualizacji obejmował sam Markdown, bez PDF, danych operacyjnych i plików z konfiguracją urządzeń. Aktualizacja dokumentacji nie jest wdrożeniem TTS, nowego słownika API lub TETRA. Przed odbiorem właściwe funkcje wymagają zgodnego kontraktu, konfiguracji i dowodu.
 
 ## Wydanie GitHub Pages
 
 Na polecenie z 10.09.2026 zaktualizowano także witrynę do wersji 0.5. Treść strony jest synchronizowana z Markdown repozytorium. Nawigacja obejmuje pełny podręcznik, wersję rozdzieloną, profil 1.5, platformę KG PSP i dwanaście załączników. Kontrola CI wykrywa rozbieżności treści przed publikacją.
+
+## Uzupełnienie o dokumenty PDF
+
+10.09.2026 opublikowano także [komplet 15 dokumentów PDF](DOKUMENTY_PDF.md) z zestawu WYTYCZNE_KRAJ: 235 stron, w tym przewodnik po dokumentacji i plakat A2. Pliki są dostępne w repozytorium i GitHub Pages. Zachowano ich oryginalne nazwy, treść, wersje oraz statusy. Wykaz zawiera rozmiary i sumy SHA-256 umożliwiające sprawdzenie pobranych kopii.

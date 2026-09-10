@@ -59,7 +59,7 @@ Próg kontroli czasu i zasady pomiaru są wymaganiami technicznymi określonymi 
 
 ## Źródła techniczne aktualizacji
 
-Podstawą kierunku były dokumenty KG PSP: wizja SOIA.KGPSP v0.3, wymagania wspólne platformy v0.2, profile sterowników v0.2 oraz instrukcje kanałów i integracji. Ich szczegółowe instrukcje instalacyjne i PDF-y nie są wgrywane w tym wydaniu repozytorium.
+Podstawą kierunku były dokumenty KG PSP: wizja SOIA.KGPSP v0.3, wymagania wspólne platformy v0.2, profile sterowników v0.2 oraz instrukcje kanałów i integracji. Ich szczegółowe instrukcje instalacyjne i pozostałe opracowania udostępniono w [spisie dokumentów PDF](../DOKUMENTY_PDF.md). Wersje, statusy i ograniczenia tych dokumentów pozostają określone w ich treści.
 
 Dokumentacja mechanizmów: [Yocto Project](https://docs.yoctoproject.org/brief-yoctoprojectqs/index.html), [BSP](https://docs.yoctoproject.org/bsp-guide/index.html), [OrchestraOS](https://cthings.co/orchestra-os) i [RAUC](https://rauc.readthedocs.io/en/latest/basic.html). Opis produktu nie jest dowodem wdrożenia funkcji w instancji KG PSP. Wersję oraz prawa do komponentów określa pakiet integracyjny.
 
